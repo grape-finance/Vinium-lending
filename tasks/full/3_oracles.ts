@@ -17,7 +17,8 @@ import {
   getLendingRateOracle,
   getPairsTokenAggregator,
 } from '../../helpers/contracts-getters';
-import { ViniumOracle, LendingRateOracle } from '../../types';
+// import { ViniumOracle, LendingRateOracle } from '../../types/LendingRateOracle';
+import { LendingRateOracle } from '../../types/LendingRateOracle';
 
 task('full:deploy-oracles', 'Deploy oracles for dev enviroment')
   .addFlag('verify', 'Verify contracts at Etherscan')
@@ -52,8 +53,8 @@ task('full:deploy-oracles', 'Deploy oracles for dev enviroment')
         poolConfig.OracleQuoteCurrency
       );
 
-      let viniumOracle: ViniumOracle;
-      let lendingRateOracle: LendingRateOracle;
+      let viniumOracle: any;
+      let lendingRateOracle: any;
 
       if (notFalsyOrZeroAddress(viniumOracleAddress)) {
         viniumOracle = await await getViniumOracle(viniumOracleAddress);

@@ -29,6 +29,8 @@ export enum eXDaiNetwork {
 export enum eAvalancheNetwork {
   avalanche = 'avalanche',
   fuji = 'fuji',
+  goerli = 'goerli',
+  base = 'base',
 }
 
 export enum EthereumNetworkNames {

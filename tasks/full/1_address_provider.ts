@@ -16,8 +16,8 @@ task(
 )
   .addFlag('verify', 'Verify contracts at Etherscan')
   .addParam('pool', `Pool name to retrieve configuration, supported: ${Object.values(ConfigNames)}`)
-  .addFlag('skipRegistry')
-  .setAction(async ({ verify, pool, skipRegistry }, DRE) => {
+  .addFlag('skipregistry')
+  .setAction(async ({ verify, pool, skipregistry }, DRE) => {
     await DRE.run('set-DRE');
     const poolConfig = loadPoolConfig(pool);
     const { MarketId } = poolConfig;
@@ -26,7 +26,7 @@ task(
     const addressesProvider = await deployLendingPoolAddressesProvider(MarketId, verify);
 
     // 2. Add to registry or setup a new one
-    if (!skipRegistry) {
+    if (!skipregistry) {
       const providerRegistryAddress = getParamPerNetwork(
         poolConfig.ProviderRegistry,
         <eNetwork>DRE.network.name

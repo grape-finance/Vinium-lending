@@ -118,6 +118,7 @@ export const CommonsConfig: ICommonConfiguration = {
   FallbackOracle: {
     [eAvalancheNetwork.avalanche]: ZERO_ADDRESS,
     [eAvalancheNetwork.fuji]: ZERO_ADDRESS,
+    [eAvalancheNetwork.goerli]: ZERO_ADDRESS,
   },
   ChainlinkAggregator: {
     [eAvalancheNetwork.avalanche]: {
@@ -139,10 +140,18 @@ export const CommonsConfig: ICommonConfiguration = {
       WAVAX: '0x5498BB86BC934c8D34FDA08E81D444153d0D06aD',
       USD: '0x86d67c3D38D2bCeE722E601025C25a575021c6EA',
     },
+    [eAvalancheNetwork.goerli]: {
+      DAI: '0x0d79df66BE487753B02D015Fb622DED7f0E9798d',
+    },
+    
   },
   ReserveAssets: {
     [eAvalancheNetwork.avalanche]: {},
     [eAvalancheNetwork.fuji]: {},
+    [eAvalancheNetwork.goerli]: {
+      DAI: "0x5810ecE5108924a8d793Dce0620fbF60C596aF77"
+    },
+    
   },
   ReservesConfig: {},
   ViTokenDomainSeparator: {
@@ -160,6 +169,7 @@ export const CommonsConfig: ICommonConfiguration = {
   ReserveFactorTreasuryAddress: {
     [eAvalancheNetwork.avalanche]: '0xEB755b81A786832705a3c0658127216eD36fE898',
     [eAvalancheNetwork.fuji]: '0xB45F5C501A22288dfdb897e5f73E189597e09288', // Self-controlled EOA for testing
+    [eAvalancheNetwork.goerli]: '0x4Aa6Da4ca5d76e8d5e3ACD11B92Ab22D564F1fcb',
   },
   IncentivesController: {
     [eAvalancheNetwork.avalanche]: '0x4a40Cf33cc1D38fc1C4668F398eE17133f5c2636',
