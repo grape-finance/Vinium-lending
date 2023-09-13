@@ -19,7 +19,7 @@ export const CommonsConfig: ICommonConfiguration = {
   StableVdTokenNamePrefix: 'Vinium Avalanche Market stable debt',
   VariableVdTokenNamePrefix: 'Vinium Avalanche Market variable debt',
   SymbolPrefix: 'v',
-  ProviderId: 0, // Overriden in index.ts
+  ProviderId: 1, // Overriden in index.ts
   OracleQuoteCurrency: 'USD',
   OracleQuoteUnit: oneUsd.toString(),
   ProtocolGlobalParams: {
@@ -72,20 +72,24 @@ export const CommonsConfig: ICommonConfiguration = {
   PoolAdmin: {
     [eAvalancheNetwork.avalanche]: undefined,
     [eAvalancheNetwork.fuji]: undefined,
+    [eAvalancheNetwork.goerli]: '0x4Aa6Da4ca5d76e8d5e3ACD11B92Ab22D564F1fcb',
   },
   PoolAdminIndex: 0,
   EmergencyAdminIndex: 0,
   EmergencyAdmin: {
     [eAvalancheNetwork.avalanche]: undefined,
     [eAvalancheNetwork.fuji]: undefined,
+    [eAvalancheNetwork.goerli]: '0x4Aa6Da4ca5d76e8d5e3ACD11B92Ab22D564F1fcb',
   },
   ProviderRegistry: {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
+    [eAvalancheNetwork.goerli]: '',
   },
   ProviderRegistryOwner: {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
+    [eAvalancheNetwork.goerli]: '0x4Aa6Da4ca5d76e8d5e3ACD11B92Ab22D564F1fcb',
   },
   LendingRateOracle: {
     [eAvalancheNetwork.avalanche]: '0xCA3eb6E8c67a2B00C5B35E0Fd469d50712017279',
@@ -102,6 +106,7 @@ export const CommonsConfig: ICommonConfiguration = {
   LendingPool: {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
+    [eAvalancheNetwork.goerli]: '0xE988564a40AFF91123B54fEb7554aEA7e37eD7E5',    
   },
   WethGateway: {
     [eAvalancheNetwork.avalanche]: '',

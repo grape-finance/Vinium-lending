@@ -1,0 +1,29 @@
+# yarn hardhat --network goerli full:deploy-address-provider-registry --pool Commons --verify
+yarn hardhat --network goerli full:deploy-address-provider --pool Commons --verify
+yarn hardhat --network goerli full:deploy-lending-pool --pool Commons --verify
+yarn hardhat --network goerli full:deploy-oracles --pool Commons --verify
+yarn hardhat --network goerli full:data-provider --verify
+yarn hardhat --network goerli full-deploy-weth-gateway --pool Commons --verify
+yarn hardhat --network goerli full:initialize-lending-pool --pool Commons --verify
+yarn hardhat --network goerli full:add-new-tokens --pool Commons --verify
+
+// LendingPoolAddressesProvider registry 0xC4508e17b9df61F02F607FfF9b36B8f3ce849217
+// LendingPoolAddressesProvider 0xf041F660e37933C5a7a4B2bf42FE3Cd068592b94
+
+// Reserve logic 0xab56eB2cd0d2921fE5359870f445BED04bf00b87
+// GenericLogic 0x35263cd786C67764921D045E9ACDab18F73c5949
+// ValidationLogic 0x7eEb8969B1E43FaA086813E506Ced4b484441712
+
+// Lending pool 0xE988564a40AFF91123B54fEb7554aEA7e37eD7E5
+// Lending pool configurator 0x75ed3C727Bc077e753C6E798Bf7Ba24c2E2999D0
+
+// StableAndVariableTokensHelper 0xB17EE3A91606CEC5fb6F120d4c5aCBEd4A293576
+// ViTokensAndRatesHelper 0xF2262573fF480A324Ca6F08233a4a1B766F4f580
+// StableVdToken 0xc08dF657AF006deB9baBdc227077D5897138a9B7
+// VariableVdToken 0x28f69082Ef34586aa3cBC35da400142256112AaE
+// Vinium oracle 0xaa90002d25ceF9df5A3242f3A2e8A786171f4001
+// Lending Rate oracle 0xBDEF5Dc435E24690651f708FB2250F05A17Fe5c1
+// ViniumProtocolDataProvider 0x808Afbe5ceE995dFE8e08d15f9Eb0F5fdC0d75Ae
+// WETHGateway 0xCF1DABc38c78c83AEF79AC0546c947F29F1a1272
+// LendingPoolCollateralManager 0xadc4cEdd19e916289828F6A9c1d2d77E71Fa8c6F
+// WalletBalanceProvider 0x5Afc8C54F1BaA8DcB824978c62D74C697a533683
