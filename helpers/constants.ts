@@ -87,7 +87,8 @@ export const chainlinkAggregatorProxy = {
   'arbitrum-rinkeby': '0x5f0423B1a6935dc5596e7A24d98532b67A0AeFd8',
   arbitrum: '0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612',
   rinkeby: '0x8A753747A1Fa494EC906cE90E9f37563A8AF630e',
-  goerli: '0x9F54B624fb17d07816C5552f8AB133c21b0322cD',
+  goerli: '0x1d35C7e9AEA65e8C3bC1B31CcAdeEB598Fdd685b',
+  // goerli: '0x14B53AbF19AAB31C7014fFD497D6F0552a69F567', // 0x9F54B624fb17d07816C5552f8AB133c21b0322cD Mock Aggregator
 };
 
 export const chainlinkEthUsdAggregatorProxy = {
@@ -101,5 +102,5 @@ export const chainlinkEthUsdAggregatorProxy = {
   'arbitrum-rinkeby': '0x5f0423B1a6935dc5596e7A24d98532b67A0AeFd8',
   arbitrum: '0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612',
   rinkeby: '0x8A753747A1Fa494EC906cE90E9f37563A8AF630e',
-  goerli: '0x9F54B624fb17d07816C5552f8AB133c21b0322cD',
+  goerli: '0x1d35C7e9AEA65e8C3bC1B31CcAdeEB598Fdd685b',
 };

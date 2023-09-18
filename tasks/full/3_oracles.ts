@@ -35,7 +35,9 @@ task('full:deploy-oracles', 'Deploy oracles for dev enviroment')
         ChainlinkAggregator,
       } = poolConfig as ICommonConfiguration;
       const lendingRateOracles = getLendingRateOracles(poolConfig);
-      const addressesProvider = await getLendingPoolAddressesProvider();
+      const addressesProvider = await getLendingPoolAddressesProvider(
+        '0x7a6Aaf62a3112a928598101fAC0bFB9B03D9Ab11'
+      );
       const admin = await getGenesisPoolAdmin(poolConfig);
       const viniumOracleAddress = getParamPerNetwork(poolConfig.ViniumOracle, network);
       const lendingRateOracleAddress = getParamPerNetwork(poolConfig.LendingRateOracle, network);

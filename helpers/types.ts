@@ -504,6 +504,7 @@ export interface IBaseConfiguration {
   VariableVdTokenNamePrefix: string;
   SymbolPrefix: string;
   ProviderId: number;
+  ViToken: iParamsPerNetwork<tEthereumAddress | undefined>;
   ProtocolGlobalParams: IProtocolGlobalConfig;
   ProviderRegistry: iParamsPerNetwork<tEthereumAddress | undefined>;
   ProviderRegistryOwner: iParamsPerNetwork<tEthereumAddress | undefined>;

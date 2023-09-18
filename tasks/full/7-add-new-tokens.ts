@@ -40,7 +40,9 @@ task('full:add-new-tokens', 'Initialize lending pool configuration.')
 
       const reserveAssets = await getParamPerNetwork(ReserveAssets, network);
       const incentivesController = await getParamPerNetwork(IncentivesController, network);
-      const addressesProvider = await getLendingPoolAddressesProvider();
+      const addressesProvider = await getLendingPoolAddressesProvider(
+        '0x7a6Aaf62a3112a928598101fAC0bFB9B03D9Ab11'
+      );
 
       const testHelpers = await getViniumProtocolDataProvider();
 

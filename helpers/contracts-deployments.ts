@@ -721,10 +721,12 @@ export const deployViTokenImplementations = async (
   ];
 
   for (let x = 0; x < viTokenImplementations.length; x++) {
+    console.log('viTokenImplementations :>> ', viTokenImplementations);
     const viTokenAddress = getOptionalParamAddressPerNetwork(
       poolConfig[viTokenImplementations[x].toString()],
       network
     );
+    console.log('viTokenAddress :>> ', viTokenAddress);
     if (!notFalsyOrZeroAddress(viTokenAddress)) {
       const deployImplementationMethod = chooseViTokenDeployment(viTokenImplementations[x]);
       console.log(`Deploying implementation`, viTokenImplementations[x]);

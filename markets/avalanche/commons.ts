@@ -8,6 +8,15 @@ import {
   oneUsd,
 } from '../../helpers/constants';
 import { ICommonConfiguration, eAvalancheNetwork } from '../../helpers/types';
+import {
+  strategySAVAX,
+  strategyUSDC,
+  strategyUSDT,
+  strategyDAI,
+  strategyWETH,
+  strategyBTCB,
+  strategyGRAPE, strategyWAVAX, strategyWBTC,
+} from './reservesConfigs';
 
 // ----------------
 // PROTOCOL GLOBAL PARAMS
@@ -15,9 +24,9 @@ import { ICommonConfiguration, eAvalancheNetwork } from '../../helpers/types';
 
 export const CommonsConfig: ICommonConfiguration = {
   MarketId: 'Commons',
-  ViTokenNamePrefix: 'Vinium Avalanche Market',
-  StableVdTokenNamePrefix: 'Vinium Avalanche Market stable debt',
-  VariableVdTokenNamePrefix: 'Vinium Avalanche Market variable debt',
+  ViTokenNamePrefix: 'Vinium Goerli Market',
+  StableVdTokenNamePrefix: 'Vinium Goerli Market stable debt',
+  VariableVdTokenNamePrefix: 'Vinium Goerli Market variable debt',
   SymbolPrefix: 'v',
   ProviderId: 1, // Overriden in index.ts
   OracleQuoteCurrency: 'USD',
@@ -68,6 +77,13 @@ export const CommonsConfig: ICommonConfiguration = {
   // COMMON PROTOCOL ADDRESSES ACROSS POOLS
   // ----------------
 
+
+  // ViToken:{
+  //   [eAvalancheNetwork.avalanche]: undefined,
+  //   [eAvalancheNetwork.fuji]: undefined,
+  //   [eAvalancheNetwork.goerli]: '0xE1E1fF2B2e6Df48Fe71D2a5E526316dE27aC2773',
+  // },
+
   // If PoolAdmin/emergencyAdmin is set, will take priority over PoolAdminIndex/emergencyAdminIndex
   PoolAdmin: {
     [eAvalancheNetwork.avalanche]: undefined,
@@ -98,19 +114,22 @@ export const CommonsConfig: ICommonConfiguration = {
   LendingPoolCollateralManager: {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
+    [eAvalancheNetwork.goerli]: '0x8935835Fc6e5A504a5394FCA6a8efb122C263886',    
   },
   LendingPoolConfigurator: {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
+    [eAvalancheNetwork.goerli]: '0x5fCdF529e120C2DF5B98aDF61F67650B6fCDfAA3',        
   },
   LendingPool: {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
-    [eAvalancheNetwork.goerli]: '0xE988564a40AFF91123B54fEb7554aEA7e37eD7E5',    
+    [eAvalancheNetwork.goerli]: '0xB403c5491CFf4746591CD39196AB6dd167366e79',    
   },
   WethGateway: {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
+    [eAvalancheNetwork.goerli]: '0x842678f9410D97bB062B1fA12d87027d4095b7E3',
   },
   TokenDistributor: {
     [eAvalancheNetwork.avalanche]: '',
@@ -146,7 +165,10 @@ export const CommonsConfig: ICommonConfiguration = {
       USD: '0x86d67c3D38D2bCeE722E601025C25a575021c6EA',
     },
     [eAvalancheNetwork.goerli]: {
-      DAI: '0x0d79df66BE487753B02D015Fb622DED7f0E9798d',
+      WETH: '0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e', 
+      WBTC: "0xA39434A63A52E749F02807ae27335515BA4b07F7", 
+      DAI: "0x0d79df66BE487753B02D015Fb622DED7f0E9798d", 
+      USDT: '0xAb5c49580294Aff77670F839ea425f5b78ab3Ae7', 
     },
     
   },
@@ -154,11 +176,24 @@ export const CommonsConfig: ICommonConfiguration = {
     [eAvalancheNetwork.avalanche]: {},
     [eAvalancheNetwork.fuji]: {},
     [eAvalancheNetwork.goerli]: {
-      DAI: "0x5810ecE5108924a8d793Dce0620fbF60C596aF77"
+      WETH: '0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6', // Official WETH
+      WBTC: "0xbf781b25A4632C580A210b3A9D06F95a720d5672", // MintableERC20 token
+      DAI: "0x5810ecE5108924a8d793Dce0620fbF60C596aF77", // MintableERC20 token
+      USDT: '0x0B3924aBe2A9856e9b685c7788d15fFD465C3Dd4', // MintableERC20 token
     },
     
   },
-  ReservesConfig: {},
+  ReservesConfig: {
+    WETH: strategyWETH,
+    WBTC: strategyWBTC,
+    DAI: strategyDAI,
+    USDT: strategyUSDT
+  },
+  ViToken:{
+    [eAvalancheNetwork.avalanche]: '',
+    [eAvalancheNetwork.fuji]: '',
+    [eAvalancheNetwork.goerli]: '0xA3f1Ab2B05aFa87BBB327B702BcaA1497c21c51A',
+  },
   ViTokenDomainSeparator: {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
@@ -170,6 +205,7 @@ export const CommonsConfig: ICommonConfiguration = {
   WrappedNativeToken: {
     [eAvalancheNetwork.avalanche]: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7', // Official WAVAX
     [eAvalancheNetwork.fuji]: '0xd00ae08403B9bbb9124bB305C09058E32C39A48c', // Official WAVAX
+    [eAvalancheNetwork.goerli]: '0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6', // Official WAVAX
   },
   ReserveFactorTreasuryAddress: {
     [eAvalancheNetwork.avalanche]: '0xEB755b81A786832705a3c0658127216eD36fE898',
@@ -179,5 +215,7 @@ export const CommonsConfig: ICommonConfiguration = {
   IncentivesController: {
     [eAvalancheNetwork.avalanche]: '0x4a40Cf33cc1D38fc1C4668F398eE17133f5c2636',
     [eAvalancheNetwork.fuji]: '0xa1EF206fb9a8D8186157FC817fCddcC47727ED55',
+    [eAvalancheNetwork.goerli]: '0x226bFdcD010CCa89a2aA4F1bF72bCCfa2d4042B2',
+    
   },
 };

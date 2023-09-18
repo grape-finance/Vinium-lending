@@ -31,7 +31,7 @@ task('full:deploy-lending-pool', 'Deploy lending pool for dev enviroment')
       const network = <eNetwork>DRE.network.name;
       const poolConfig = loadPoolConfig(pool);
       const addressesProvider = await getLendingPoolAddressesProvider(
-        '0xf041F660e37933C5a7a4B2bf42FE3Cd068592b94'
+        '0x7a6Aaf62a3112a928598101fAC0bFB9B03D9Ab11'
       );
 
       const { LendingPool, LendingPoolConfigurator } = poolConfig;

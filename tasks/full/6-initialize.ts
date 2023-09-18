@@ -40,9 +40,13 @@ task('full:initialize-lending-pool', 'Initialize lending pool configuration.')
 
       const reserveAssets = await getParamPerNetwork(ReserveAssets, network);
       const incentivesController = await getParamPerNetwork(IncentivesController, network);
-      const addressesProvider = await getLendingPoolAddressesProvider();
+      const addressesProvider = await getLendingPoolAddressesProvider(
+        '0x7a6Aaf62a3112a928598101fAC0bFB9B03D9Ab11'
+      );
 
-      const testHelpers = await getViniumProtocolDataProvider();
+      const testHelpers = await getViniumProtocolDataProvider(
+        '0xE77DD5814C3eF8d5d512192d5fE6E57de64A9803'
+      );
 
       const admin = await addressesProvider.getPoolAdmin();
       const oracle = await addressesProvider.getPriceOracle();
@@ -90,7 +94,9 @@ task('full:initialize-lending-pool', 'Initialize lending pool configuration.')
         '\tSetting ViniumProtocolDataProvider at AddressesProvider at id: 0x01',
         collateralManagerAddress
       );
-      const viniumProtocolDataProvider = await getViniumProtocolDataProvider();
+      const viniumProtocolDataProvider = await getViniumProtocolDataProvider(
+        '0xE77DD5814C3eF8d5d512192d5fE6E57de64A9803'
+      );
       await waitForTx(
         await addressesProvider.setAddress(
           '0x0100000000000000000000000000000000000000000000000000000000000000',
