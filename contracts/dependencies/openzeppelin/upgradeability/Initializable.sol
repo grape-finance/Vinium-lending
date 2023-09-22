@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: agpl-3.0
-pragma solidity >=0.4.24 <0.7.0;
+pragma solidity >=0.4.24 <=0.8.12;
 
 /**
  * @title Initializable
@@ -59,6 +59,11 @@ contract Initializable {
       cs := extcodesize(address())
     }
     return cs == 0;
+  }
+
+  modifier onlyInitializing() {
+    require(initializing, 'Initializable: contract is not initializing');
+    _;
   }
 
   // Reserved storage space to allow for layout changes in the future.

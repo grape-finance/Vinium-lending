@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: agpl-3.0
-pragma solidity 0.6.12;
+pragma solidity 0.8.12;
 
+import {SafeMath} from '../../dependencies/openzeppelin/contracts/SafeMath.sol';
 import {IERC20} from '../../dependencies/openzeppelin/contracts/IERC20.sol';
 import {SafeERC20} from '../../dependencies/openzeppelin/contracts/SafeERC20.sol';
 import {Ownable} from '../../dependencies/openzeppelin/contracts/Ownable.sol';
@@ -22,6 +23,7 @@ contract ViToken is
   IncentivizedERC20('VITOKEN_IMPL', 'VITOKEN_IMPL', 0),
   IViToken
 {
+  using SafeMath for uint256;
   using WadRayMath for uint256;
   using SafeERC20 for IERC20;
 
@@ -38,9 +40,9 @@ contract ViToken is
 
   bytes32 public DOMAIN_SEPARATOR;
 
-  ILendingPool internal _pool;
+  // ILendingPool internal _pool;
   address internal _treasury;
-  address internal _underlyingAsset;
+  // address internal _underlyingAsset;
   IViniumIncentivesController internal _incentivesController;
 
   modifier onlyLendingPool() {
@@ -52,11 +54,9 @@ contract ViToken is
     return VITOKEN_REVISION;
   }
 
-  function setIncentivesController(IViniumIncentivesController incentivesController)
-    external
-    override
-    onlyLendingPool
-  {
+  function setIncentivesController(
+    IViniumIncentivesController incentivesController
+  ) external override onlyLendingPool {
     _incentivesController = incentivesController;
   }
 
@@ -214,12 +214,9 @@ contract ViToken is
    * @param user The user whose balance is calculated
    * @return The balance of the user
    **/
-  function balanceOf(address user)
-    public
-    view
-    override(IncentivizedERC20, IERC20)
-    returns (uint256)
-  {
+  function balanceOf(
+    address user
+  ) public view override(IncentivizedERC20, IERC20) returns (uint256) {
     return super.balanceOf(user).rayMul(_pool.getReserveNormalizedIncome(_underlyingAsset));
   }
 
@@ -239,12 +236,9 @@ contract ViToken is
    * @return The scaled balance of the user
    * @return The scaled balance and the scaled total supply
    **/
-  function getScaledUserBalanceAndSupply(address user)
-    external
-    view
-    override
-    returns (uint256, uint256)
-  {
+  function getScaledUserBalanceAndSupply(
+    address user
+  ) external view override returns (uint256, uint256) {
     return (super.balanceOf(user), super.totalSupply());
   }
 
@@ -314,12 +308,10 @@ contract ViToken is
    * @param amount The amount getting transferred
    * @return The amount transferred
    **/
-  function transferUnderlyingTo(address target, uint256 amount)
-    external
-    override
-    onlyLendingPool
-    returns (uint256)
-  {
+  function transferUnderlyingTo(
+    address target,
+    uint256 amount
+  ) external override onlyLendingPool returns (uint256) {
     IERC20(_underlyingAsset).safeTransfer(target, amount);
     return amount;
   }
@@ -375,12 +367,7 @@ contract ViToken is
    * @param amount The amount getting transferred
    * @param validate `true` if the transfer needs to be validated
    **/
-  function _transfer(
-    address from,
-    address to,
-    uint256 amount,
-    bool validate
-  ) internal {
+  function _transfer(address from, address to, uint256 amount, bool validate) internal {
     address underlyingAsset = _underlyingAsset;
     ILendingPool pool = _pool;
 
@@ -404,11 +391,7 @@ contract ViToken is
    * @param to The destination address
    * @param amount The amount getting transferred
    **/
-  function _transfer(
-    address from,
-    address to,
-    uint256 amount
-  ) internal override {
+  function _transfer(address from, address to, uint256 amount) internal override {
     _transfer(from, to, amount, true);
   }
 }

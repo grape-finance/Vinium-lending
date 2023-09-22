@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: agpl-3.0
-pragma solidity 0.6.12;
+pragma solidity 0.8.12;
 pragma experimental ABIEncoderV2;
 
 import {PercentageMath} from '../protocol/libraries/math/PercentageMath.sol';
@@ -41,7 +41,7 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
     ILendingPoolAddressesProvider addressesProvider,
     IUniswapV2Router02 uniswapRouter,
     address wethAddress
-  ) public FlashLoanReceiverBase(addressesProvider) {
+  ) FlashLoanReceiverBase(addressesProvider) {
     ORACLE = IPriceOracleGetter(addressesProvider.getPriceOracle());
     UNISWAP_ROUTER = uniswapRouter;
     WETH_ADDRESS = wethAddress;
@@ -61,18 +61,7 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
     uint256 amountIn,
     address reserveIn,
     address reserveOut
-  )
-    external
-    view
-    override
-    returns (
-      uint256,
-      uint256,
-      uint256,
-      uint256,
-      address[] memory
-    )
-  {
+  ) external view override returns (uint256, uint256, uint256, uint256, address[] memory) {
     AmountCalc memory results = _getAmountsOutData(reserveIn, reserveOut, amountIn);
 
     return (
@@ -98,18 +87,7 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
     uint256 amountOut,
     address reserveIn,
     address reserveOut
-  )
-    external
-    view
-    override
-    returns (
-      uint256,
-      uint256,
-      uint256,
-      uint256,
-      address[] memory
-    )
-  {
+  ) external view override returns (uint256, uint256, uint256, uint256, address[] memory) {
     AmountCalc memory results = _getAmountsInData(reserveIn, reserveOut, amountOut);
 
     return (
@@ -143,8 +121,8 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
     uint256 toAssetPrice = _getPrice(assetToSwapTo);
 
     uint256 expectedMinAmountOut = amountToSwap
-      .mul(fromAssetPrice.mul(10**toAssetDecimals))
-      .div(toAssetPrice.mul(10**fromAssetDecimals))
+      .mul(fromAssetPrice.mul(10 ** toAssetDecimals))
+      .div(toAssetPrice.mul(10 ** fromAssetDecimals))
       .percentMul(PercentageMath.PERCENTAGE_FACTOR.sub(MAX_SLIPPAGE_PERCENT));
 
     require(expectedMinAmountOut < minAmountOut, 'minAmountOut exceed max slippage');
@@ -200,8 +178,8 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
     uint256 toAssetPrice = _getPrice(assetToSwapTo);
 
     uint256 expectedMaxAmountToSwap = amountToReceive
-      .mul(toAssetPrice.mul(10**fromAssetDecimals))
-      .div(fromAssetPrice.mul(10**toAssetDecimals))
+      .mul(toAssetPrice.mul(10 ** fromAssetDecimals))
+      .div(fromAssetPrice.mul(10 ** toAssetDecimals))
       .percentMul(PercentageMath.PERCENTAGE_FACTOR.add(MAX_SLIPPAGE_PERCENT));
 
     require(maxAmountToSwap < expectedMaxAmountToSwap, 'maxAmountToSwap exceed max slippage');
@@ -320,7 +298,7 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
     uint256 ethUsdPrice = _getPrice(USD_ADDRESS);
     uint256 reservePrice = _getPrice(reserve);
 
-    return amount.mul(reservePrice).div(10**decimals).mul(ethUsdPrice).div(10**18);
+    return amount.mul(reservePrice).div(10 ** decimals).mul(ethUsdPrice).div(10 ** 18);
   }
 
   /**
@@ -350,7 +328,7 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
       return
         AmountCalc(
           finalAmountIn,
-          finalAmountIn.mul(10**18).div(amountIn),
+          finalAmountIn.mul(10 ** 18).div(amountIn),
           _calcUsdValue(reserveIn, amountIn, reserveDecimals),
           _calcUsdValue(reserveIn, finalAmountIn, reserveDecimals),
           path
@@ -398,8 +376,8 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
     uint256 reserveInDecimals = _getDecimals(reserveIn);
     uint256 reserveOutDecimals = _getDecimals(reserveOut);
 
-    uint256 outPerInPrice = finalAmountIn.mul(10**18).mul(10**reserveOutDecimals).div(
-      bestAmountOut.mul(10**reserveInDecimals)
+    uint256 outPerInPrice = finalAmountIn.mul(10 ** 18).mul(10 ** reserveOutDecimals).div(
+      bestAmountOut.mul(10 ** reserveInDecimals)
     );
 
     return
@@ -440,7 +418,7 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
       return
         AmountCalc(
           amountIn,
-          amountOut.mul(10**18).div(amountIn),
+          amountOut.mul(10 ** 18).div(amountIn),
           _calcUsdValue(reserveIn, amountIn, reserveDecimals),
           _calcUsdValue(reserveIn, amountOut, reserveDecimals),
           path
@@ -459,8 +437,8 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
     uint256 reserveInDecimals = _getDecimals(reserveIn);
     uint256 reserveOutDecimals = _getDecimals(reserveOut);
 
-    uint256 inPerOutPrice = amountOut.mul(10**18).mul(10**reserveInDecimals).div(
-      finalAmountIn.mul(10**reserveOutDecimals)
+    uint256 inPerOutPrice = amountOut.mul(10 ** 18).mul(10 ** reserveInDecimals).div(
+      finalAmountIn.mul(10 ** reserveOutDecimals)
     );
 
     return

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: agpl-3.0
-pragma solidity 0.6.12;
+pragma solidity 0.8.12;
 
 import {IVariableVdToken} from '../../interfaces/IVariableVdToken.sol';
 import {WadRayMath} from '../libraries/math/WadRayMath.sol';
@@ -19,15 +19,13 @@ contract VariableVdToken is VdTokenBase, IVariableVdToken {
 
   uint256 public constant DEBT_TOKEN_REVISION = 0x1;
 
-  ILendingPool internal _pool;
-  address internal _underlyingAsset;
+  // ILendingPool internal _pool;
+  // address internal _underlyingAsset;
   IViniumIncentivesController internal _incentivesController;
 
-  function setIncentivesController(IViniumIncentivesController incentivesController)
-    external
-    override
-    onlyLendingPool
-  {
+  function setIncentivesController(
+    IViniumIncentivesController incentivesController
+  ) external override onlyLendingPool {
     _incentivesController = incentivesController;
   }
 
@@ -129,11 +127,7 @@ contract VariableVdToken is VdTokenBase, IVariableVdToken {
    * @param amount The amount getting burned
    * @param index The variable debt index of the reserve
    **/
-  function burn(
-    address user,
-    uint256 amount,
-    uint256 index
-  ) external override onlyLendingPool {
+  function burn(address user, uint256 amount, uint256 index) external override onlyLendingPool {
     uint256 amountScaled = amount.rayDiv(index);
     require(amountScaled != 0, Errors.CT_INVALID_BURN_AMOUNT);
 
@@ -173,12 +167,9 @@ contract VariableVdToken is VdTokenBase, IVariableVdToken {
    * @return The principal balance of the user
    * @return The principal total supply
    **/
-  function getScaledUserBalanceAndSupply(address user)
-    external
-    view
-    override
-    returns (uint256, uint256)
-  {
+  function getScaledUserBalanceAndSupply(
+    address user
+  ) external view override returns (uint256, uint256) {
     return (super.balanceOf(user), super.totalSupply());
   }
 

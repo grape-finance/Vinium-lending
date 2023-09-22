@@ -1,4 +1,4 @@
-pragma solidity 0.6.12;
+pragma solidity 0.8.12;
 
 import {StableVdToken} from '../../contracts/protocol/tokenization/StableVdToken.sol';
 import {IncentivizedERC20} from '../../contracts/protocol/tokenization/IncentivizedERC20.sol';

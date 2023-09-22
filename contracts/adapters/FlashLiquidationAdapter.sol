@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: agpl-3.0
-pragma solidity 0.6.12;
+pragma solidity 0.8.12;
 pragma experimental ABIEncoderV2;
 
+import {SafeMath} from '../dependencies/openzeppelin/contracts/SafeMath.sol';
 import {BaseUniswapAdapter} from './BaseUniswapAdapter.sol';
 import {ILendingPoolAddressesProvider} from '../interfaces/ILendingPoolAddressesProvider.sol';
 import {IUniswapV2Router02} from '../interfaces/IUniswapV2Router02.sol';
@@ -18,6 +19,7 @@ import {ReserveConfiguration} from '../protocol/libraries/configuration/ReserveC
  * @author Vinium
  **/
 contract FlashLiquidationAdapter is BaseUniswapAdapter {
+  using SafeMath for uint256;
   using ReserveConfiguration for DataTypes.ReserveConfigurationMap;
   uint256 internal constant LIQUIDATION_CLOSE_FACTOR_PERCENT = 5000;
 

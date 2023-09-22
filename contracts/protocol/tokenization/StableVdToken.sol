@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: agpl-3.0
-pragma solidity 0.6.12;
+pragma solidity 0.8.12;
 
+import {SafeMath} from '../../dependencies/openzeppelin/contracts/SafeMath.sol';
 import {VdTokenBase} from './base/VdTokenBase.sol';
 import {MathUtils} from '../libraries/math/MathUtils.sol';
 import {WadRayMath} from '../libraries/math/WadRayMath.sol';
@@ -16,6 +17,7 @@ import {Errors} from '../libraries/helpers/Errors.sol';
  * @author Vinium
  **/
 contract StableVdToken is IStableVdToken, VdTokenBase {
+  using SafeMath for uint256;
   using WadRayMath for uint256;
 
   uint256 public constant DEBT_TOKEN_REVISION = 0x1;
@@ -25,15 +27,13 @@ contract StableVdToken is IStableVdToken, VdTokenBase {
   mapping(address => uint256) internal _usersStableRate;
   uint40 internal _totalSupplyTimestamp;
 
-  ILendingPool internal _pool;
-  address internal _underlyingAsset;
+  // ILendingPool internal _pool;
+  // address internal _underlyingAsset;
   IViniumIncentivesController internal _incentivesController;
 
-  function setIncentivesController(IViniumIncentivesController incentivesController)
-    external
-    override
-    onlyLendingPool
-  {
+  function setIncentivesController(
+    IViniumIncentivesController incentivesController
+  ) external override onlyLendingPool {
     _incentivesController = incentivesController;
   }
 
@@ -271,15 +271,9 @@ contract StableVdToken is IStableVdToken, VdTokenBase {
    * @param user The address of the user for which the interest is being accumulated
    * @return The previous principal balance, the new principal balance and the balance increase
    **/
-  function _calculateBalanceIncrease(address user)
-    internal
-    view
-    returns (
-      uint256,
-      uint256,
-      uint256
-    )
-  {
+  function _calculateBalanceIncrease(
+    address user
+  ) internal view returns (uint256, uint256, uint256) {
     uint256 previousPrincipalBalance = super.balanceOf(user);
 
     if (previousPrincipalBalance == 0) {
@@ -299,17 +293,7 @@ contract StableVdToken is IStableVdToken, VdTokenBase {
   /**
    * @dev Returns the principal and total supply, the average borrow rate and the last supply update timestamp
    **/
-  function getSupplyData()
-    public
-    view
-    override
-    returns (
-      uint256,
-      uint256,
-      uint256,
-      uint40
-    )
-  {
+  function getSupplyData() public view override returns (uint256, uint256, uint256, uint40) {
     uint256 avgRate = _avgStableRate;
     return (super.totalSupply(), _calcTotalSupply(avgRate), avgRate, _totalSupplyTimestamp);
   }
@@ -413,16 +397,14 @@ contract StableVdToken is IStableVdToken, VdTokenBase {
    * @param amount The amount being minted
    * @param oldTotalSupply the total supply before the minting event
    **/
-  function _mint(
-    address account,
-    uint256 amount,
-    uint256 oldTotalSupply
-  ) internal {
+  function _mint(address account, uint256 amount, uint256 oldTotalSupply) internal {
     uint256 oldAccountBalance = _balances[account];
-    _balances[account] = oldAccountBalance.add(amount);
-
     if (address(_incentivesController) != address(0)) {
-      _incentivesController.handleAction(account, oldTotalSupply, oldAccountBalance);
+      _incentivesController.handleActionBefore(account);
+    }
+    _balances[account] = oldAccountBalance.add(amount);
+    if (address(_incentivesController) != address(0)) {
+      _incentivesController.handleActionAfter(account, oldAccountBalance, oldTotalSupply);
     }
   }
 
@@ -432,16 +414,14 @@ contract StableVdToken is IStableVdToken, VdTokenBase {
    * @param amount The amount being burned
    * @param oldTotalSupply The total supply before the burning event
    **/
-  function _burn(
-    address account,
-    uint256 amount,
-    uint256 oldTotalSupply
-  ) internal {
+  function _burn(address account, uint256 amount, uint256 oldTotalSupply) internal {
     uint256 oldAccountBalance = _balances[account];
-    _balances[account] = oldAccountBalance.sub(amount, Errors.SDT_BURN_EXCEEDS_BALANCE);
-
     if (address(_incentivesController) != address(0)) {
-      _incentivesController.handleAction(account, oldTotalSupply, oldAccountBalance);
+      _incentivesController.handleActionBefore(account);
+    }
+    _balances[account] = oldAccountBalance.sub(amount, Errors.SDT_BURN_EXCEEDS_BALANCE);
+    if (address(_incentivesController) != address(0)) {
+      _incentivesController.handleActionAfter(account, oldAccountBalance, oldTotalSupply);
     }
   }
 }

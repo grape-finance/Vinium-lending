@@ -114,22 +114,22 @@ export const CommonsConfig: ICommonConfiguration = {
   LendingPoolCollateralManager: {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
-    [eAvalancheNetwork.goerli]: '0x8935835Fc6e5A504a5394FCA6a8efb122C263886',    
+    [eAvalancheNetwork.goerli]: '',    
   },
   LendingPoolConfigurator: {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
-    [eAvalancheNetwork.goerli]: '0x5fCdF529e120C2DF5B98aDF61F67650B6fCDfAA3',        
+    [eAvalancheNetwork.goerli]: '0x1E2A9f601314A52140735c94186629d16490aF09',        
   },
   LendingPool: {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
-    [eAvalancheNetwork.goerli]: '0xB403c5491CFf4746591CD39196AB6dd167366e79',    
+    [eAvalancheNetwork.goerli]: '0x2A92b818900157d07946781bB3ccbd012bD6b1b0',    
   },
   WethGateway: {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
-    [eAvalancheNetwork.goerli]: '0x842678f9410D97bB062B1fA12d87027d4095b7E3',
+    [eAvalancheNetwork.goerli]: '0x113959964373658282C23af32De8B642d4f60174',
   },
   TokenDistributor: {
     [eAvalancheNetwork.avalanche]: '',
@@ -192,7 +192,7 @@ export const CommonsConfig: ICommonConfiguration = {
   ViToken:{
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
-    [eAvalancheNetwork.goerli]: '0xA3f1Ab2B05aFa87BBB327B702BcaA1497c21c51A',
+    [eAvalancheNetwork.goerli]: '',
   },
   ViTokenDomainSeparator: {
     [eAvalancheNetwork.avalanche]: '',

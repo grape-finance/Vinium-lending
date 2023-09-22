@@ -54,7 +54,7 @@ certora-test:
     - apt-get update || apt-get update
     - apt-get install -y software-properties-common
     - pip3 install certora-cli
-    - wget https://github.com/ethereum/solidity/releases/download/v0.6.12/solc-static-linux
+    - wget https://github.com/ethereum/solidity/releases/download/v0.8.12/solc-static-linux
     - chmod +x solc-static-linux
     - mv solc-static-linux /usr/bin/solc
     - export PATH=$PATH:/usr/bin/solc/solc-static-linux

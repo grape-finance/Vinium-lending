@@ -74,12 +74,44 @@ let forkMode;
 
 const buidlerConfig: HardhatUserConfig = {
   solidity: {
-    version: '0.6.12',
-    settings: {
-      optimizer: { enabled: true, runs: 200 },
-      evmVersion: 'istanbul',
-    },
+    // version: '0.8.12',
+    compilers: [
+      {
+        version: '0.8.12',
+        settings: {
+          evmVersion: 'istanbul',
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
+      {
+        version: '0.6.12',
+        settings: {
+          evmVersion: 'istanbul',
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
+    ],
+    // settings: {
+    //   optimizer: { enabled: true, runs: 200 },
+    //   evmVersion: 'istanbul',
+    // },
+    // settings: {
+    //   optimizer: {
+    //     enabled: true,
+    //     runs: 200,
+    //     details: {
+    //       yul: false
+    //     }
+    //   }
+    // }
   },
+
   typechain: {
     outDir: 'types',
     target: 'ethers-v5',

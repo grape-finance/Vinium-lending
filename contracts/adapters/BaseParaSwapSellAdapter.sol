@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: agpl-3.0
-pragma solidity 0.6.12;
+pragma solidity 0.8.12;
 pragma experimental ABIEncoderV2;
 
+import {SafeMath} from '../dependencies/openzeppelin/contracts/SafeMath.sol';
+import {SafeERC20} from '../dependencies/openzeppelin/contracts/SafeERC20.sol';
 import {BaseParaSwapAdapter} from './BaseParaSwapAdapter.sol';
 import {PercentageMath} from '../protocol/libraries/math/PercentageMath.sol';
 import {IParaSwapAugustus} from '../interfaces/IParaSwapAugustus.sol';
@@ -15,14 +17,16 @@ import {IERC20Detailed} from '../dependencies/openzeppelin/contracts/IERC20Detai
  * @author Jason Raymond Bell
  */
 abstract contract BaseParaSwapSellAdapter is BaseParaSwapAdapter {
+  using SafeMath for uint256;
   using PercentageMath for uint256;
+  using SafeERC20 for IERC20Detailed;
 
   IParaSwapAugustusRegistry public immutable AUGUSTUS_REGISTRY;
 
   constructor(
     ILendingPoolAddressesProvider addressesProvider,
     IParaSwapAugustusRegistry augustusRegistry
-  ) public BaseParaSwapAdapter(addressesProvider) {
+  ) BaseParaSwapAdapter(addressesProvider) {
     // Do something on Augustus registry to check the right contract was passed
     require(!augustusRegistry.isValidAugustus(address(0)));
     AUGUSTUS_REGISTRY = augustusRegistry;
@@ -57,11 +61,10 @@ abstract contract BaseParaSwapSellAdapter is BaseParaSwapAdapter {
       uint256 fromAssetPrice = _getPrice(address(assetToSwapFrom));
       uint256 toAssetPrice = _getPrice(address(assetToSwapTo));
 
-      uint256 expectedMinAmountOut =
-        amountToSwap
-          .mul(fromAssetPrice.mul(10**toAssetDecimals))
-          .div(toAssetPrice.mul(10**fromAssetDecimals))
-          .percentMul(PercentageMath.PERCENTAGE_FACTOR - MAX_SLIPPAGE_PERCENT);
+      uint256 expectedMinAmountOut = amountToSwap
+        .mul(fromAssetPrice.mul(10 ** toAssetDecimals))
+        .div(toAssetPrice.mul(10 ** fromAssetDecimals))
+        .percentMul(PercentageMath.PERCENTAGE_FACTOR - MAX_SLIPPAGE_PERCENT);
 
       require(expectedMinAmountOut <= minAmountToReceive, 'MIN_AMOUNT_EXCEEDS_MAX_SLIPPAGE');
     }
@@ -77,9 +80,10 @@ abstract contract BaseParaSwapSellAdapter is BaseParaSwapAdapter {
     if (fromAmountOffset != 0) {
       // Ensure 256 bit (32 bytes) fromAmount value is within bounds of the
       // calldata, not overlapping with the first 4 bytes (function selector).
-      require(fromAmountOffset >= 4 &&
-        fromAmountOffset <= swapCalldata.length.sub(32),
-        'FROM_AMOUNT_OFFSET_OUT_OF_RANGE');
+      require(
+        fromAmountOffset >= 4 && fromAmountOffset <= swapCalldata.length.sub(32),
+        'FROM_AMOUNT_OFFSET_OUT_OF_RANGE'
+      );
       // Overwrite the fromAmount with the correct amount for the swap.
       // In memory, swapCalldata consists of a 256 bit length field, followed by
       // the actual bytes data, that is why 32 is added to the byte offset.
@@ -87,7 +91,7 @@ abstract contract BaseParaSwapSellAdapter is BaseParaSwapAdapter {
         mstore(add(swapCalldata, add(fromAmountOffset, 32)), amountToSwap)
       }
     }
-    (bool success,) = address(augustus).call(swapCalldata);
+    (bool success, ) = address(augustus).call(swapCalldata);
     if (!success) {
       // Copy revert reason from call
       assembly {
@@ -95,15 +99,13 @@ abstract contract BaseParaSwapSellAdapter is BaseParaSwapAdapter {
         revert(0, returndatasize())
       }
     }
-    require(assetToSwapFrom.balanceOf(address(this)) == balanceBeforeAssetFrom - amountToSwap, 'WRONG_BALANCE_AFTER_SWAP');
+    require(
+      assetToSwapFrom.balanceOf(address(this)) == balanceBeforeAssetFrom - amountToSwap,
+      'WRONG_BALANCE_AFTER_SWAP'
+    );
     amountReceived = assetToSwapTo.balanceOf(address(this)).sub(balanceBeforeAssetTo);
     require(amountReceived >= minAmountToReceive, 'INSUFFICIENT_AMOUNT_RECEIVED');
 
-    emit Swapped(
-      address(assetToSwapFrom),
-      address(assetToSwapTo),
-      amountToSwap,
-      amountReceived
-    );
+    emit Swapped(address(assetToSwapFrom), address(assetToSwapTo), amountToSwap, amountReceived);
   }
 }

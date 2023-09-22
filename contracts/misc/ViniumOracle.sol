@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: agpl-3.0
-pragma solidity 0.6.12;
+pragma solidity 0.8.12;
 
 import {Ownable} from '../dependencies/openzeppelin/contracts/Ownable.sol';
 import {IERC20} from '../dependencies/openzeppelin/contracts/IERC20.sol';
@@ -51,10 +51,10 @@ contract ViniumOracle is IPriceOracleGetter, Ownable {
   /// @notice External function called by the Vinium governance to set or replace sources of assets
   /// @param assets The addresses of the assets
   /// @param sources The address of the source of each asset
-  function setAssetSources(address[] calldata assets, address[] calldata sources)
-    external
-    onlyOwner
-  {
+  function setAssetSources(
+    address[] calldata assets,
+    address[] calldata sources
+  ) external onlyOwner {
     _setAssetsSources(assets, sources);
   }
 

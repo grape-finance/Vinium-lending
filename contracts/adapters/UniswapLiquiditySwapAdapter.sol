@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: agpl-3.0
-pragma solidity 0.6.12;
+pragma solidity 0.8.12;
 pragma experimental ABIEncoderV2;
 
+import {SafeMath} from '../dependencies/openzeppelin/contracts/SafeMath.sol';
+import {SafeERC20} from '../dependencies/openzeppelin/contracts/SafeERC20.sol';
 import {BaseUniswapAdapter} from './BaseUniswapAdapter.sol';
 import {ILendingPoolAddressesProvider} from '../interfaces/ILendingPoolAddressesProvider.sol';
 import {IUniswapV2Router02} from '../interfaces/IUniswapV2Router02.sol';
@@ -13,6 +15,8 @@ import {IERC20} from '../dependencies/openzeppelin/contracts/IERC20.sol';
  * @author Vinium
  **/
 contract UniswapLiquiditySwapAdapter is BaseUniswapAdapter {
+  using SafeMath for uint256;
+  using SafeERC20 for IERC20;
   struct PermitParams {
     uint256[] amount;
     uint256[] deadline;

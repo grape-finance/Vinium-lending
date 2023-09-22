@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: agpl-3.0
-pragma solidity 0.6.12;
+pragma solidity 0.8.12;
 pragma experimental ABIEncoderV2;
 
 import {IERC20Detailed} from '../dependencies/openzeppelin/contracts/IERC20Detailed.sol';
@@ -64,7 +64,9 @@ contract ViniumProtocolDataProvider {
     return viTokens;
   }
 
-  function getReserveConfigurationData(address asset)
+  function getReserveConfigurationData(
+    address asset
+  )
     external
     view
     returns (
@@ -93,7 +95,9 @@ contract ViniumProtocolDataProvider {
     usageAsCollateralEnabled = liquidationThreshold > 0;
   }
 
-  function getReserveData(address asset)
+  function getReserveData(
+    address asset
+  )
     external
     view
     returns (
@@ -126,7 +130,10 @@ contract ViniumProtocolDataProvider {
     );
   }
 
-  function getUserReserveData(address asset, address user)
+  function getUserReserveData(
+    address asset,
+    address user
+  )
     external
     view
     returns (
@@ -159,14 +166,12 @@ contract ViniumProtocolDataProvider {
     usageAsCollateralEnabled = userConfig.isUsingAsCollateral(reserve.id);
   }
 
-  function getReserveTokensAddresses(address asset)
+  function getReserveTokensAddresses(
+    address asset
+  )
     external
     view
-    returns (
-      address viTokenAddress,
-      address stableVdTokenAddress,
-      address variableVdTokenAddress
-    )
+    returns (address viTokenAddress, address stableVdTokenAddress, address variableVdTokenAddress)
   {
     DataTypes.ReserveData memory reserve = ILendingPool(ADDRESSES_PROVIDER.getLendingPool())
       .getReserveData(asset);

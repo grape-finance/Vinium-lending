@@ -31,7 +31,7 @@ task('full:deploy-lending-pool', 'Deploy lending pool for dev enviroment')
       const network = <eNetwork>DRE.network.name;
       const poolConfig = loadPoolConfig(pool);
       const addressesProvider = await getLendingPoolAddressesProvider(
-        '0x7a6Aaf62a3112a928598101fAC0bFB9B03D9Ab11'
+        '0x3e07e121EbE2F2F0f18fF4E56418C121f92C4CA4'
       );
 
       const { LendingPool, LendingPoolConfigurator } = poolConfig;
@@ -46,7 +46,7 @@ task('full:deploy-lending-pool', 'Deploy lending pool for dev enviroment')
       }
       console.log('\tSetting lending pool implementation with address:', lendingPoolImplAddress);
       // Set lending pool impl to Address provider
-      await waitForTx(await addressesProvider.setLendingPoolImpl(lendingPoolImplAddress));
+      // await waitForTx(await addressesProvider.setLendingPoolImpl(lendingPoolImplAddress));
 
       const address = await addressesProvider.getLendingPool();
       const lendingPoolProxy = await getLendingPool(address);
@@ -65,9 +65,9 @@ task('full:deploy-lending-pool', 'Deploy lending pool for dev enviroment')
         lendingPoolConfiguratorImplAddress
       );
       // Set lending pool conf impl to Address Provider
-      await waitForTx(
-        await addressesProvider.setLendingPoolConfiguratorImpl(lendingPoolConfiguratorImplAddress)
-      );
+      // await waitForTx(
+      //   await addressesProvider.setLendingPoolConfiguratorImpl(lendingPoolConfiguratorImplAddress)
+      // );
 
       const lendingPoolConfiguratorProxy = await getLendingPoolConfiguratorProxy(
         await addressesProvider.getLendingPoolConfigurator()

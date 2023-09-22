@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: agpl-3.0
-pragma solidity 0.6.12;
+pragma solidity 0.8.12;
 pragma experimental ABIEncoderV2;
 
 import {IPriceOracleGetter} from '../../interfaces/IPriceOracleGetter.sol';
@@ -51,16 +51,7 @@ interface IBaseUniswapAdapter {
     uint256 amountIn,
     address reserveIn,
     address reserveOut
-  )
-    external
-    view
-    returns (
-      uint256,
-      uint256,
-      uint256,
-      uint256,
-      address[] memory
-    );
+  ) external view returns (uint256, uint256, uint256, uint256, address[] memory);
 
   /**
    * @dev Returns the minimum input asset amount required to buy the given output asset amount and the prices
@@ -77,14 +68,5 @@ interface IBaseUniswapAdapter {
     uint256 amountOut,
     address reserveIn,
     address reserveOut
-  )
-    external
-    view
-    returns (
-      uint256,
-      uint256,
-      uint256,
-      uint256,
-      address[] memory
-    );
+  ) external view returns (uint256, uint256, uint256, uint256, address[] memory);
 }

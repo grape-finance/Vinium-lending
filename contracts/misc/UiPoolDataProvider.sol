@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: agpl-3.0
-pragma solidity 0.6.12;
+pragma solidity 0.8.12;
 pragma experimental ABIEncoderV2;
 
 import {IERC20Detailed} from '../dependencies/openzeppelin/contracts/IERC20Detailed.sol';
@@ -26,23 +26,17 @@ contract UiPoolDataProvider is IUiPoolDataProvider {
   IViniumIncentivesController public immutable override incentivesController;
   IPriceOracleGetter public immutable oracle;
 
-  constructor(IViniumIncentivesController _incentivesController, IPriceOracleGetter _oracle)
-    public
-  {
+  constructor(
+    IViniumIncentivesController _incentivesController,
+    IPriceOracleGetter _oracle
+  ) public {
     incentivesController = _incentivesController;
     oracle = _oracle;
   }
 
-  function getInterestRateStrategySlopes(DefaultReserveInterestRateStrategy interestRateStrategy)
-    internal
-    view
-    returns (
-      uint256,
-      uint256,
-      uint256,
-      uint256
-    )
-  {
+  function getInterestRateStrategySlopes(
+    DefaultReserveInterestRateStrategy interestRateStrategy
+  ) internal view returns (uint256, uint256, uint256, uint256) {
     return (
       interestRateStrategy.variableRateSlope1(),
       interestRateStrategy.variableRateSlope2(),
@@ -51,26 +45,16 @@ contract UiPoolDataProvider is IUiPoolDataProvider {
     );
   }
 
-  function getReservesList(ILendingPoolAddressesProvider provider)
-    public
-    view
-    override
-    returns (address[] memory)
-  {
+  function getReservesList(
+    ILendingPoolAddressesProvider provider
+  ) public view override returns (address[] memory) {
     ILendingPool lendingPool = ILendingPool(provider.getLendingPool());
     return lendingPool.getReservesList();
   }
 
-  function getSimpleReservesData(ILendingPoolAddressesProvider provider)
-    public
-    view
-    override
-    returns (
-      AggregatedReserveData[] memory,
-      uint256,
-      uint256
-    )
-  {
+  function getSimpleReservesData(
+    ILendingPoolAddressesProvider provider
+  ) public view override returns (AggregatedReserveData[] memory, uint256, uint256) {
     ILendingPool lendingPool = ILendingPool(provider.getLendingPool());
     address[] memory reserves = lendingPool.getReservesList();
     AggregatedReserveData[] memory reservesData = new AggregatedReserveData[](reserves.length);
@@ -166,12 +150,10 @@ contract UiPoolDataProvider is IUiPoolDataProvider {
     return (reservesData, oracle.getAssetPrice(MOCK_USD_ADDRESS), emissionEndTimestamp);
   }
 
-  function getUserReservesData(ILendingPoolAddressesProvider provider, address user)
-    external
-    view
-    override
-    returns (UserReserveData[] memory, uint256)
-  {
+  function getUserReservesData(
+    ILendingPoolAddressesProvider provider,
+    address user
+  ) external view override returns (UserReserveData[] memory, uint256) {
     ILendingPool lendingPool = ILendingPool(provider.getLendingPool());
     address[] memory reserves = lendingPool.getReservesList();
     DataTypes.UserConfigurationMap memory userConfig = lendingPool.getUserConfiguration(user);
@@ -227,7 +209,10 @@ contract UiPoolDataProvider is IUiPoolDataProvider {
     return (userReservesData, userUnclaimedRewards);
   }
 
-  function getReservesData(ILendingPoolAddressesProvider provider, address user)
+  function getReservesData(
+    ILendingPoolAddressesProvider provider,
+    address user
+  )
     external
     view
     override

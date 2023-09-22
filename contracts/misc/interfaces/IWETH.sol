@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: agpl-3.0
-pragma solidity 0.6.12;
+pragma solidity 0.8.12;
 
 interface IWETH {
   function deposit() external payable;
@@ -8,9 +8,5 @@ interface IWETH {
 
   function approve(address guy, uint256 wad) external returns (bool);
 
-  function transferFrom(
-    address src,
-    address dst,
-    uint256 wad
-  ) external returns (bool);
+  function transferFrom(address src, address dst, uint256 wad) external returns (bool);
 }

@@ -41,11 +41,11 @@ task('full:initialize-lending-pool', 'Initialize lending pool configuration.')
       const reserveAssets = await getParamPerNetwork(ReserveAssets, network);
       const incentivesController = await getParamPerNetwork(IncentivesController, network);
       const addressesProvider = await getLendingPoolAddressesProvider(
-        '0x7a6Aaf62a3112a928598101fAC0bFB9B03D9Ab11'
+        '0x3e07e121EbE2F2F0f18fF4E56418C121f92C4CA4'
       );
 
       const testHelpers = await getViniumProtocolDataProvider(
-        '0xE77DD5814C3eF8d5d512192d5fE6E57de64A9803'
+        '0x45829C3C93E3Ae0B6a9089448B0364885eaf2bfc'
       );
 
       const admin = await addressesProvider.getPoolAdmin();
@@ -57,19 +57,19 @@ task('full:initialize-lending-pool', 'Initialize lending pool configuration.')
 
       const treasuryAddress = await getTreasuryAddress(poolConfig);
 
-      await initReservesByHelper(
-        ReservesConfig,
-        reserveAssets,
-        ViTokenNamePrefix,
-        StableVdTokenNamePrefix,
-        VariableVdTokenNamePrefix,
-        SymbolPrefix,
-        admin,
-        treasuryAddress,
-        incentivesController,
-        pool,
-        verify
-      );
+      // await initReservesByHelper(
+      //   ReservesConfig,
+      //   reserveAssets,
+      //   ViTokenNamePrefix,
+      //   StableVdTokenNamePrefix,
+      //   VariableVdTokenNamePrefix,
+      //   SymbolPrefix,
+      //   admin,
+      //   treasuryAddress,
+      //   incentivesController,
+      //   pool,
+      //   verify
+      // );
       await configureReservesByHelper(ReservesConfig, reserveAssets, testHelpers, admin);
 
       let collateralManagerAddress = await getParamPerNetwork(
@@ -95,7 +95,7 @@ task('full:initialize-lending-pool', 'Initialize lending pool configuration.')
         collateralManagerAddress
       );
       const viniumProtocolDataProvider = await getViniumProtocolDataProvider(
-        '0xE77DD5814C3eF8d5d512192d5fE6E57de64A9803'
+        '0x45829C3C93E3Ae0B6a9089448B0364885eaf2bfc'
       );
       await waitForTx(
         await addressesProvider.setAddress(

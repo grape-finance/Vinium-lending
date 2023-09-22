@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: agpl-3.0
-pragma solidity 0.6.12;
+pragma solidity 0.8.12;
 pragma experimental ABIEncoderV2;
 
 import {IERC20Detailed} from '../dependencies/openzeppelin/contracts/IERC20Detailed.sol';
@@ -36,16 +36,9 @@ contract UiPoolDataProviderV2 is IUiPoolDataProviderV2 {
     marketReferenceCurrencyPriceInUsdProxyAggregator = _marketReferenceCurrencyPriceInUsdProxyAggregator;
   }
 
-  function getInterestRateStrategySlopes(DefaultReserveInterestRateStrategy interestRateStrategy)
-    internal
-    view
-    returns (
-      uint256,
-      uint256,
-      uint256,
-      uint256
-    )
-  {
+  function getInterestRateStrategySlopes(
+    DefaultReserveInterestRateStrategy interestRateStrategy
+  ) internal view returns (uint256, uint256, uint256, uint256) {
     return (
       interestRateStrategy.variableRateSlope1(),
       interestRateStrategy.variableRateSlope2(),
@@ -54,22 +47,16 @@ contract UiPoolDataProviderV2 is IUiPoolDataProviderV2 {
     );
   }
 
-  function getReservesList(ILendingPoolAddressesProvider provider)
-    public
-    view
-    override
-    returns (address[] memory)
-  {
+  function getReservesList(
+    ILendingPoolAddressesProvider provider
+  ) public view override returns (address[] memory) {
     ILendingPool lendingPool = ILendingPool(provider.getLendingPool());
     return lendingPool.getReservesList();
   }
 
-  function getReservesData(ILendingPoolAddressesProvider provider)
-    public
-    view
-    override
-    returns (AggregatedReserveData[] memory, BaseCurrencyInfo memory)
-  {
+  function getReservesData(
+    ILendingPoolAddressesProvider provider
+  ) public view override returns (AggregatedReserveData[] memory, BaseCurrencyInfo memory) {
     IViniumOracle oracle = IViniumOracle(provider.getPriceOracle());
     ILendingPool lendingPool = ILendingPool(provider.getLendingPool());
     address[] memory reserves = lendingPool.getReservesList();
@@ -156,9 +143,7 @@ contract UiPoolDataProviderV2 is IUiPoolDataProviderV2 {
         baseCurrencyInfo.marketReferenceCurrencyUnit = baseCurrencyUnit;
         baseCurrencyInfo.marketReferenceCurrencyPriceInUsd = int256(baseCurrencyUnit);
       }
-    } catch (
-      bytes memory /*lowLevelData*/
-    ) {
+    } catch (bytes memory /*lowLevelData*/) {
       baseCurrencyInfo.marketReferenceCurrencyUnit = ETH_CURRENCY_UNIT;
       baseCurrencyInfo
         .marketReferenceCurrencyPriceInUsd = marketReferenceCurrencyPriceInUsdProxyAggregator
@@ -168,12 +153,10 @@ contract UiPoolDataProviderV2 is IUiPoolDataProviderV2 {
     return (reservesData, baseCurrencyInfo);
   }
 
-  function getUserReservesData(ILendingPoolAddressesProvider provider, address user)
-    external
-    view
-    override
-    returns (UserReserveData[] memory)
-  {
+  function getUserReservesData(
+    ILendingPoolAddressesProvider provider,
+    address user
+  ) external view override returns (UserReserveData[] memory) {
     ILendingPool lendingPool = ILendingPool(provider.getLendingPool());
     address[] memory reserves = lendingPool.getReservesList();
     DataTypes.UserConfigurationMap memory userConfig = lendingPool.getUserConfiguration(user);

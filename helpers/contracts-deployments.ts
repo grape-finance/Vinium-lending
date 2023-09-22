@@ -225,9 +225,9 @@ export const deployValidationLogic = async (
 export const deployViniumLibraries = async (
   verify?: boolean
 ): Promise<LendingPoolLibraryAddresses> => {
-  const reserveLogic = await deployReserveLogicLibrary(verify);
-  const genericLogic = await deployGenericLogic(reserveLogic, verify);
-  const validationLogic = await deployValidationLogic(reserveLogic, genericLogic, verify);
+  // const reserveLogic = await deployReserveLogicLibrary(verify);
+  // const genericLogic = await deployGenericLogic(reserveLogic, verify);
+  // const validationLogic = await deployValidationLogic(reserveLogic, genericLogic, verify);
 
   // Hardcoded solidity placeholders, if any library changes path this will fail.
   // The '__$PLACEHOLDER$__ can be calculated via solidity keccak, but the LendingPoolLibraryAddresses Type seems to
@@ -241,14 +241,16 @@ export const deployViniumLibraries = async (
   // libPath example: contracts/libraries/logic/GenericLogic.sol
   // libName example: GenericLogic
   return {
-    ['__$de8c0cf1a7d7c36c802af9a64fb9d86036$__']: validationLogic.address,
-    ['__$22cd43a9dda9ce44e9b92ba393b88fb9ac$__']: reserveLogic.address,
+    ['__$de8c0cf1a7d7c36c802af9a64fb9d86036$__']: '0x5B371397dab7A60a9798dE99d8a08b587C8b5B93',
+    ['__$22cd43a9dda9ce44e9b92ba393b88fb9ac$__']: '0xA316412d564c3c749738B5F59e7Fb2819c9A2E93',
   };
 };
 
 export const deployLendingPool = async (verify?: boolean) => {
   const libraries = await deployViniumLibraries(verify);
-  const lendingPoolImpl = await new LendingPoolFactory(libraries, await getFirstSigner()).deploy();
+  const firstSigner = await getFirstSigner();
+  console.log('firstSigner :>> ', firstSigner);
+  const lendingPoolImpl = await new LendingPoolFactory(libraries, firstSigner).deploy();
   await insertContractAddressInDb(eContractid.LendingPoolImpl, lendingPoolImpl.address);
   return withSaveAndVerify(lendingPoolImpl, eContractid.LendingPool, [], verify);
 };
@@ -721,7 +723,6 @@ export const deployViTokenImplementations = async (
   ];
 
   for (let x = 0; x < viTokenImplementations.length; x++) {
-    console.log('viTokenImplementations :>> ', viTokenImplementations);
     const viTokenAddress = getOptionalParamAddressPerNetwork(
       poolConfig[viTokenImplementations[x].toString()],
       network

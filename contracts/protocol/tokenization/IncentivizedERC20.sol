@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: agpl-3.0
-pragma solidity 0.6.12;
+pragma solidity 0.8.12;
 
 import {Context} from '../../dependencies/openzeppelin/contracts/Context.sol';
 import {IERC20} from '../../dependencies/openzeppelin/contracts/IERC20.sol';
 import {IERC20Detailed} from '../../dependencies/openzeppelin/contracts/IERC20Detailed.sol';
 import {SafeMath} from '../../dependencies/openzeppelin/contracts/SafeMath.sol';
 import {IViniumIncentivesController} from '../../interfaces/IViniumIncentivesController.sol';
+import {ILendingPoolAddressesProvider} from '../../interfaces/ILendingPoolAddressesProvider.sol';
+import {IPriceOracle} from '../../interfaces/IPriceOracle.sol';
+import {ILendingPool} from '../../interfaces/ILendingPool.sol';
 
 /**
  * @title ERC20
@@ -23,11 +26,10 @@ abstract contract IncentivizedERC20 is Context, IERC20, IERC20Detailed {
   string private _symbol;
   uint8 private _decimals;
 
-  constructor(
-    string memory name,
-    string memory symbol,
-    uint8 decimals
-  ) public {
+  ILendingPool internal _pool;
+  address internal _underlyingAsset;
+
+  constructor(string memory name, string memory symbol, uint8 decimals) {
     _name = name;
     _symbol = symbol;
     _decimals = decimals;
@@ -92,13 +94,10 @@ abstract contract IncentivizedERC20 is Context, IERC20, IERC20Detailed {
    * @param spender The user allowed to spend the owner's tokens
    * @return The amount of owner's tokens spender is allowed to spend
    **/
-  function allowance(address owner, address spender)
-    public
-    view
-    virtual
-    override
-    returns (uint256)
-  {
+  function allowance(
+    address owner,
+    address spender
+  ) public view virtual override returns (uint256) {
     return _allowances[owner][spender];
   }
 
@@ -151,11 +150,10 @@ abstract contract IncentivizedERC20 is Context, IERC20, IERC20Detailed {
    * @param subtractedValue The amount being subtracted to the allowance
    * @return `true`
    **/
-  function decreaseAllowance(address spender, uint256 subtractedValue)
-    public
-    virtual
-    returns (bool)
-  {
+  function decreaseAllowance(
+    address spender,
+    uint256 subtractedValue
+  ) public virtual returns (bool) {
     _approve(
       _msgSender(),
       spender,
@@ -167,26 +165,35 @@ abstract contract IncentivizedERC20 is Context, IERC20, IERC20Detailed {
     return true;
   }
 
-  function _transfer(
-    address sender,
-    address recipient,
-    uint256 amount
-  ) internal virtual {
+  function _transfer(address sender, address recipient, uint256 amount) internal virtual {
     require(sender != address(0), 'ERC20: transfer from the zero address');
     require(recipient != address(0), 'ERC20: transfer to the zero address');
 
     _beforeTokenTransfer(sender, recipient, amount);
 
-    uint256 oldSenderBalance = _balances[sender];
-    _balances[sender] = oldSenderBalance.sub(amount, 'ERC20: transfer amount exceeds balance');
-    uint256 oldRecipientBalance = _balances[recipient];
-    _balances[recipient] = _balances[recipient].add(amount);
+    uint256 senderBalance = _balances[sender].sub(amount, 'ERC20: transfer amount exceeds balance');
+
+    if (address(_getIncentivesController()) != address(0)) {
+      // uint256 currentTotalSupply = _totalSupply;
+      _getIncentivesController().handleActionBefore(sender);
+      if (sender != recipient) {
+        _getIncentivesController().handleActionBefore(recipient);
+      }
+    }
+
+    _balances[sender] = senderBalance;
+    uint256 recipientBalance = _balances[recipient].add(amount);
+    _balances[recipient] = recipientBalance;
 
     if (address(_getIncentivesController()) != address(0)) {
       uint256 currentTotalSupply = _totalSupply;
-      _getIncentivesController().handleAction(sender, currentTotalSupply, oldSenderBalance);
+      _getIncentivesController().handleActionAfter(sender, _balances[sender], currentTotalSupply);
       if (sender != recipient) {
-        _getIncentivesController().handleAction(recipient, currentTotalSupply, oldRecipientBalance);
+        _getIncentivesController().handleActionAfter(
+          recipient,
+          _balances[recipient],
+          currentTotalSupply
+        );
       }
     }
   }
@@ -196,14 +203,15 @@ abstract contract IncentivizedERC20 is Context, IERC20, IERC20Detailed {
 
     _beforeTokenTransfer(address(0), account, amount);
 
-    uint256 oldTotalSupply = _totalSupply;
-    _totalSupply = oldTotalSupply.add(amount);
-
-    uint256 oldAccountBalance = _balances[account];
-    _balances[account] = oldAccountBalance.add(amount);
-
+    uint256 currentTotalSupply = _totalSupply.add(amount);
+    uint256 accountBalance = _balances[account].add(amount);
     if (address(_getIncentivesController()) != address(0)) {
-      _getIncentivesController().handleAction(account, oldTotalSupply, oldAccountBalance);
+      _getIncentivesController().handleActionBefore(account);
+    }
+    _totalSupply = currentTotalSupply;
+    _balances[account] = accountBalance;
+    if (address(_getIncentivesController()) != address(0)) {
+      _getIncentivesController().handleActionAfter(account, accountBalance, currentTotalSupply);
     }
   }
 
@@ -212,22 +220,22 @@ abstract contract IncentivizedERC20 is Context, IERC20, IERC20Detailed {
 
     _beforeTokenTransfer(account, address(0), amount);
 
-    uint256 oldTotalSupply = _totalSupply;
-    _totalSupply = oldTotalSupply.sub(amount);
-
-    uint256 oldAccountBalance = _balances[account];
-    _balances[account] = oldAccountBalance.sub(amount, 'ERC20: burn amount exceeds balance');
+    uint256 currentTotalSupply = _totalSupply.sub(amount);
+    uint256 accountBalance = _balances[account].sub(amount, 'ERC20: burn amount exceeds balance');
 
     if (address(_getIncentivesController()) != address(0)) {
-      _getIncentivesController().handleAction(account, oldTotalSupply, oldAccountBalance);
+      _getIncentivesController().handleActionBefore(account);
+    }
+
+    _totalSupply = currentTotalSupply;
+    _balances[account] = accountBalance;
+
+    if (address(_getIncentivesController()) != address(0)) {
+      _getIncentivesController().handleActionAfter(account, accountBalance, currentTotalSupply);
     }
   }
 
-  function _approve(
-    address owner,
-    address spender,
-    uint256 amount
-  ) internal virtual {
+  function _approve(address owner, address spender, uint256 amount) internal virtual {
     require(owner != address(0), 'ERC20: approve from the zero address');
     require(spender != address(0), 'ERC20: approve to the zero address');
 
@@ -247,9 +255,11 @@ abstract contract IncentivizedERC20 is Context, IERC20, IERC20Detailed {
     _decimals = newDecimals;
   }
 
-  function _beforeTokenTransfer(
-    address from,
-    address to,
-    uint256 amount
-  ) internal virtual {}
+  function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual {}
+
+  function getAssetPrice() external view returns (uint256) {
+    ILendingPoolAddressesProvider provider = _pool.getAddressesProvider();
+    address oracle = provider.getPriceOracle();
+    return IPriceOracle(oracle).getAssetPrice(_underlyingAsset);
+  }
 }

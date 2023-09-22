@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: agpl-3.0
-pragma solidity 0.6.12;
+pragma solidity 0.8.12;
 
 interface IUniswapV2Router02 {
   function swapExactTokensForTokens(
@@ -18,13 +18,13 @@ interface IUniswapV2Router02 {
     uint256 deadline
   ) external returns (uint256[] memory amounts);
 
-  function getAmountsOut(uint256 amountIn, address[] calldata path)
-    external
-    view
-    returns (uint256[] memory amounts);
+  function getAmountsOut(
+    uint256 amountIn,
+    address[] calldata path
+  ) external view returns (uint256[] memory amounts);
 
-  function getAmountsIn(uint256 amountOut, address[] calldata path)
-    external
-    view
-    returns (uint256[] memory amounts);
+  function getAmountsIn(
+    uint256 amountOut,
+    address[] calldata path
+  ) external view returns (uint256[] memory amounts);
 }

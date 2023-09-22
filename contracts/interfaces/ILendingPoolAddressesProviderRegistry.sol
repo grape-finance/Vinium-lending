@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: agpl-3.0
-pragma solidity 0.6.12;
+pragma solidity 0.8.12;
 
 /**
  * @title LendingPoolAddressesProviderRegistry contract
@@ -15,10 +15,9 @@ interface ILendingPoolAddressesProviderRegistry {
 
   function getAddressesProvidersList() external view returns (address[] memory);
 
-  function getAddressesProviderIdByAddress(address addressesProvider)
-    external
-    view
-    returns (uint256);
+  function getAddressesProviderIdByAddress(
+    address addressesProvider
+  ) external view returns (uint256);
 
   function registerAddressesProvider(address provider, uint256 id) external;
 
