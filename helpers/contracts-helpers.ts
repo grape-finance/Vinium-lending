@@ -19,6 +19,8 @@ import {
   iXDaiParamsPerNetwork,
   iAvalancheParamsPerNetwork,
   eAvalancheNetwork,
+  iBaseParamsPerNetwork,
+  eBaseNetwork,
 } from './types';
 import { MintableERC20 } from '../types/MintableERC20';
 import { Artifact } from 'hardhat/types';
@@ -87,16 +89,10 @@ export const getCurrentBlock = async () => {
   return DRE.ethers.provider.getBlockNumber();
 };
 
-export const decodeAbiNumber = (data: string): number =>
-  parseInt(utils.defaultAbiCoder.decode(['uint256'], data).toString());
+export const decodeAbiNumber = (data: string): number => parseInt(utils.defaultAbiCoder.decode(['uint256'], data).toString());
 
-export const deployContract = async <ContractType extends Contract>(
-  contractName: string,
-  args: any[]
-): Promise<ContractType> => {
-  const contract = (await (await DRE.ethers.getContractFactory(contractName))
-    .connect(await getFirstSigner())
-    .deploy(...args)) as ContractType;
+export const deployContract = async <ContractType extends Contract>(contractName: string, args: any[]): Promise<ContractType> => {
+  const contract = (await (await DRE.ethers.getContractFactory(contractName)).connect(await getFirstSigner()).deploy(...args)) as ContractType;
   await waitForTx(contract.deployTransaction);
   await registerContractInJsonDb(<eContractid>contractName, contract);
   return contract;
@@ -116,10 +112,8 @@ export const withSaveAndVerify = async <ContractType extends Contract>(
   return instance;
 };
 
-export const getContract = async <ContractType extends Contract>(
-  contractName: string,
-  address: string
-): Promise<ContractType> => (await DRE.ethers.getContractAt(contractName, address)) as ContractType;
+export const getContract = async <ContractType extends Contract>(contractName: string, address: string): Promise<ContractType> =>
+  (await DRE.ethers.getContractAt(contractName, address)) as ContractType;
 
 export const linkBytecode = (artifact: BuidlerArtifact | Artifact, libraries: any) => {
   let bytecode = artifact.bytecode;
@@ -133,10 +127,7 @@ export const linkBytecode = (artifact: BuidlerArtifact | Artifact, libraries: an
       }
 
       for (const fixup of fixups) {
-        bytecode =
-          bytecode.substr(0, 2 + fixup.start * 2) +
-          addr.substr(2) +
-          bytecode.substr(2 + (fixup.start + fixup.length) * 2);
+        bytecode = bytecode.substr(0, 2 + fixup.start * 2) + addr.substr(2) + bytecode.substr(2 + (fixup.start + fixup.length) * 2);
       }
     }
   }
@@ -145,11 +136,11 @@ export const linkBytecode = (artifact: BuidlerArtifact | Artifact, libraries: an
 };
 
 export const getParamPerNetwork = <T>(param: iParamsPerNetwork<T>, network: eNetwork) => {
-  const { main, ropsten, kovan, coverage, buidlerevm, tenderly, goerli } =
-    param as iEthereumParamsPerNetwork<T>;
+  const { main, ropsten, kovan, coverage, buidlerevm, tenderly, goerli } = param as iEthereumParamsPerNetwork<T>;
   const { matic, mumbai } = param as iPolygonParamsPerNetwork<T>;
   const { xdai } = param as iXDaiParamsPerNetwork<T>;
   const { avalanche, fuji } = param as iAvalancheParamsPerNetwork<T>;
+  const { base, basegoerli } = param as iBaseParamsPerNetwork<T>;
   if (process.env.FORK) {
     return param[process.env.FORK as eNetwork] as T;
   }
@@ -181,23 +172,21 @@ export const getParamPerNetwork = <T>(param: iParamsPerNetwork<T>, network: eNet
       return fuji;
     case eEthereumNetwork.goerli:
       return goerli;
+    case eBaseNetwork.base:
+      return base;
+    case eBaseNetwork.basegoerli:
+      return basegoerli;
   }
 };
 
-export const getOptionalParamAddressPerNetwork = (
-  param: iParamsPerNetwork<tEthereumAddress> | undefined | null,
-  network: eNetwork
-) => {
+export const getOptionalParamAddressPerNetwork = (param: iParamsPerNetwork<tEthereumAddress> | undefined | null, network: eNetwork) => {
   if (!param) {
     return ZERO_ADDRESS;
   }
   return getParamPerNetwork(param, network);
 };
 
-export const getParamPerPool = <T>(
-  { proto, amm, matic, avalanche }: iParamsPerPool<T>,
-  pool: ViniumPools
-) => {
+export const getParamPerPool = <T>({ proto, amm, matic, avalanche }: iParamsPerPool<T>, pool: ViniumPools) => {
   switch (pool) {
     case ViniumPools.proto:
       return proto;
@@ -291,28 +280,8 @@ export const buildLiquiditySwapParams = (
   useEthPath: boolean[]
 ) => {
   return ethers.utils.defaultAbiCoder.encode(
-    [
-      'address[]',
-      'uint256[]',
-      'bool[]',
-      'uint256[]',
-      'uint256[]',
-      'uint8[]',
-      'bytes32[]',
-      'bytes32[]',
-      'bool[]',
-    ],
-    [
-      assetToSwapToList,
-      minAmountsToReceive,
-      swapAllBalances,
-      permitAmounts,
-      deadlines,
-      v,
-      r,
-      s,
-      useEthPath,
-    ]
+    ['address[]', 'uint256[]', 'bool[]', 'uint256[]', 'uint256[]', 'uint8[]', 'bytes32[]', 'bytes32[]', 'bool[]'],
+    [assetToSwapToList, minAmountsToReceive, swapAllBalances, permitAmounts, deadlines, v, r, s, useEthPath]
   );
 };
 
@@ -359,30 +328,12 @@ export const buildParaSwapLiquiditySwapParams = (
   s: string | Buffer
 ) => {
   return ethers.utils.defaultAbiCoder.encode(
-    [
-      'address',
-      'uint256',
-      'uint256',
-      'bytes',
-      'address',
-      'tuple(uint256,uint256,uint8,bytes32,bytes32)',
-    ],
-    [
-      assetToSwapTo,
-      minAmountToReceive,
-      swapAllBalanceOffset,
-      swapCalldata,
-      augustus,
-      [permitAmount, deadline, v, r, s],
-    ]
+    ['address', 'uint256', 'uint256', 'bytes', 'address', 'tuple(uint256,uint256,uint8,bytes32,bytes32)'],
+    [assetToSwapTo, minAmountToReceive, swapAllBalanceOffset, swapCalldata, augustus, [permitAmount, deadline, v, r, s]]
   );
 };
 
-export const verifyContract = async (
-  id: string,
-  instance: Contract,
-  args: (string | string[])[]
-) => {
+export const verifyContract = async (id: string, instance: Contract, args: (string | string[])[]) => {
   if (usingTenderly()) {
     await verifyAtTenderly(id, instance);
   }
@@ -390,10 +341,7 @@ export const verifyContract = async (
   return instance;
 };
 
-export const getContractAddressWithJsonFallback = async (
-  id: string,
-  pool: ConfigNames
-): Promise<tEthereumAddress> => {
+export const getContractAddressWithJsonFallback = async (id: string, pool: ConfigNames): Promise<tEthereumAddress> => {
   const poolConfig = loadPoolConfig(pool);
   const network = <eNetwork>DRE.network.name;
   const db = getDb();

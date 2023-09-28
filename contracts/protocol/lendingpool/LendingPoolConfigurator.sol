@@ -14,8 +14,9 @@ import {PercentageMath} from '../libraries/math/PercentageMath.sol';
 import {DataTypes} from '../libraries/types/DataTypes.sol';
 import {IInitializableVdToken} from '../../interfaces/IInitializableVdToken.sol';
 import {IInitializableViToken} from '../../interfaces/IInitializableViToken.sol';
-import {IViniumIncentivesController} from '../../interfaces/IViniumIncentivesController.sol';
+import {IChefIncentivesController} from '../../interfaces/IChefIncentivesController.sol';
 import {ILendingPoolConfigurator} from '../../interfaces/ILendingPoolConfigurator.sol';
+import {IMultiFeeDistribution} from '../../interfaces/IMultiFeeDistribution.sol';
 
 /**
  * @title LendingPoolConfigurator contract
@@ -66,6 +67,10 @@ contract LendingPoolConfigurator is VersionedInitializable, ILendingPoolConfigur
   }
 
   function _initReserve(ILendingPool pool, InitReserveInput calldata input) internal {
+    IChefIncentivesController incentivesController = IChefIncentivesController(
+      input.incentivesController
+    );
+
     address viTokenProxyAddress = _initTokenWithProxy(
       input.viTokenImpl,
       abi.encodeWithSelector(
@@ -73,7 +78,7 @@ contract LendingPoolConfigurator is VersionedInitializable, ILendingPoolConfigur
         pool,
         input.treasury,
         input.underlyingAsset,
-        IViniumIncentivesController(input.incentivesController),
+        incentivesController,
         input.underlyingAssetDecimals,
         input.viTokenName,
         input.viTokenSymbol,
@@ -81,13 +86,16 @@ contract LendingPoolConfigurator is VersionedInitializable, ILendingPoolConfigur
       )
     );
 
+    incentivesController.addPool(viTokenProxyAddress, input.allocPoint);
+    IMultiFeeDistribution(input.treasury).addReward(viTokenProxyAddress);
+
     address stableVdTokenProxyAddress = _initTokenWithProxy(
       input.stableVdTokenImpl,
       abi.encodeWithSelector(
         IInitializableVdToken.initialize.selector,
         pool,
         input.underlyingAsset,
-        IViniumIncentivesController(input.incentivesController),
+        input.incentivesController,
         input.underlyingAssetDecimals,
         input.stableVdTokenName,
         input.stableVdTokenSymbol,
@@ -101,13 +109,15 @@ contract LendingPoolConfigurator is VersionedInitializable, ILendingPoolConfigur
         IInitializableVdToken.initialize.selector,
         pool,
         input.underlyingAsset,
-        IViniumIncentivesController(input.incentivesController),
+        IChefIncentivesController(input.incentivesController),
         input.underlyingAssetDecimals,
         input.variableVdTokenName,
         input.variableVdTokenSymbol,
         input.params
       )
     );
+
+    incentivesController.addPool(variableVdTokenProxyAddress, input.allocPoint);
 
     pool.initReserve(
       input.underlyingAsset,

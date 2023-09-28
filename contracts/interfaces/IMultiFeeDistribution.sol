@@ -43,6 +43,8 @@ interface IMultiFeeDistribution is IFeeDistribution {
   function claimFromConverter(address) external;
 
   function mint(address user, uint256 amount, bool withPenalty) external;
+
+  function addReward(address _rewardToken) external {}
 }
 
 interface IMFDPlus is IMultiFeeDistribution {

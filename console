@@ -3,40 +3,42 @@ yarn hardhat --network goerli full:deploy-lending-pool --pool Commons --verify
 yarn hardhat --network goerli full:deploy-oracles --pool Commons --verify
 yarn hardhat --network goerli full:data-provider --verify
 yarn hardhat --network goerli full-deploy-weth-gateway --pool Commons --verify
+yarn hardhat --network goerli full:deploy-incentive-controller --pool Commons --verify
+yarn hardhat --network goerli full:initialize-incentive-controller --pool Commons --verify
 yarn hardhat --network goerli full:initialize-lending-pool --pool Commons --verify
 yarn hardhat --network goerli full:add-new-tokens --pool Commons --verify
 
 yarn hardhat --network goerli deploy-UiPoolDataProviderV2 --verify
 yarn hardhat --network goerli deploy-UiIncentiveDataProviderV2 --verify
 
-// LendingPoolAddressesProvider registry 0x9a94AB0CB90e7a26decAa1ae3Ecd08Bec10f0039
-// LendingPoolAddressesProvider 0x3e07e121EbE2F2F0f18fF4E56418C121f92C4CA4
+// LendingPoolAddressesProvider registry 0x040Fb9Dc9913d0CB102805Cf79eaf435e6Da7392
+// LendingPoolAddressesProvider 0x8ef569898B9e44B8360018FED9d2966AE7fe4B01
 
 // Reserve logic 0xA316412d564c3c749738B5F59e7Fb2819c9A2E93
 // GenericLogic 0xfb0d06c9B248038eaF57E9E88AE33f4aC8e979Be
 // ValidationLogic 0x5B371397dab7A60a9798dE99d8a08b587C8b5B93
 
-// LendingPool Proxy 0x2A92b818900157d07946781bB3ccbd012bD6b1b0
-// LendingPool 0x5b3BB951770Bb4cb1Be3A2463a29d8628599309c
-// LendingPoolConfigurator Proxy 0x1E2A9f601314A52140735c94186629d16490aF09
-// LendingPoolConfigurator 0x6CC8310b1D91D3e4c0C229154737EACd557817B2
+// LendingPool Proxy 0x8Ce59fa0b750c5eCe33d831Cf9e449359B85f2a2
+// LendingPool 0xD7Df1637A40aa4b90F88CC2C67aC12c9089F713E
+// LendingPoolConfigurator Proxy 0xd6bFaDbe46868bae673E5C08227686d79361307E
+// LendingPoolConfigurator 0xa219B76D34F3E98F85058Cd86DFA9A558e9775fA
 
-// StableAndVariableTokensHelper 0xEcAc4BF1C5c0b12b418b1E529E93960BfBD553cD
-// ViTokensAndRatesHelper 0x3eC20e4d587f45419b400695cbBA3Ec62f5C5d59
+// StableAndVariableTokensHelper 0x7EC4b6895e02922952550Ae86C445F70C93b640B
+// ViTokensAndRatesHelper 0x94056EaD321C62c9A40730Bf48074a4d07C5fFE0
 
-// ViToken 0x6B248C4A78fE6500E3872Dc7Cb320f14401Dd57C
-// StableVdToken 0xE4F02e3A18E5Bc4A49990DA7d12172895651f6f0
-// VariableVdToken 0xd837A2052Ba2DB8C26229f6123D3DbA909418877
+// ViToken 0xCf996392E67021FF74628eBc2BE122f9BCc0C40d
+// StableVdToken 0x7bE2FB1B4183EDD0BdA3DE8D67B5Bcfc5688fB02
+// VariableVdToken 0xAB711f5EDA59eC32467c1219B5AcE334C8094C83
 
-// ViniumOracle 0x59C2777e3b1520e6c0590491e030F09E79a02f85
-// LendingRateOracle 0x0B1B30B9ed2651B2af5Ba525E8B63a4eb6B800DE
+// ViniumOracle 0x114b024AA7EE7273F45290057375572e9F09d5B3
+// LendingRateOracle 0xd11e590f99f9aAdc75C341DA1f4472068c10AE95
 
-// ViniumProtocolDataProvider 0x45829C3C93E3Ae0B6a9089448B0364885eaf2bfc
+// ViniumProtocolDataProvider 0x4e7B0d82747Db4Ca10340C86F1A456A479bBC8a6
 
-// WETHGateway 0x113959964373658282C23af32De8B642d4f60174
+// WETHGateway 0x5A334bC82A5e2Fc0711697FF4B1F99CBEaa508C8
 
-// DefaultReserveInterestRateStrategy 0xfa0d2212e63556f9939d3a19293ae218088829c4
-// 0xAda482aa691af0fed900319EF991de59a7A83F03
+// DefaultReserveInterestRateStrategy 0x085CCCF1b605cE9885A0781562172652680Fe516
+// 0xc524DC686197255684aF8478bEAb9fA655A4b40b
 
 // LendingPoolCollateralManager 0x10b289593f9DCB64fE8B5EbaCE7538C8f6E0cc74
 // WalletBalanceProvider 0xB9b8Bb3c796F93497522A2bd9dEb28d00e256d39
@@ -44,4 +46,16 @@ yarn hardhat --network goerli deploy-UiIncentiveDataProviderV2 --verify
 // UiPoolDataProviderV2 0x84A63CDC0aa7e851373C9DD1CB824E2c6e7d4f49
 // UiIncentiveDataProviderV2 0xC20bda162d06431ab8891C9810a37F5585EA5147
 
-// UiIncentiveController 0xDf405Ef49410a6c4D2bc95D48f78416a1582E256
+// ViniumOFT 0xc91659a1c17De3aAb2E1a70cb93116CDB6cc0fb5
+// LiquidityZap 0xE614d3F8d4204B0C1585d07C783F90ea2B6b8aB4
+// UniswapPoolHelper 0x3AAba231d16f9949f9F3e2776eDe23c102Ca0995
+// LockZap 0xc628156900E97B9CDC21C61Eb88e1DAc8C1dE8d0
+// UniV2TwapOracle 0x044DfA8DB54e2FDFdfEECAE61343DC3194467207
+// PriceProvider 0xd48c963821D4Fa49c99f1C7748563AC75185211B
+// LockerList 0xa6Bd4606667B0C2414Db4f65e8c8C11D517b579C
+// MultiFeeDistribution 0xC7166497936d2542E39e874EC4f0C583e644F009
+// MiddleFeeDistribution 0xD996976110075cfa000224E593811e51A1F43C9A
+// EligibilityDataProvider 0x0523b1836caba731071A660201325bE4D20b0256
+// ChefIncentiveController 0xA8c523263E3aEDC6df5a731E6e588049cE01322F
+
+// Old Incentive Controller 0xDf405Ef49410a6c4D2bc95D48f78416a1582E256

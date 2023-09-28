@@ -23,6 +23,7 @@ require('dotenv').config();
 import '@nomiclabs/hardhat-ethers';
 import '@nomiclabs/hardhat-etherscan';
 import '@nomiclabs/hardhat-waffle';
+import '@openzeppelin/hardhat-upgrades';
 // import 'temp-hardhat-etherscan';
 import 'hardhat-gas-reporter';
 import 'hardhat-typechain';
@@ -78,6 +79,16 @@ const buidlerConfig: HardhatUserConfig = {
     compilers: [
       {
         version: '0.8.12',
+        settings: {
+          evmVersion: 'istanbul',
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
+      {
+        version: '0.8.9',
         settings: {
           evmVersion: 'istanbul',
           optimizer: {

@@ -12,10 +12,7 @@ import { eNetwork, ICommonConfiguration } from '../../helpers/types';
 import { notFalsyOrZeroAddress, waitForTx } from '../../helpers/misc-utils';
 import { initReservesByHelper, configureReservesByHelper } from '../../helpers/init-helpers';
 import { exit } from 'process';
-import {
-  getViniumProtocolDataProvider,
-  getLendingPoolAddressesProvider,
-} from '../../helpers/contracts-getters';
+import { getViniumProtocolDataProvider, getLendingPoolAddressesProvider } from '../../helpers/contracts-getters';
 import { chainlinkAggregatorProxy, chainlinkEthUsdAggregatorProxy } from '../../helpers/constants';
 
 task('full:add-new-tokens', 'Initialize lending pool configuration.')
@@ -40,9 +37,7 @@ task('full:add-new-tokens', 'Initialize lending pool configuration.')
 
       const reserveAssets = await getParamPerNetwork(ReserveAssets, network);
       const incentivesController = await getParamPerNetwork(IncentivesController, network);
-      const addressesProvider = await getLendingPoolAddressesProvider(
-        '0x3e07e121EbE2F2F0f18fF4E56418C121f92C4CA4'
-      );
+      const addressesProvider = await getLendingPoolAddressesProvider('0x8ef569898B9e44B8360018FED9d2966AE7fe4B01');
 
       const testHelpers = await getViniumProtocolDataProvider();
 

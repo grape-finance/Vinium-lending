@@ -1,10 +1,4 @@
-import {
-  eContractid,
-  eNetwork,
-  iMultiPoolsAssets,
-  IReserveParams,
-  tEthereumAddress,
-} from './types';
+import { eContractid, eNetwork, iMultiPoolsAssets, IReserveParams, tEthereumAddress } from './types';
 import { ViniumProtocolDataProvider } from '../types/ViniumProtocolDataProvider';
 import { chunk, getDb, waitForTx } from './misc-utils';
 import {
@@ -14,19 +8,13 @@ import {
   getLendingPoolAddressesProvider,
   getLendingPoolConfiguratorProxy,
 } from './contracts-getters';
-import {
-  getContractAddressWithJsonFallback,
-  rawInsertContractAddressInDb,
-} from './contracts-helpers';
+import { getContractAddressWithJsonFallback, rawInsertContractAddressInDb } from './contracts-helpers';
 import { BigNumberish } from 'ethers';
 import { ConfigNames } from './configuration';
 import { deployRateStrategy } from './contracts-deployments';
 import { ZERO_ADDRESS } from './constants';
 
-export const getViTokenExtraParams = async (
-  viTokenName: string,
-  tokenAddress: tEthereumAddress
-) => {
+export const getViTokenExtraParams = async (viTokenName: string, tokenAddress: tEthereumAddress) => {
   switch (viTokenName) {
     default:
       return '0x10';
@@ -43,12 +31,11 @@ export const initReservesByHelper = async (
   admin: tEthereumAddress,
   treasuryAddress: tEthereumAddress,
   incentivesController: tEthereumAddress,
+  allocPoint: string,
   poolName: ConfigNames,
   verify: boolean
 ) => {
-  const addressProvider = await getLendingPoolAddressesProvider(
-    '0x3e07e121EbE2F2F0f18fF4E56418C121f92C4CA4'
-  );
+  const addressProvider = await getLendingPoolAddressesProvider('0x8ef569898B9e44B8360018FED9d2966AE7fe4B01');
 
   // CHUNK CONFIGURATION
   const initChunks = 1;
@@ -65,6 +52,7 @@ export const initReservesByHelper = async (
     underlyingAsset: string;
     treasury: string;
     incentivesController: string;
+    allocPoint: BigNumberish;
     underlyingAssetName: string;
     viTokenName: string;
     viTokenSymbol: string;
@@ -101,14 +89,7 @@ export const initReservesByHelper = async (
       continue;
     }
     const { strategy, viTokenImpl, reserveDecimals } = params;
-    const {
-      optimalUtilizationRate,
-      baseVariableBorrowRate,
-      variableRateSlope1,
-      variableRateSlope2,
-      stableRateSlope1,
-      stableRateSlope2,
-    } = strategy;
+    const { optimalUtilizationRate, baseVariableBorrowRate, variableRateSlope1, variableRateSlope2, stableRateSlope1, stableRateSlope2 } = strategy;
     if (!strategyAddresses[strategy.name]) {
       // Strategy does not exist, create a new one
       rateStrategies[strategy.name] = [
@@ -120,11 +101,7 @@ export const initReservesByHelper = async (
         stableRateSlope1,
         stableRateSlope2,
       ];
-      strategyAddresses[strategy.name] = await deployRateStrategy(
-        strategy.name,
-        rateStrategies[strategy.name],
-        verify
-      );
+      strategyAddresses[strategy.name] = await deployRateStrategy(strategy.name, rateStrategies[strategy.name], verify);
 
       // This causes the last strategy to be printed twice, once under "DefaultReserveInterestRateStrategy"
       // and once under the actual `strategyASSET` key.
@@ -134,19 +111,14 @@ export const initReservesByHelper = async (
     reserveSymbols.push(symbol);
     initInputParams.push({
       viTokenImpl: await getContractAddressWithJsonFallback(viTokenImpl, poolName),
-      stableVdTokenImpl: await getContractAddressWithJsonFallback(
-        eContractid.StableVdToken,
-        poolName
-      ),
-      variableVdTokenImpl: await getContractAddressWithJsonFallback(
-        eContractid.VariableVdToken,
-        poolName
-      ),
+      stableVdTokenImpl: await getContractAddressWithJsonFallback(eContractid.StableVdToken, poolName),
+      variableVdTokenImpl: await getContractAddressWithJsonFallback(eContractid.VariableVdToken, poolName),
       underlyingAssetDecimals: reserveDecimals,
       interestRateStrategyAddress: strategyAddresses[strategy.name],
       underlyingAsset: tokenAddresses[symbol],
       treasury: treasuryAddress,
       incentivesController: incentivesController,
+      allocPoint: allocPoint,
       underlyingAssetName: symbol,
       viTokenName: `${viTokenNamePrefix} ${symbol}`,
       viTokenSymbol: `vi${symbol}`,
@@ -162,16 +134,12 @@ export const initReservesByHelper = async (
   const chunkedSymbols = chunk(reserveSymbols, initChunks);
   const chunkedInitInputParams = chunk(initInputParams, initChunks);
 
-  const configurator = await getLendingPoolConfiguratorProxy(
-    '0x1E2A9f601314A52140735c94186629d16490aF09'
-  );
+  const configurator = await getLendingPoolConfiguratorProxy('0xd6bFaDbe46868bae673E5C08227686d79361307E');
 
   console.log(`- Reserves initialization in ${chunkedInitInputParams.length} txs`);
   for (let chunkIndex = 0; chunkIndex < chunkedInitInputParams.length; chunkIndex++) {
     console.log('chunkedInitInputParams[chunkIndex] :>> ', chunkedInitInputParams[chunkIndex]);
-    const tx3 = await waitForTx(
-      await configurator.batchInitReserve(chunkedInitInputParams[chunkIndex])
-    );
+    const tx3 = await waitForTx(await configurator.batchInitReserve(chunkedInitInputParams[chunkIndex]));
 
     console.log(`  - Reserve ready for: ${chunkedSymbols[chunkIndex].join(', ')}`);
     console.log('    * gasUsed', tx3.gasUsed.toString());
@@ -188,12 +156,8 @@ export const getPairsTokenAggregator = (
 
   const pairs = Object.entries(assetsAddressesWithoutEth).map(([tokenSymbol, tokenAddress]) => {
     if (tokenSymbol !== 'WETH' && tokenSymbol !== 'ETH') {
-      const aggregatorAddressIndex = Object.keys(aggregatorsAddresses).findIndex(
-        (value) => value === tokenSymbol
-      );
-      const [, aggregatorAddress] = (
-        Object.entries(aggregatorsAddresses) as [string, tEthereumAddress][]
-      )[aggregatorAddressIndex];
+      const aggregatorAddressIndex = Object.keys(aggregatorsAddresses).findIndex((value) => value === tokenSymbol);
+      const [, aggregatorAddress] = (Object.entries(aggregatorsAddresses) as [string, tEthereumAddress][])[aggregatorAddressIndex];
       return [tokenAddress, aggregatorAddress];
     }
   }) as [string, string][];
@@ -210,12 +174,8 @@ export const configureReservesByHelper = async (
   helpers: ViniumProtocolDataProvider,
   admin: tEthereumAddress
 ) => {
-  const addressProvider = await getLendingPoolAddressesProvider(
-    '0x3e07e121EbE2F2F0f18fF4E56418C121f92C4CA4'
-  );
-  const vitokenAndRatesDeployer = await getViTokensAndRatesHelper(
-    '0x3eC20e4d587f45419b400695cbBA3Ec62f5C5d59'
-  );
+  const addressProvider = await getLendingPoolAddressesProvider('0x8ef569898B9e44B8360018FED9d2966AE7fe4B01');
+  const vitokenAndRatesDeployer = await getViTokensAndRatesHelper('0x94056EaD321C62c9A40730Bf48074a4d07C5fFE0');
   const tokens: string[] = [];
   const symbols: string[] = [];
 
@@ -231,32 +191,17 @@ export const configureReservesByHelper = async (
 
   for (const [
     assetSymbol,
-    {
-      baseLTVAsCollateral,
-      liquidationBonus,
-      liquidationThreshold,
-      reserveFactor,
-      stableBorrowRateEnabled,
-      borrowingEnabled,
-    },
+    { baseLTVAsCollateral, liquidationBonus, liquidationThreshold, reserveFactor, stableBorrowRateEnabled, borrowingEnabled },
   ] of Object.entries(reservesParams) as [string, IReserveParams][]) {
     if (!tokenAddresses[assetSymbol]) {
-      console.log(
-        `- Skipping init of ${assetSymbol} due token address is not set at markets config`
-      );
+      console.log(`- Skipping init of ${assetSymbol} due token address is not set at markets config`);
       continue;
     }
     if (baseLTVAsCollateral === '-1') continue;
 
-    const assetAddressIndex = Object.keys(tokenAddresses).findIndex(
-      (value) => value === assetSymbol
-    );
-    const [, tokenAddress] = (Object.entries(tokenAddresses) as [string, string][])[
-      assetAddressIndex
-    ];
-    const { usageAsCollateralEnabled: alreadyEnabled } = await helpers.getReserveConfigurationData(
-      tokenAddress
-    );
+    const assetAddressIndex = Object.keys(tokenAddresses).findIndex((value) => value === assetSymbol);
+    const [, tokenAddress] = (Object.entries(tokenAddresses) as [string, string][])[assetAddressIndex];
+    const { usageAsCollateralEnabled: alreadyEnabled } = await helpers.getReserveConfigurationData(tokenAddress);
 
     if (alreadyEnabled) {
       console.log(`- Reserve ${assetSymbol} is already enabled as collateral, skipping`);
@@ -288,9 +233,7 @@ export const configureReservesByHelper = async (
 
     console.log(`- Configure reserves in ${chunkedInputParams.length} txs`);
     for (let chunkIndex = 0; chunkIndex < chunkedInputParams.length; chunkIndex++) {
-      await waitForTx(
-        await vitokenAndRatesDeployer.configureReserves(chunkedInputParams[chunkIndex])
-      );
+      await waitForTx(await vitokenAndRatesDeployer.configureReserves(chunkedInputParams[chunkIndex]));
       console.log(`  - Init for: ${chunkedSymbols[chunkIndex].join(', ')}`);
     }
     // Set deployer back as admin
@@ -298,10 +241,7 @@ export const configureReservesByHelper = async (
   }
 };
 
-const getAddressById = async (
-  id: string,
-  network: eNetwork
-): Promise<tEthereumAddress | undefined> =>
+const getAddressById = async (id: string, network: eNetwork): Promise<tEthereumAddress | undefined> =>
   (await getDb().get(`${id}.${network}`).value())?.address || undefined;
 
 // Function deprecated

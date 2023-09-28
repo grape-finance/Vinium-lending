@@ -4,7 +4,7 @@ export interface SymbolMap<T> {
   [symbol: string]: T;
 }
 
-export type eNetwork = eEthereumNetwork | ePolygonNetwork | eXDaiNetwork | eAvalancheNetwork;
+export type eNetwork = eEthereumNetwork | ePolygonNetwork | eXDaiNetwork | eAvalancheNetwork | eBaseNetwork;
 
 export enum eEthereumNetwork {
   buidlerevm = 'buidlerevm',
@@ -29,8 +29,12 @@ export enum eXDaiNetwork {
 export enum eAvalancheNetwork {
   avalanche = 'avalanche',
   fuji = 'fuji',
-  goerli = 'goerli',
+  // goerli = 'goerli',
+}
+
+export enum eBaseNetwork {
   base = 'base',
+  basegoerli = 'basegoerli',
 }
 
 export enum EthereumNetworkNames {
@@ -103,6 +107,20 @@ export enum eContractid {
   ParaSwapLiquiditySwapAdapter = 'ParaSwapLiquiditySwapAdapter',
   UiIncentiveDataProviderV2V3 = 'UiIncentiveDataProviderV2V3',
   UiIncentiveDataProviderV2 = 'UiIncentiveDataProviderV2',
+
+  RewardAddressesProvider = 'RewardAddressesProvider',
+  ViniumOFT = 'ViniumOFT',
+  LiquidityZap = 'LiquidityZap',
+  UniswapPoolHelper = 'UniswapPoolHelper',
+  LockZap = 'LockZap',
+  BaseOracle = 'BaseOracle',
+  UniV2TwapOracle = 'UniV2TwapOracle',
+  PriceProvider = 'PriceProvider',
+  LockerList = 'LockerList',
+  MultiFeeDistribution = 'MultiFeeDistribution',
+  MiddleFeeDistribution = 'MiddleFeeDistribution',
+  EligibilityDataProvider = 'EligibilityDataProvider',
+  ChefIncentivesController = 'ChefIncentivesController',
 }
 
 /*
@@ -315,20 +333,11 @@ export type iLpPoolAssets<T> = Pick<
   | 'BptBALWETH'
 >;
 
-export type iMaticPoolAssets<T> = Pick<
-  iAssetsWithoutUSD<T>,
-  'DAI' | 'USDC' | 'USDT' | 'WBTC' | 'WETH' | 'WMATIC' | 'VINIUM'
->;
+export type iMaticPoolAssets<T> = Pick<iAssetsWithoutUSD<T>, 'DAI' | 'USDC' | 'USDT' | 'WBTC' | 'WETH' | 'WMATIC' | 'VINIUM'>;
 
-export type iXDAIPoolAssets<T> = Pick<
-  iAssetsWithoutUSD<T>,
-  'DAI' | 'USDC' | 'USDT' | 'WBTC' | 'WETH' | 'STAKE'
->;
+export type iXDAIPoolAssets<T> = Pick<iAssetsWithoutUSD<T>, 'DAI' | 'USDC' | 'USDT' | 'WBTC' | 'WETH' | 'STAKE'>;
 
-export type iAvalanchePoolAssets<T> = Pick<
-  iAssetsWithoutUSD<T>,
-  'WETH' | 'DAI' | 'USDT' | 'BTCB' | 'USDC' | 'SAVAX' | 'GRAPE'
->;
+export type iAvalanchePoolAssets<T> = Pick<iAssetsWithoutUSD<T>, 'WETH' | 'DAI' | 'USDT' | 'BTCB' | 'USDC' | 'SAVAX' | 'GRAPE'>;
 
 export type iMultiPoolsAssets<T> = iAssetCommon<T> | iViniumPoolAssets<T>;
 
@@ -424,12 +433,10 @@ export type iParamsPerNetwork<T> =
   | iEthereumParamsPerNetwork<T>
   | iPolygonParamsPerNetwork<T>
   | iXDaiParamsPerNetwork<T>
-  | iAvalancheParamsPerNetwork<T>;
+  | iAvalancheParamsPerNetwork<T>
+  | iBaseParamsPerNetwork<T>;
 
-export interface iParamsPerNetworkAll<T>
-  extends iEthereumParamsPerNetwork<T>,
-    iPolygonParamsPerNetwork<T>,
-    iXDaiParamsPerNetwork<T> {}
+export interface iParamsPerNetworkAll<T> extends iEthereumParamsPerNetwork<T>, iPolygonParamsPerNetwork<T>, iXDaiParamsPerNetwork<T> {}
 
 export interface iEthereumParamsPerNetwork<T> {
   [eEthereumNetwork.coverage]: T;
@@ -454,6 +461,11 @@ export interface iXDaiParamsPerNetwork<T> {
 export interface iAvalancheParamsPerNetwork<T> {
   [eAvalancheNetwork.avalanche]: T;
   [eAvalancheNetwork.fuji]: T;
+}
+
+export interface iBaseParamsPerNetwork<T> {
+  [eBaseNetwork.base]: T;
+  [eBaseNetwork.basegoerli]: T;
 }
 
 export interface iParamsPerPool<T> {
@@ -526,12 +538,25 @@ export interface IBaseConfiguration {
   WrappedNativeToken: iParamsPerNetwork<tEthereumAddress>;
   WethGateway: iParamsPerNetwork<tEthereumAddress>;
   ReserveFactorTreasuryAddress: iParamsPerNetwork<tEthereumAddress>;
-  IncentivesController: iParamsPerNetwork<tEthereumAddress>;
   StableVdTokenImplementation?: iParamsPerNetwork<tEthereumAddress>;
   VariableVdTokenImplementation?: iParamsPerNetwork<tEthereumAddress>;
   ReserveAssets: iParamsPerNetwork<SymbolMap<tEthereumAddress>>;
   OracleQuoteCurrency: string;
   OracleQuoteUnit: string;
+  OFTTokenAddress: iParamsPerNetwork<tEthereumAddress | undefined>;
+  OFTEndpoint: iParamsPerNetwork<tEthereumAddress | undefined>;
+  OFTTreasury: iParamsPerNetwork<tEthereumAddress | undefined>;
+  LiquidityZap: iParamsPerNetwork<tEthereumAddress | undefined>;
+  UniswapPoolHelper: iParamsPerNetwork<tEthereumAddress | undefined>;
+  LockZap: iParamsPerNetwork<tEthereumAddress | undefined>;
+  BaseOracle: iParamsPerNetwork<tEthereumAddress | undefined>;
+  UniV2TwapOracle: iParamsPerNetwork<tEthereumAddress | undefined>;
+  PriceProvider: iParamsPerNetwork<tEthereumAddress | undefined>;
+  LockerList: iParamsPerNetwork<tEthereumAddress | undefined>;
+  MultiFeeDistribution: iParamsPerNetwork<tEthereumAddress | undefined>;
+  MiddleFeeDistribution: iParamsPerNetwork<tEthereumAddress | undefined>;
+  EligibilityDataProvider: iParamsPerNetwork<tEthereumAddress | undefined>;
+  IncentivesController: iParamsPerNetwork<tEthereumAddress>;
 }
 
 export interface ICommonConfiguration extends IBaseConfiguration {

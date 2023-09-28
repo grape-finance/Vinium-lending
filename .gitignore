@@ -9,6 +9,8 @@ build/
 .idea
 /types
 
+.openzeppelin
+
 deployed-contracts.json
 
 coverage

@@ -12,10 +12,7 @@ import { eNetwork, ICommonConfiguration } from '../../helpers/types';
 import { notFalsyOrZeroAddress, waitForTx } from '../../helpers/misc-utils';
 import { initReservesByHelper, configureReservesByHelper } from '../../helpers/init-helpers';
 import { exit } from 'process';
-import {
-  getViniumProtocolDataProvider,
-  getLendingPoolAddressesProvider,
-} from '../../helpers/contracts-getters';
+import { getViniumProtocolDataProvider, getLendingPoolAddressesProvider } from '../../helpers/contracts-getters';
 import { chainlinkAggregatorProxy, chainlinkEthUsdAggregatorProxy } from '../../helpers/constants';
 
 task('full:initialize-lending-pool', 'Initialize lending pool configuration.')
@@ -40,13 +37,9 @@ task('full:initialize-lending-pool', 'Initialize lending pool configuration.')
 
       const reserveAssets = await getParamPerNetwork(ReserveAssets, network);
       const incentivesController = await getParamPerNetwork(IncentivesController, network);
-      const addressesProvider = await getLendingPoolAddressesProvider(
-        '0x3e07e121EbE2F2F0f18fF4E56418C121f92C4CA4'
-      );
+      const addressesProvider = await getLendingPoolAddressesProvider('0x8ef569898B9e44B8360018FED9d2966AE7fe4B01');
 
-      const testHelpers = await getViniumProtocolDataProvider(
-        '0x45829C3C93E3Ae0B6a9089448B0364885eaf2bfc'
-      );
+      const testHelpers = await getViniumProtocolDataProvider('0x4e7B0d82747Db4Ca10340C86F1A456A479bBC8a6');
 
       const admin = await addressesProvider.getPoolAdmin();
       const oracle = await addressesProvider.getPriceOracle();
@@ -57,51 +50,36 @@ task('full:initialize-lending-pool', 'Initialize lending pool configuration.')
 
       const treasuryAddress = await getTreasuryAddress(poolConfig);
 
-      // await initReservesByHelper(
-      //   ReservesConfig,
-      //   reserveAssets,
-      //   ViTokenNamePrefix,
-      //   StableVdTokenNamePrefix,
-      //   VariableVdTokenNamePrefix,
-      //   SymbolPrefix,
-      //   admin,
-      //   treasuryAddress,
-      //   incentivesController,
-      //   pool,
-      //   verify
-      // );
+      await initReservesByHelper(
+        ReservesConfig,
+        reserveAssets,
+        ViTokenNamePrefix,
+        StableVdTokenNamePrefix,
+        VariableVdTokenNamePrefix,
+        SymbolPrefix,
+        admin,
+        treasuryAddress,
+        incentivesController,
+        '1000',
+        pool,
+        verify
+      );
       await configureReservesByHelper(ReservesConfig, reserveAssets, testHelpers, admin);
 
-      let collateralManagerAddress = await getParamPerNetwork(
-        LendingPoolCollateralManager,
-        network
-      );
+      let collateralManagerAddress = await getParamPerNetwork(LendingPoolCollateralManager, network);
       if (!notFalsyOrZeroAddress(collateralManagerAddress)) {
         const collateralManager = await deployLendingPoolCollateralManager(verify);
         collateralManagerAddress = collateralManager.address;
       }
       // Seems unnecessary to register the collateral manager in the JSON db
 
-      console.log(
-        '\tSetting lending pool collateral manager implementation with address',
-        collateralManagerAddress
-      );
-      await waitForTx(
-        await addressesProvider.setLendingPoolCollateralManager(collateralManagerAddress)
-      );
+      console.log('\tSetting lending pool collateral manager implementation with address', collateralManagerAddress);
+      await waitForTx(await addressesProvider.setLendingPoolCollateralManager(collateralManagerAddress));
 
-      console.log(
-        '\tSetting ViniumProtocolDataProvider at AddressesProvider at id: 0x01',
-        collateralManagerAddress
-      );
-      const viniumProtocolDataProvider = await getViniumProtocolDataProvider(
-        '0x45829C3C93E3Ae0B6a9089448B0364885eaf2bfc'
-      );
+      console.log('\tSetting ViniumProtocolDataProvider at AddressesProvider at id: 0x01', collateralManagerAddress);
+      const viniumProtocolDataProvider = await getViniumProtocolDataProvider('0x4e7B0d82747Db4Ca10340C86F1A456A479bBC8a6');
       await waitForTx(
-        await addressesProvider.setAddress(
-          '0x0100000000000000000000000000000000000000000000000000000000000000',
-          viniumProtocolDataProvider.address
-        )
+        await addressesProvider.setAddress('0x0100000000000000000000000000000000000000000000000000000000000000', viniumProtocolDataProvider.address)
       );
 
       await deployWalletBalancerProvider(verify);
