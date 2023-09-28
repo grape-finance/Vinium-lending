@@ -399,12 +399,10 @@ contract StableVdToken is IStableVdToken, VdTokenBase {
    **/
   function _mint(address account, uint256 amount, uint256 oldTotalSupply) internal {
     uint256 oldAccountBalance = _balances[account];
-    if (address(_incentivesController) != address(0)) {
-      _incentivesController.handleActionBefore(account);
-    }
     _balances[account] = oldAccountBalance.add(amount);
+
     if (address(_incentivesController) != address(0)) {
-      _incentivesController.handleActionAfter(account, oldAccountBalance, oldTotalSupply);
+      _incentivesController.handleAction(account, oldAccountBalance, oldTotalSupply);
     }
   }
 
@@ -417,11 +415,7 @@ contract StableVdToken is IStableVdToken, VdTokenBase {
   function _burn(address account, uint256 amount, uint256 oldTotalSupply) internal {
     uint256 oldAccountBalance = _balances[account];
     if (address(_incentivesController) != address(0)) {
-      _incentivesController.handleActionBefore(account);
-    }
-    _balances[account] = oldAccountBalance.sub(amount, Errors.SDT_BURN_EXCEEDS_BALANCE);
-    if (address(_incentivesController) != address(0)) {
-      _incentivesController.handleActionAfter(account, oldAccountBalance, oldTotalSupply);
+      _incentivesController.handleAction(account, oldAccountBalance, oldTotalSupply);
     }
   }
 }

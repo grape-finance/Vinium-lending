@@ -95,7 +95,7 @@ contract LendingPoolConfigurator is VersionedInitializable, ILendingPoolConfigur
         IInitializableVdToken.initialize.selector,
         pool,
         input.underlyingAsset,
-        input.incentivesController,
+        IChefIncentivesController(input.incentivesController),
         input.underlyingAssetDecimals,
         input.stableVdTokenName,
         input.stableVdTokenSymbol,

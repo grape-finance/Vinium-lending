@@ -305,24 +305,8 @@ export const deployLockerList = async (verify?: boolean) => {
   return withSaveAndVerify(LockerList, eContractid.LockerList, [], verify);
 };
 
-export const deployMultiFeeDistribution = async (
-  args: [tEthereumAddress, tEthereumAddress, tEthereumAddress, tEthereumAddress, tEthereumAddress, string, string, string, string, string],
-  verify?: boolean
-) => {
-  const MultiFeeDistribution = await DRE.ethers.getContractFactory('MultiFeeDistribution');
-  const multiFeeDistribution = await DRE.upgrades.deployProxy(MultiFeeDistribution, [
-    args[0],
-    args[1],
-    args[2],
-    args[3],
-    args[4],
-    args[5],
-    args[6],
-    args[7],
-    args[8],
-    args[9],
-  ]);
-  await multiFeeDistribution.deployed();
+export const deployMultiFeeDistribution = async (args: [tEthereumAddress], verify?: boolean) => {
+  const multiFeeDistribution = await new MultiFeeDistributionFactory(await getFirstSigner()).deploy(...args);
   await insertContractAddressInDb(eContractid.MultiFeeDistribution, multiFeeDistribution.address);
   return withSaveAndVerify(multiFeeDistribution, eContractid.MultiFeeDistribution, [], verify);
 };

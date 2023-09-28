@@ -5,7 +5,7 @@ import '@layerzerolabs/solidity-examples/contracts/token/oft/v2/OFTV2.sol';
 import '@openzeppelin/contracts/security/Pausable.sol';
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
-import '../../interfaces/IPriceProvider.sol';
+// import '../../interfaces/IPriceProvider.sol';
 
 contract ViniumOFT is OFTV2, Pausable {
   using SafeMath for uint256;
@@ -19,14 +19,16 @@ contract ViniumOFT is OFTV2, Pausable {
   /// @notice Divisor for fee ratio, 100%
   uint256 public constant FEE_DIVISOR = 10000;
 
+  address public minter;
+
   /// @notice PriceProvider, for RDNT price in native fee calc
-  IPriceProvider public priceProvider;
+  // IPriceProvider public priceProvider;
 
   /// @notice Emitted when fee ratio is updated
   event FeeUpdated(uint256 fee);
 
   /// @notice Emitted when PriceProvider is updated
-  event PriceProviderUpdated(IPriceProvider indexed priceProvider);
+  // event PriceProviderUpdated(IPriceProvider indexed priceProvider);
 
   /// @notice Emitted when Treasury is updated
   event TreasuryUpdated(address indexed treasury);
@@ -57,6 +59,12 @@ contract ViniumOFT is OFTV2, Pausable {
     if (_mintAmt != 0) {
       _mint(_dao, _mintAmt);
     }
+  }
+
+  function setMinter(address _minter) external returns (bool) {
+    require(minter == address(0));
+    minter = _minter;
+    return true;
   }
 
   function burn(uint256 _amount) public {
@@ -161,15 +169,15 @@ contract ViniumOFT is OFTV2, Pausable {
    * @param _rdntAmount amount for bridge
    */
   function getBridgeFee(uint256 _rdntAmount) public view returns (uint256) {
-    if (address(priceProvider) == address(0)) {
-      return 0;
-    }
-    uint256 priceInEth = priceProvider.getTokenPrice();
-    uint256 priceDecimals = priceProvider.decimals();
-    uint256 rdntInEth = _rdntAmount.mul(priceInEth).div(10 ** priceDecimals).mul(10 ** 18).div(
-      10 ** decimals()
-    );
-    return rdntInEth.mul(feeRatio).div(FEE_DIVISOR);
+    // if (address(priceProvider) == address(0)) {
+    return 0;
+    // }
+    // uint256 priceInEth = priceProvider.getTokenPrice();
+    // uint256 priceDecimals = priceProvider.decimals();
+    // uint256 rdntInEth = _rdntAmount.mul(priceInEth).div(
+    //   10 ** decimals()
+    // );
+    // return rdntInEth.mul(feeRatio).div(FEE_DIVISOR);
   }
 
   /**
@@ -186,11 +194,11 @@ contract ViniumOFT is OFTV2, Pausable {
    * @notice Set price provider
    * @param _priceProvider address
    */
-  function setPriceProvider(IPriceProvider _priceProvider) external onlyOwner {
-    require(address(_priceProvider) != address(0), 'invalid PriceProvider');
-    priceProvider = _priceProvider;
-    emit PriceProviderUpdated(_priceProvider);
-  }
+  // function setPriceProvider(IPriceProvider _priceProvider) external onlyOwner {
+  //   require(address(_priceProvider) != address(0), 'invalid PriceProvider');
+  //   priceProvider = _priceProvider;
+  //   emit PriceProviderUpdated(_priceProvider);
+  // }
 
   /**
    * @notice Set Treasury
