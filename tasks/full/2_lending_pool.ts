@@ -21,7 +21,7 @@ task('full:deploy-lending-pool', 'Deploy lending pool for dev enviroment')
       await DRE.run('set-DRE');
       const network = <eNetwork>DRE.network.name;
       const poolConfig = loadPoolConfig(pool);
-      const addressesProvider = await getLendingPoolAddressesProvider('0x8ef569898B9e44B8360018FED9d2966AE7fe4B01');
+      const addressesProvider = await getLendingPoolAddressesProvider('0x253aAaB984f1E56D0D04DC067Bb73C5BAeC214c7');
 
       const { LendingPool, LendingPoolConfigurator } = poolConfig;
 
@@ -33,9 +33,9 @@ task('full:deploy-lending-pool', 'Deploy lending pool for dev enviroment')
         lendingPoolImplAddress = lendingPoolImpl.address;
         await lendingPoolImpl.initialize(addressesProvider.address);
       }
-      // console.log('\tSetting lending pool implementation with address:', lendingPoolImplAddress);
-      // // Set lending pool impl to Address provider
-      // await waitForTx(await addressesProvider.setLendingPoolImpl(lendingPoolImplAddress));
+      console.log('\tSetting lending pool implementation with address:', lendingPoolImplAddress);
+      // Set lending pool impl to Address provider
+      await waitForTx(await addressesProvider.setLendingPoolImpl(lendingPoolImplAddress));
 
       const address = await addressesProvider.getLendingPool();
       const lendingPoolProxy = await getLendingPool(address);
@@ -49,31 +49,20 @@ task('full:deploy-lending-pool', 'Deploy lending pool for dev enviroment')
         const lendingPoolConfiguratorImpl = await deployLendingPoolConfigurator(verify);
         lendingPoolConfiguratorImplAddress = lendingPoolConfiguratorImpl.address;
       }
-      // console.log(
-      //   '\tSetting lending pool configurator implementation with address:',
-      //   lendingPoolConfiguratorImplAddress
-      // );
-      // // Set lending pool conf impl to Address Provider
-      // await waitForTx(
-      //   await addressesProvider.setLendingPoolConfiguratorImpl(lendingPoolConfiguratorImplAddress)
-      // );
+      console.log('\tSetting lending pool configurator implementation with address:', lendingPoolConfiguratorImplAddress);
+      // Set lending pool conf impl to Address Provider
+      await waitForTx(await addressesProvider.setLendingPoolConfiguratorImpl(lendingPoolConfiguratorImplAddress));
 
       const lendingPoolConfiguratorProxy = await getLendingPoolConfiguratorProxy(await addressesProvider.getLendingPoolConfigurator());
 
       await insertContractAddressInDb(eContractid.LendingPoolConfigurator, lendingPoolConfiguratorProxy.address);
       const admin = await DRE.ethers.getSigner(await getEmergencyAdmin(poolConfig));
       // Pause market during deployment
-      // await waitForTx(await lendingPoolConfiguratorProxy.connect(admin).setPoolPause(true));
+      await waitForTx(await lendingPoolConfiguratorProxy.connect(admin).setPoolPause(true));
 
       // Deploy deployment helpers
-      // await deployStableAndVariableTokensHelper(
-      //   [lendingPoolProxy.address, addressesProvider.address],
-      //   verify
-      // );
-      // await deployViTokensAndRatesHelper(
-      //   [lendingPoolProxy.address, addressesProvider.address, lendingPoolConfiguratorProxy.address],
-      //   verify
-      // );
+      await deployStableAndVariableTokensHelper([lendingPoolProxy.address, addressesProvider.address], verify);
+      await deployViTokensAndRatesHelper([lendingPoolProxy.address, addressesProvider.address, lendingPoolConfiguratorProxy.address], verify);
       await deployViTokenImplementations(pool, poolConfig.ReservesConfig, verify);
     } catch (error) {
       if (DRE.network.name.includes('tenderly')) {

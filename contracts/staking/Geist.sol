@@ -64,7 +64,7 @@ contract GeistToken is IERC20 {
   function transferFrom(address _from, address _to, uint256 _value) public override returns (bool) {
     uint256 allowed = allowance[_from][msg.sender];
     require(allowed >= _value, 'Insufficient allowance');
-    if (allowed != uint(-1)) {
+    if (allowed != type(uint256).max) {
       allowance[_from][msg.sender] = allowed.sub(_value);
     }
     _transfer(_from, _to, _value);

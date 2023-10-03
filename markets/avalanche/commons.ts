@@ -114,22 +114,22 @@ export const CommonsConfig: ICommonConfiguration = {
   LendingPoolCollateralManager: {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '0x10b289593f9DCB64fE8B5EbaCE7538C8f6E0cc74',    
+    [eEthereumNetwork.goerli]: '',
   },
   LendingPoolConfigurator: {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '0xd6bFaDbe46868bae673E5C08227686d79361307E',        
+    [eEthereumNetwork.goerli]: '0x752Ab2B06AACA63A347eD6d87e5D8821bfEe15f4',
   },
   LendingPool: {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '0x8Ce59fa0b750c5eCe33d831Cf9e449359B85f2a2',    
+    [eEthereumNetwork.goerli]: '0x51684FA42df6A553aaE41e6F79389cf90ba4DA80',    
   },
   WethGateway: {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '0x5A334bC82A5e2Fc0711697FF4B1F99CBEaa508C8',
+    [eEthereumNetwork.goerli]: '0x6D1D7068703203A05fB5ef9056fe8B6077482736',
   },
   TokenDistributor: {
     [eAvalancheNetwork.avalanche]: '',
@@ -138,7 +138,7 @@ export const CommonsConfig: ICommonConfiguration = {
   ViniumOracle: {
     [eAvalancheNetwork.avalanche]: '0xFC5C922b6A0137FD33E3604663aB468D15C9d4f5',
     [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '0x114b024AA7EE7273F45290057375572e9F09d5B3',
+    [eEthereumNetwork.goerli]: '0x79020cb62098F25c6F47b77f0cfcd7c0953AD5a8',
     
   },
   FallbackOracle: {
@@ -213,13 +213,7 @@ export const CommonsConfig: ICommonConfiguration = {
   ReserveFactorTreasuryAddress: {
     [eAvalancheNetwork.avalanche]: '0xEB755b81A786832705a3c0658127216eD36fE898',
     [eAvalancheNetwork.fuji]: '0xB45F5C501A22288dfdb897e5f73E189597e09288', // Self-controlled EOA for testing
-    [eEthereumNetwork.goerli]: '0x4Aa6Da4ca5d76e8d5e3ACD11B92Ab22D564F1fcb',
-  },
-  OFTTokenAddress: {
-    [eAvalancheNetwork.avalanche]: '',
-    [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '0xc91659a1c17De3aAb2E1a70cb93116CDB6cc0fb5',
-    [eBaseNetwork.base]: '',
+    [eEthereumNetwork.goerli]: '', // MultiFee Distribution Address
   },
   OFTEndpoint: {
     [eAvalancheNetwork.avalanche]: '',
@@ -233,69 +227,21 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.goerli]: '0x4Aa6Da4ca5d76e8d5e3ACD11B92Ab22D564F1fcb',
     [eBaseNetwork.base]: '0x4Aa6Da4ca5d76e8d5e3ACD11B92Ab22D564F1fcb',
   },
-  LiquidityZap: {
+  OFTTokenAddress: {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '0xE614d3F8d4204B0C1585d07C783F90ea2B6b8aB4',
-    [eBaseNetwork.base]: '',
-  },
-  UniswapPoolHelper: {
-    [eAvalancheNetwork.avalanche]: '',
-    [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '0x3AAba231d16f9949f9F3e2776eDe23c102Ca0995',
-    [eBaseNetwork.base]: '',
-  },
-  LockZap: {
-    [eAvalancheNetwork.avalanche]: '',
-    [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '0xc628156900E97B9CDC21C61Eb88e1DAc8C1dE8d0',
-    [eBaseNetwork.base]: '',
-  },
-  BaseOracle: {
-    [eAvalancheNetwork.avalanche]: '',
-    [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '',
-    [eBaseNetwork.base]: '',
-  },
-  UniV2TwapOracle: {
-    [eAvalancheNetwork.avalanche]: '',
-    [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '0x044DfA8DB54e2FDFdfEECAE61343DC3194467207',
-    [eBaseNetwork.base]: '',
-  },
-  PriceProvider: {
-    [eAvalancheNetwork.avalanche]: '',
-    [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '0xd48c963821D4Fa49c99f1C7748563AC75185211B',
-    [eBaseNetwork.base]: '',
-  },
-  LockerList: {
-    [eAvalancheNetwork.avalanche]: '',
-    [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '0xa6Bd4606667B0C2414Db4f65e8c8C11D517b579C',
+    [eEthereumNetwork.goerli]: '0xFa98854f0DE9E8Bd35742C91468108b04E0429dB',
     [eBaseNetwork.base]: '',
   },
   MultiFeeDistribution: {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '0xC7166497936d2542E39e874EC4f0C583e644F009',
-    [eBaseNetwork.base]: '',
-  },
-  MiddleFeeDistribution: {
-    [eAvalancheNetwork.avalanche]: '',
-    [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '0xD996976110075cfa000224E593811e51A1F43C9A',
-    [eBaseNetwork.base]: '',
-  },
-  EligibilityDataProvider: {
-    [eAvalancheNetwork.avalanche]: '',
-    [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '0x0523b1836caba731071A660201325bE4D20b0256',
+    [eEthereumNetwork.goerli]: '0xEE280750B1D883EB84e29956a2a9814f70FA7699',
     [eBaseNetwork.base]: '',
   },
   IncentivesController: {
     [eAvalancheNetwork.avalanche]: '0x4a40Cf33cc1D38fc1C4668F398eE17133f5c2636',
     [eAvalancheNetwork.fuji]: '0xa1EF206fb9a8D8186157FC817fCddcC47727ED55',
-    [eEthereumNetwork.goerli]: '0xA8c523263E3aEDC6df5a731E6e588049cE01322F',
+    [eEthereumNetwork.goerli]: '0xCc8978D7f3F7B534472B3c7cdEF37294ACa16966',
   },
 };

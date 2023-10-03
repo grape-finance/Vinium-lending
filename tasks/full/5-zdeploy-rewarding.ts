@@ -24,6 +24,7 @@ import { notFalsyOrZeroAddress, waitForTx } from '../../helpers/misc-utils';
 import { exit } from 'process';
 import { chainlinkAggregatorProxy, chainlinkEthUsdAggregatorProxy } from '../../helpers/constants';
 import { ethers } from 'ethers';
+import { MultiFeeDistributionFactory } from '../../types';
 
 task('full:deploy-incentive-controller', 'Deploy Incentive Controller')
   .addFlag('verify', 'Verify contracts at Etherscan')
@@ -78,16 +79,10 @@ task('full:deploy-incentive-controller', 'Deploy Incentive Controller')
       }
       console.log('MultiFeeDistribution :>> ', multiFeeDistribution);
 
-      // uint128[] memory _startTimeOffset,
-      // uint128[] memory _rewardsPerSecond,
-      // address _poolConfigurator,
-      // IMultiFeeDistribution _rewardMinter,
-      // uint256 _maxMintable
-
       let incentivesController = await getParamPerNetwork(IncentivesController, network);
-      if (!notFalsyOrZeroAddress(multiFeeDistribution)) {
+      if (!notFalsyOrZeroAddress(incentivesController)) {
         const IncentivesController = await deployChefIncentivesController(
-          [lendingPoolConfigurator, eligibilityDataProvider!, middleFeeDistribution!, '2652320636000000000'],
+          [ethers.utils.parseEther('1'), lendingPoolConfigurator!, multiFeeDistribution!, ethers.utils.parseEther('400000000')],
           verify
         );
         incentivesController = IncentivesController.address;

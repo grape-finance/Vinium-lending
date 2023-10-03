@@ -19,9 +19,9 @@ contract ViniumOFT is OFTV2, Pausable {
   /// @notice Divisor for fee ratio, 100%
   uint256 public constant FEE_DIVISOR = 10000;
 
-  address public minter;
+  address public multiFeeDistribution;
 
-  /// @notice PriceProvider, for RDNT price in native fee calc
+  /// @notice PriceProvider, for ViniumOFT price in native fee calc
   // IPriceProvider public priceProvider;
 
   /// @notice Emitted when fee ratio is updated
@@ -61,9 +61,15 @@ contract ViniumOFT is OFTV2, Pausable {
     }
   }
 
-  function setMinter(address _minter) external returns (bool) {
-    require(minter == address(0));
-    minter = _minter;
+  function setMinter(address _multiFeeDistribution) external returns (bool) {
+    require(multiFeeDistribution == address(0) && _multiFeeDistribution != address(0));
+    multiFeeDistribution = _multiFeeDistribution;
+    return true;
+  }
+
+  function mint(address _to, uint256 _value) external returns (bool) {
+    require(msg.sender == multiFeeDistribution, 'VniumOFT: Only MultiFee contract can mint'); // minter must be multifee contract
+    _mint(_to, _value);
     return true;
   }
 
@@ -166,18 +172,18 @@ contract ViniumOFT is OFTV2, Pausable {
 
   /**
    * @notice Bridge fee amount
-   * @param _rdntAmount amount for bridge
+   * @param _ViniumOFTAmount amount for bridge
    */
-  function getBridgeFee(uint256 _rdntAmount) public view returns (uint256) {
+  function getBridgeFee(uint256 _ViniumOFTAmount) public view returns (uint256) {
     // if (address(priceProvider) == address(0)) {
     return 0;
     // }
     // uint256 priceInEth = priceProvider.getTokenPrice();
     // uint256 priceDecimals = priceProvider.decimals();
-    // uint256 rdntInEth = _rdntAmount.mul(priceInEth).div(
+    // uint256 ViniumOFTInEth = _ViniumOFTAmount.mul(priceInEth).div(
     //   10 ** decimals()
     // );
-    // return rdntInEth.mul(feeRatio).div(FEE_DIVISOR);
+    // return ViniumOFTInEth.mul(feeRatio).div(FEE_DIVISOR);
   }
 
   /**

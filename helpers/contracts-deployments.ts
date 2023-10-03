@@ -1,4 +1,4 @@
-import { Contract } from 'ethers';
+import { BigNumberish, Contract } from 'ethers';
 // import { ethers, upgrades } from 'hardhat';
 import { DRE, notFalsyOrZeroAddress } from './misc-utils';
 import {
@@ -83,6 +83,7 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { LendingPoolLibraryAddresses } from '../types/LendingPoolFactory';
 import { UiPoolDataProvider } from '../types';
 import { eNetwork } from './types';
+import BigNumber from 'bignumber.js';
 
 export const deployUiIncentiveDataProviderV2 = async (verify?: boolean) =>
   withSaveAndVerify(await new UiIncentiveDataProviderV2Factory(await getFirstSigner()).deploy(), eContractid.UiIncentiveDataProviderV2, [], verify);
@@ -308,7 +309,7 @@ export const deployLockerList = async (verify?: boolean) => {
 export const deployMultiFeeDistribution = async (args: [tEthereumAddress], verify?: boolean) => {
   const multiFeeDistribution = await new MultiFeeDistributionFactory(await getFirstSigner()).deploy(...args);
   await insertContractAddressInDb(eContractid.MultiFeeDistribution, multiFeeDistribution.address);
-  return withSaveAndVerify(multiFeeDistribution, eContractid.MultiFeeDistribution, [], verify);
+  return withSaveAndVerify(multiFeeDistribution, eContractid.MultiFeeDistribution, [args[0]], verify);
 };
 
 export const deployMiddleFeeDistribution = async (args: [tEthereumAddress, tEthereumAddress, tEthereumAddress], verify?: boolean) => {
@@ -325,13 +326,18 @@ export const deployEligibilityDataProvider = async (args: [tEthereumAddress, tEt
   return withSaveAndVerify(eligibilityDataProvider, eContractid.EligibilityDataProvider, [], verify);
 };
 
-export const deployChefIncentivesController = async (args: [tEthereumAddress, tEthereumAddress, tEthereumAddress, string], verify?: boolean) => {
-  // const ChefIncentivesController = await new ChefIncentivesControllerFactory(await getFirstSigner()).deploy();
-  const ChefIncentivesController = await DRE.ethers.getContractFactory('ChefIncentivesController');
-  const chefIncentivesController = await DRE.upgrades.deployProxy(ChefIncentivesController, [args[0], args[1], args[2], args[3]]);
+export const deployChefIncentivesController = async (args: [BigNumberish, tEthereumAddress, tEthereumAddress, BigNumberish], verify?: boolean) => {
+  const ChefIncentivesController = await new ChefIncentivesControllerFactory(await getFirstSigner()).deploy(...args);
+  // const ChefIncentivesController = await DRE.ethers.getContractFactory('ChefIncentivesController');
+  // const chefIncentivesController = await DRE.upgrades.deployProxy(ChefIncentivesController, [args[0], args[1], args[2], args[3]]);
 
-  await insertContractAddressInDb(eContractid.ChefIncentivesController, chefIncentivesController.address);
-  return withSaveAndVerify(chefIncentivesController, eContractid.ChefIncentivesController, [], verify);
+  await insertContractAddressInDb(eContractid.ChefIncentivesController, ChefIncentivesController.address);
+  return withSaveAndVerify(
+    ChefIncentivesController,
+    eContractid.ChefIncentivesController,
+    [args[0].toString(), args[1], args[2], args[3].toString()],
+    verify
+  );
 };
 
 // export const deployMintableDelegationERC20 = async (

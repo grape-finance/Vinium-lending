@@ -47,6 +47,7 @@ contract MultiFeeDistribution is IMultiFeeDistribution, Ownable {
     uint256 amount;
   }
 
+  address public lendingPoolConfigurator;
   IChefIncentivesController public incentivesController;
   IMintableToken public immutable stakingToken;
   address[] public rewardTokens;
@@ -88,19 +89,27 @@ contract MultiFeeDistribution is IMultiFeeDistribution, Ownable {
   /* ========== ADMIN CONFIGURATION ========== */
 
   function setMinters(address[] memory _minters) external onlyOwner {
-    require(!mintersAreSet);
+    // require(!mintersAreSet);
     for (uint i; i < _minters.length; i++) {
       minters[_minters[i]] = true;
     }
-    mintersAreSet = true;
+    // mintersAreSet = true;
   }
 
   function setIncentivesController(IChefIncentivesController _controller) external onlyOwner {
     incentivesController = _controller;
   }
 
+  function setLendingPoolConfigurator(address _lendingPoolConfigurator) external onlyOwner {
+    lendingPoolConfigurator = _lendingPoolConfigurator;
+  }
+
   // Add a new reward token to be distributed to stakers
-  function addReward(address _rewardsToken) external override onlyOwner {
+  function addReward(address _rewardsToken) external override {
+    require(
+      msg.sender == owner() ||
+        ((msg.sender == lendingPoolConfigurator) && lendingPoolConfigurator != address(0))
+    );
     require(rewardData[_rewardsToken].lastUpdateTime == 0);
     rewardTokens.push(_rewardsToken);
     rewardData[_rewardsToken].lastUpdateTime = block.timestamp;

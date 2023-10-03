@@ -9,7 +9,7 @@ task('full:data-provider', 'Initialize lending pool configuration.')
     try {
       await localBRE.run('set-DRE');
 
-      const addressesProvider = await getLendingPoolAddressesProvider('0x8ef569898B9e44B8360018FED9d2966AE7fe4B01');
+      const addressesProvider = await getLendingPoolAddressesProvider('0x253aAaB984f1E56D0D04DC067Bb73C5BAeC214c7');
 
       await deployViniumProtocolDataProvider(addressesProvider.address, verify);
     } catch (err) {

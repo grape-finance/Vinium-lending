@@ -28,11 +28,6 @@ contract ChefIncentivesController is Ownable {
     uint256 accRewardPerShare; // Accumulated rewards per share, times 1e12. See below.
     IOnwardIncentivesController onwardIncentives;
   }
-  // Info about token emissions for a given time period.
-  struct EmissionPoint {
-    uint128 startTimeOffset;
-    uint128 rewardsPerSecond;
-  }
 
   address public poolConfigurator;
 
@@ -45,10 +40,6 @@ contract ChefIncentivesController is Ownable {
   address[] public registeredTokens;
   mapping(address => PoolInfo) public poolInfo;
 
-  // Data about the future reward rates. emissionSchedule stored in reverse chronological order,
-  // whenever the number of blocks since the start block exceeds the next block offset a new
-  // reward rate is applied.
-  EmissionPoint[] public emissionSchedule;
   // token => user => Info of each user that stakes LP tokens.
   mapping(address => mapping(address => UserInfo)) public userInfo;
   // user => base claimable balance
@@ -71,23 +62,14 @@ contract ChefIncentivesController is Ownable {
   );
 
   constructor(
-    uint128[] memory _startTimeOffset,
-    uint128[] memory _rewardsPerSecond,
+    uint256 _rewardsPerSecond,
     address _poolConfigurator,
     IMultiFeeDistribution _rewardMinter,
     uint256 _maxMintable
   ) Ownable() {
     poolConfigurator = _poolConfigurator;
     rewardMinter = _rewardMinter;
-    uint256 length = _startTimeOffset.length;
-    for (uint256 i = length - 1; i + 1 != 0; i--) {
-      emissionSchedule.push(
-        EmissionPoint({
-          startTimeOffset: _startTimeOffset[i],
-          rewardsPerSecond: _rewardsPerSecond[i]
-        })
-      );
-    }
+    rewardsPerSecond = _rewardsPerSecond;
     maxMintableTokens = _maxMintable;
   }
 
@@ -101,7 +83,6 @@ contract ChefIncentivesController is Ownable {
   function addPool(address _token, uint256 _allocPoint) external {
     require(msg.sender == poolConfigurator);
     require(poolInfo[_token].lastRewardTime == 0);
-    _updateEmissions();
     totalAllocPoint = totalAllocPoint.add(_allocPoint);
     registeredTokens.push(_token);
     poolInfo[_token] = PoolInfo({
@@ -168,18 +149,6 @@ contract ChefIncentivesController is Ownable {
     return claimable;
   }
 
-  function _updateEmissions() internal {
-    uint256 length = emissionSchedule.length;
-    if (startTime > 0 && length > 0) {
-      EmissionPoint memory e = emissionSchedule[length - 1];
-      if (block.timestamp.sub(startTime) > e.startTimeOffset) {
-        _massUpdatePools();
-        rewardsPerSecond = uint256(e.rewardsPerSecond);
-        emissionSchedule.pop();
-      }
-    }
-  }
-
   // Update reward variables for all pools
   function _massUpdatePools() internal {
     uint256 totalAP = totalAllocPoint;
@@ -221,7 +190,6 @@ contract ChefIncentivesController is Ownable {
   function handleAction(address _user, uint256 _balance, uint256 _totalSupply) external {
     PoolInfo storage pool = poolInfo[msg.sender];
     require(pool.lastRewardTime > 0);
-    _updateEmissions();
     _updatePool(pool, totalAllocPoint);
     UserInfo storage user = userInfo[msg.sender][_user];
     uint256 amount = user.amount;
@@ -244,7 +212,6 @@ contract ChefIncentivesController is Ownable {
   // Claim pending rewards for one or more pools.
   // Rewards are not received directly, they are minted by the rewardMinter.
   function claim(address _user, address[] calldata _tokens) external {
-    _updateEmissions();
     uint256 pending = userBaseClaimable[_user];
     userBaseClaimable[_user] = 0;
     uint256 _totalAllocPoint = totalAllocPoint;

@@ -35,7 +35,7 @@ export const initReservesByHelper = async (
   poolName: ConfigNames,
   verify: boolean
 ) => {
-  const addressProvider = await getLendingPoolAddressesProvider('0x8ef569898B9e44B8360018FED9d2966AE7fe4B01');
+  const addressProvider = await getLendingPoolAddressesProvider('0x253aAaB984f1E56D0D04DC067Bb73C5BAeC214c7');
 
   // CHUNK CONFIGURATION
   const initChunks = 1;
@@ -134,7 +134,7 @@ export const initReservesByHelper = async (
   const chunkedSymbols = chunk(reserveSymbols, initChunks);
   const chunkedInitInputParams = chunk(initInputParams, initChunks);
 
-  const configurator = await getLendingPoolConfiguratorProxy('0xd6bFaDbe46868bae673E5C08227686d79361307E');
+  const configurator = await getLendingPoolConfiguratorProxy('0x752Ab2B06AACA63A347eD6d87e5D8821bfEe15f4');
 
   console.log(`- Reserves initialization in ${chunkedInitInputParams.length} txs`);
   for (let chunkIndex = 0; chunkIndex < chunkedInitInputParams.length; chunkIndex++) {
@@ -174,8 +174,8 @@ export const configureReservesByHelper = async (
   helpers: ViniumProtocolDataProvider,
   admin: tEthereumAddress
 ) => {
-  const addressProvider = await getLendingPoolAddressesProvider('0x8ef569898B9e44B8360018FED9d2966AE7fe4B01');
-  const vitokenAndRatesDeployer = await getViTokensAndRatesHelper('0x94056EaD321C62c9A40730Bf48074a4d07C5fFE0');
+  const addressProvider = await getLendingPoolAddressesProvider('0x253aAaB984f1E56D0D04DC067Bb73C5BAeC214c7');
+  const vitokenAndRatesDeployer = await getViTokensAndRatesHelper('0x11Ba75c7C440e6560a1Bbe85AA99798871577822');
   const tokens: string[] = [];
   const symbols: string[] = [];
 
@@ -218,7 +218,6 @@ export const configureReservesByHelper = async (
       stableBorrowingEnabled: stableBorrowRateEnabled,
       borrowingEnabled: borrowingEnabled,
     });
-
     tokens.push(tokenAddress);
     symbols.push(assetSymbol);
   }
@@ -226,6 +225,7 @@ export const configureReservesByHelper = async (
     // Set viTokenAndRatesDeployer as temporal admin
     await waitForTx(await addressProvider.setPoolAdmin(vitokenAndRatesDeployer.address));
 
+    // console.log('inputParams :>> ', inputParams);
     // Deploy init per chunks
     const enableChunks = 20;
     const chunkedSymbols = chunk(symbols, enableChunks);
@@ -233,6 +233,7 @@ export const configureReservesByHelper = async (
 
     console.log(`- Configure reserves in ${chunkedInputParams.length} txs`);
     for (let chunkIndex = 0; chunkIndex < chunkedInputParams.length; chunkIndex++) {
+      console.log('chunkedInputParams[chunkIndex] :>> ', chunkedInputParams[chunkIndex]);
       await waitForTx(await vitokenAndRatesDeployer.configureReserves(chunkedInputParams[chunkIndex]));
       console.log(`  - Init for: ${chunkedSymbols[chunkIndex].join(', ')}`);
     }

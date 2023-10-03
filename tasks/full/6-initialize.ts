@@ -32,14 +32,15 @@ task('full:initialize-lending-pool', 'Initialize lending pool configuration.')
         ReservesConfig,
         LendingPoolCollateralManager,
         WethGateway,
+        MultiFeeDistribution,
         IncentivesController,
       } = poolConfig as ICommonConfiguration;
 
       const reserveAssets = await getParamPerNetwork(ReserveAssets, network);
       const incentivesController = await getParamPerNetwork(IncentivesController, network);
-      const addressesProvider = await getLendingPoolAddressesProvider('0x8ef569898B9e44B8360018FED9d2966AE7fe4B01');
+      const addressesProvider = await getLendingPoolAddressesProvider('0x253aAaB984f1E56D0D04DC067Bb73C5BAeC214c7');
 
-      const testHelpers = await getViniumProtocolDataProvider('0x4e7B0d82747Db4Ca10340C86F1A456A479bBC8a6');
+      const testHelpers = await getViniumProtocolDataProvider('0x59aB4B21a81aBc7AB900E0A548cA51e263907B44');
 
       const admin = await addressesProvider.getPoolAdmin();
       const oracle = await addressesProvider.getPriceOracle();
@@ -48,39 +49,39 @@ task('full:initialize-lending-pool', 'Initialize lending pool configuration.')
         throw 'Reserve assets is undefined. Check ReserveAssets configuration at config directory';
       }
 
-      const treasuryAddress = await getTreasuryAddress(poolConfig);
+      const multiFeeDistribution = await getParamPerNetwork(MultiFeeDistribution, network);
 
-      await initReservesByHelper(
-        ReservesConfig,
-        reserveAssets,
-        ViTokenNamePrefix,
-        StableVdTokenNamePrefix,
-        VariableVdTokenNamePrefix,
-        SymbolPrefix,
-        admin,
-        treasuryAddress,
-        incentivesController,
-        '1000',
-        pool,
-        verify
-      );
-      await configureReservesByHelper(ReservesConfig, reserveAssets, testHelpers, admin);
+      // await initReservesByHelper(
+      //   ReservesConfig,
+      //   reserveAssets,
+      //   ViTokenNamePrefix,
+      //   StableVdTokenNamePrefix,
+      //   VariableVdTokenNamePrefix,
+      //   SymbolPrefix,
+      //   admin,
+      //   multiFeeDistribution!, // treasury address
+      //   incentivesController,
+      //   '1000',
+      //   pool,
+      //   verify
+      // );
+      // await configureReservesByHelper(ReservesConfig, reserveAssets, testHelpers, admin);
 
-      let collateralManagerAddress = await getParamPerNetwork(LendingPoolCollateralManager, network);
-      if (!notFalsyOrZeroAddress(collateralManagerAddress)) {
-        const collateralManager = await deployLendingPoolCollateralManager(verify);
-        collateralManagerAddress = collateralManager.address;
-      }
-      // Seems unnecessary to register the collateral manager in the JSON db
+      // let collateralManagerAddress = await getParamPerNetwork(LendingPoolCollateralManager, network);
+      // if (!notFalsyOrZeroAddress(collateralManagerAddress)) {
+      //   const collateralManager = await deployLendingPoolCollateralManager(verify);
+      //   collateralManagerAddress = collateralManager.address;
+      // }
+      // // Seems unnecessary to register the collateral manager in the JSON db
 
-      console.log('\tSetting lending pool collateral manager implementation with address', collateralManagerAddress);
-      await waitForTx(await addressesProvider.setLendingPoolCollateralManager(collateralManagerAddress));
+      // console.log('\tSetting lending pool collateral manager implementation with address', collateralManagerAddress);
+      // await waitForTx(await addressesProvider.setLendingPoolCollateralManager(collateralManagerAddress));
 
-      console.log('\tSetting ViniumProtocolDataProvider at AddressesProvider at id: 0x01', collateralManagerAddress);
-      const viniumProtocolDataProvider = await getViniumProtocolDataProvider('0x4e7B0d82747Db4Ca10340C86F1A456A479bBC8a6');
-      await waitForTx(
-        await addressesProvider.setAddress('0x0100000000000000000000000000000000000000000000000000000000000000', viniumProtocolDataProvider.address)
-      );
+      // console.log('\tSetting ViniumProtocolDataProvider at AddressesProvider at id: 0x01', collateralManagerAddress);
+      // const viniumProtocolDataProvider = await getViniumProtocolDataProvider('0xdcDeCd42a72FeC53D21118A3Bc2157CF28Ce65C7');
+      // await waitForTx(
+      //   await addressesProvider.setAddress('0x0100000000000000000000000000000000000000000000000000000000000000', viniumProtocolDataProvider.address)
+      // );
 
       await deployWalletBalancerProvider(verify);
 
