@@ -102,6 +102,16 @@ const buidlerConfig: HardhatUserConfig = {
         },
       },
       {
+        version: '0.8.2',
+        settings: {
+          evmVersion: 'istanbul',
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
+      {
         version: '0.6.12',
         settings: {
           evmVersion: 'istanbul',

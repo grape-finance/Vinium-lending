@@ -10,6 +10,7 @@ yarn hardhat --network goerli full:add-new-tokens --pool Commons --verify
 
 yarn hardhat --network goerli deploy-UiPoolDataProviderV2 --verify
 yarn hardhat --network goerli deploy-UiIncentiveDataProviderV2 --verify
+yarn hardhat --network goerli full:multicall --verify
 
 // LendingPoolAddressesProvider registry 0xB42D29B9b51E8C40A73427fc1E736F355cF79705
 // LendingPoolAddressesProvider 0x253aAaB984f1E56D0D04DC067Bb73C5BAeC214c7
@@ -36,7 +37,7 @@ yarn hardhat --network goerli deploy-UiIncentiveDataProviderV2 --verify
 // ViniumProtocolDataProvider 0x59aB4B21a81aBc7AB900E0A548cA51e263907B44
 
 // WETHGateway 0x6D1D7068703203A05fB5ef9056fe8B6077482736
-
+ 
 // DefaultReserveInterestRateStrategy 0xa94B9915231526EfFa68f8344FB15FfeF75fe92A
 // 0x77799E5569F794DA6d8481280B8fE499BFdB827D
 
@@ -45,6 +46,7 @@ yarn hardhat --network goerli deploy-UiIncentiveDataProviderV2 --verify
 
 // UiPoolDataProviderV2 0x84A63CDC0aa7e851373C9DD1CB824E2c6e7d4f49
 // UiIncentiveDataProviderV2 0xC20bda162d06431ab8891C9810a37F5585EA5147
+// Multicall 0xf7Bb9EFeABd7129fE9E77D234DFB33Aa12b2f851
 
 // ViniumOFT 0xFa98854f0DE9E8Bd35742C91468108b04E0429dB
 // MultiFeeDistribution 0xEE280750B1D883EB84e29956a2a9814f70FA7699

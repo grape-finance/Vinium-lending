@@ -66,6 +66,7 @@ import {
   MiddleFeeDistributionFactory,
   ChefIncentivesControllerFactory,
   EligibilityDataProviderFactory,
+  MulticallFactory,
 } from '../types';
 import {
   withSaveAndVerify,
@@ -369,6 +370,9 @@ export const deployMockFlashLoanReceiver = async (addressesProvider: tEthereumAd
 
 export const deployWalletBalancerProvider = async (verify?: boolean) =>
   withSaveAndVerify(await new WalletBalanceProviderFactory(await getFirstSigner()).deploy(), eContractid.WalletBalanceProvider, [], verify);
+
+export const deployMulticall = async (verify?: boolean) =>
+  withSaveAndVerify(await new MulticallFactory(await getFirstSigner()).deploy(), eContractid.Multicall, [], verify);
 
 export const deployViniumProtocolDataProvider = async (addressesProvider: tEthereumAddress, verify?: boolean) =>
   withSaveAndVerify(

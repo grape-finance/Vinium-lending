@@ -121,6 +121,8 @@ export enum eContractid {
   MiddleFeeDistribution = 'MiddleFeeDistribution',
   EligibilityDataProvider = 'EligibilityDataProvider',
   ChefIncentivesController = 'ChefIncentivesController',
+
+  Multicall = 'Multicall',
 }
 
 /*
