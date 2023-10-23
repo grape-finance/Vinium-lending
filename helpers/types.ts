@@ -122,6 +122,8 @@ export enum eContractid {
   EligibilityDataProvider = 'EligibilityDataProvider',
   ChefIncentivesController = 'ChefIncentivesController',
 
+  Leverager = 'Leverager',
+
   Multicall = 'Multicall',
 }
 
@@ -559,6 +561,7 @@ export interface IBaseConfiguration {
   MiddleFeeDistribution: iParamsPerNetwork<tEthereumAddress | undefined>;
   EligibilityDataProvider: iParamsPerNetwork<tEthereumAddress | undefined>;
   IncentivesController: iParamsPerNetwork<tEthereumAddress>;
+  Leverager: iParamsPerNetwork<tEthereumAddress>;
 }
 
 export interface ICommonConfiguration extends IBaseConfiguration {

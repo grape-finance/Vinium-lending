@@ -62,7 +62,7 @@ contract ViniumOFT is OFTV2, Pausable {
   }
 
   function setMinter(address _multiFeeDistribution) external returns (bool) {
-    require(multiFeeDistribution == address(0) && _multiFeeDistribution != address(0));
+    require(_multiFeeDistribution != address(0));
     multiFeeDistribution = _multiFeeDistribution;
     return true;
   }
@@ -101,13 +101,7 @@ contract ViniumOFT is OFTV2, Pausable {
     bool _useZro,
     bytes calldata _adapterParams
   ) public view override returns (uint nativeFee, uint zroFee) {
-    (nativeFee, zroFee) = super.estimateSendFee(
-      _dstChainId,
-      _toAddress,
-      _amount,
-      _useZro,
-      _adapterParams
-    );
+    (nativeFee, zroFee) = super.estimateSendFee(_dstChainId, _toAddress, _amount, _useZro, _adapterParams);
     nativeFee = nativeFee.add(getBridgeFee(_amount));
   }
 
@@ -142,14 +136,7 @@ contract ViniumOFT is OFTV2, Pausable {
     require(amount > 0, 'OFTCore: amount too small');
 
     bytes memory lzPayload = _encodeSendPayload(_toAddress, _ld2sd(amount));
-    _lzSend(
-      _dstChainId,
-      lzPayload,
-      _refundAddress,
-      _zroPaymentAddress,
-      _adapterParams,
-      msg.value.sub(fee)
-    );
+    _lzSend(_dstChainId, lzPayload, _refundAddress, _zroPaymentAddress, _adapterParams, msg.value.sub(fee));
 
     emit SendToChain(_dstChainId, _from, _toAddress, amount);
   }
@@ -161,12 +148,7 @@ contract ViniumOFT is OFTV2, Pausable {
    * @param _toAddress to addr on dst chain
    * @param _amount amount to bridge
    */
-  function _debitFrom(
-    address _from,
-    uint16 _dstChainId,
-    bytes32 _toAddress,
-    uint _amount
-  ) internal override whenNotPaused returns (uint) {
+  function _debitFrom(address _from, uint16 _dstChainId, bytes32 _toAddress, uint _amount) internal override whenNotPaused returns (uint) {
     return super._debitFrom(_from, _dstChainId, _toAddress, _amount);
   }
 

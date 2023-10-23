@@ -16,7 +16,6 @@ import {IInitializableVdToken} from '../../interfaces/IInitializableVdToken.sol'
 import {IInitializableViToken} from '../../interfaces/IInitializableViToken.sol';
 import {IChefIncentivesController} from '../../interfaces/IChefIncentivesController.sol';
 import {ILendingPoolConfigurator} from '../../interfaces/ILendingPoolConfigurator.sol';
-import {IMultiFeeDistribution} from '../../interfaces/IMultiFeeDistribution.sol';
 
 /**
  * @title LendingPoolConfigurator contract
@@ -38,10 +37,7 @@ contract LendingPoolConfigurator is VersionedInitializable, ILendingPoolConfigur
   }
 
   modifier onlyEmergencyAdmin() {
-    require(
-      addressesProvider.getEmergencyAdmin() == msg.sender,
-      Errors.LPC_CALLER_NOT_EMERGENCY_ADMIN
-    );
+    require(addressesProvider.getEmergencyAdmin() == msg.sender, Errors.LPC_CALLER_NOT_EMERGENCY_ADMIN);
     _;
   }
 
@@ -67,9 +63,7 @@ contract LendingPoolConfigurator is VersionedInitializable, ILendingPoolConfigur
   }
 
   function _initReserve(ILendingPool pool, InitReserveInput calldata input) internal {
-    IChefIncentivesController incentivesController = IChefIncentivesController(
-      input.incentivesController
-    );
+    IChefIncentivesController incentivesController = IChefIncentivesController(input.incentivesController);
 
     address viTokenProxyAddress = _initTokenWithProxy(
       input.viTokenImpl,
@@ -87,7 +81,7 @@ contract LendingPoolConfigurator is VersionedInitializable, ILendingPoolConfigur
     );
 
     incentivesController.addPool(viTokenProxyAddress, input.allocPoint);
-    IMultiFeeDistribution(input.treasury).addReward(viTokenProxyAddress);
+    // IMultiFeeDistribution(input.treasury).addReward(viTokenProxyAddress);
 
     address stableVdTokenProxyAddress = _initTokenWithProxy(
       input.stableVdTokenImpl,
@@ -127,9 +121,7 @@ contract LendingPoolConfigurator is VersionedInitializable, ILendingPoolConfigur
       input.interestRateStrategyAddress
     );
 
-    DataTypes.ReserveConfigurationMap memory currentConfig = pool.getConfiguration(
-      input.underlyingAsset
-    );
+    DataTypes.ReserveConfigurationMap memory currentConfig = pool.getConfiguration(input.underlyingAsset);
 
     currentConfig.setDecimals(input.underlyingAssetDecimals);
 
@@ -195,11 +187,7 @@ contract LendingPoolConfigurator is VersionedInitializable, ILendingPoolConfigur
       input.params
     );
 
-    _upgradeTokenImplementation(
-      reserveData.stableVdTokenAddress,
-      input.implementation,
-      encodedCall
-    );
+    _upgradeTokenImplementation(reserveData.stableVdTokenAddress, input.implementation, encodedCall);
 
     emit StableVdTokenUpgraded(input.asset, reserveData.stableVdTokenAddress, input.implementation);
   }
@@ -225,17 +213,9 @@ contract LendingPoolConfigurator is VersionedInitializable, ILendingPoolConfigur
       input.params
     );
 
-    _upgradeTokenImplementation(
-      reserveData.variableVdTokenAddress,
-      input.implementation,
-      encodedCall
-    );
+    _upgradeTokenImplementation(reserveData.variableVdTokenAddress, input.implementation, encodedCall);
 
-    emit VariableVdTokenUpgraded(
-      input.asset,
-      reserveData.variableVdTokenAddress,
-      input.implementation
-    );
+    emit VariableVdTokenUpgraded(input.asset, reserveData.variableVdTokenAddress, input.implementation);
   }
 
   /**
@@ -243,10 +223,7 @@ contract LendingPoolConfigurator is VersionedInitializable, ILendingPoolConfigur
    * @param asset The address of the underlying asset of the reserve
    * @param stableBorrowRateEnabled True if stable borrow rate needs to be enabled by default on this reserve
    **/
-  function enableBorrowingOnReserve(
-    address asset,
-    bool stableBorrowRateEnabled
-  ) external onlyPoolAdmin {
+  function enableBorrowingOnReserve(address asset, bool stableBorrowRateEnabled) external onlyPoolAdmin {
     DataTypes.ReserveConfigurationMap memory currentConfig = pool.getConfiguration(asset);
 
     currentConfig.setBorrowingEnabled(true);
@@ -279,12 +256,7 @@ contract LendingPoolConfigurator is VersionedInitializable, ILendingPoolConfigur
    * @param liquidationBonus The bonus liquidators receive to liquidate this asset. The values is always above 100%. A value of 105%
    * means the liquidator will receive a 5% bonus
    **/
-  function configureReserveAsCollateral(
-    address asset,
-    uint256 ltv,
-    uint256 liquidationThreshold,
-    uint256 liquidationBonus
-  ) external onlyPoolAdmin {
+  function configureReserveAsCollateral(address asset, uint256 ltv, uint256 liquidationThreshold, uint256 liquidationBonus) external onlyPoolAdmin {
     DataTypes.ReserveConfigurationMap memory currentConfig = pool.getConfiguration(asset);
 
     //validation of the parameters: the LTV can
@@ -295,17 +267,11 @@ contract LendingPoolConfigurator is VersionedInitializable, ILendingPoolConfigur
     if (liquidationThreshold != 0) {
       //liquidation bonus must be bigger than 100.00%, otherwise the liquidator would receive less
       //collateral than needed to cover the debt
-      require(
-        liquidationBonus > PercentageMath.PERCENTAGE_FACTOR,
-        Errors.LPC_INVALID_CONFIGURATION
-      );
+      require(liquidationBonus > PercentageMath.PERCENTAGE_FACTOR, Errors.LPC_INVALID_CONFIGURATION);
 
       //if threshold * bonus is less than PERCENTAGE_FACTOR, it's guaranteed that at the moment
       //a loan is taken there is enough collateral available to cover the liquidation bonus
-      require(
-        liquidationThreshold.percentMul(liquidationBonus) <= PercentageMath.PERCENTAGE_FACTOR,
-        Errors.LPC_INVALID_CONFIGURATION
-      );
+      require(liquidationThreshold.percentMul(liquidationBonus) <= PercentageMath.PERCENTAGE_FACTOR, Errors.LPC_INVALID_CONFIGURATION);
     } else {
       require(liquidationBonus == 0, Errors.LPC_INVALID_CONFIGURATION);
       //if the liquidation threshold is being set to 0,
@@ -430,10 +396,7 @@ contract LendingPoolConfigurator is VersionedInitializable, ILendingPoolConfigur
    * @param asset The address of the underlying asset of the reserve
    * @param rateStrategyAddress The new address of the interest strategy contract
    **/
-  function setReserveInterestRateStrategyAddress(
-    address asset,
-    address rateStrategyAddress
-  ) external onlyPoolAdmin {
+  function setReserveInterestRateStrategyAddress(address asset, address rateStrategyAddress) external onlyPoolAdmin {
     pool.setReserveInterestRateStrategyAddress(asset, rateStrategyAddress);
     emit ReserveInterestRateStrategyChanged(asset, rateStrategyAddress);
   }
@@ -446,34 +409,20 @@ contract LendingPoolConfigurator is VersionedInitializable, ILendingPoolConfigur
     pool.setPause(val);
   }
 
-  function setIncentivesController(
-    address asset,
-    address incentivesController
-  ) external onlyEmergencyAdmin {
+  function setIncentivesController(address asset, address incentivesController) external onlyEmergencyAdmin {
     pool.setIncentivesController(asset, incentivesController);
   }
 
-  function _initTokenWithProxy(
-    address implementation,
-    bytes memory initParams
-  ) internal returns (address) {
-    InitializableImmutableAdminUpgradeabilityProxy proxy = new InitializableImmutableAdminUpgradeabilityProxy(
-        address(this)
-      );
+  function _initTokenWithProxy(address implementation, bytes memory initParams) internal returns (address) {
+    InitializableImmutableAdminUpgradeabilityProxy proxy = new InitializableImmutableAdminUpgradeabilityProxy(address(this));
 
     proxy.initialize(implementation, initParams);
 
     return address(proxy);
   }
 
-  function _upgradeTokenImplementation(
-    address proxyAddress,
-    address implementation,
-    bytes memory initParams
-  ) internal {
-    InitializableImmutableAdminUpgradeabilityProxy proxy = InitializableImmutableAdminUpgradeabilityProxy(
-        payable(proxyAddress)
-      );
+  function _upgradeTokenImplementation(address proxyAddress, address implementation, bytes memory initParams) internal {
+    InitializableImmutableAdminUpgradeabilityProxy proxy = InitializableImmutableAdminUpgradeabilityProxy(payable(proxyAddress));
 
     proxy.upgradeToAndCall(implementation, initParams);
   }
@@ -483,9 +432,6 @@ contract LendingPoolConfigurator is VersionedInitializable, ILendingPoolConfigur
 
     uint256 availableLiquidity = IERC20Detailed(asset).balanceOf(reserveData.viTokenAddress);
 
-    require(
-      availableLiquidity == 0 && reserveData.currentLiquidityRate == 0,
-      Errors.LPC_RESERVE_LIQUIDITY_NOT_0
-    );
+    require(availableLiquidity == 0 && reserveData.currentLiquidityRate == 0, Errors.LPC_RESERVE_LIQUIDITY_NOT_0);
   }
 }

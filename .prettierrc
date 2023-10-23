@@ -9,7 +9,7 @@
       "files": "*.sol",
       "options": {
         "semi": false,
-        "printWidth": 100
+        "printWidth": 150
       }
     }
   ]

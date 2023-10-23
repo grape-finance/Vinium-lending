@@ -35,7 +35,7 @@ export const initReservesByHelper = async (
   poolName: ConfigNames,
   verify: boolean
 ) => {
-  const addressProvider = await getLendingPoolAddressesProvider('0x253aAaB984f1E56D0D04DC067Bb73C5BAeC214c7');
+  const addressProvider = await getLendingPoolAddressesProvider('0x8FC2aA21e1963CE9C12F07fc27AFe7681Dc3969b');
 
   // CHUNK CONFIGURATION
   const initChunks = 1;
@@ -134,7 +134,7 @@ export const initReservesByHelper = async (
   const chunkedSymbols = chunk(reserveSymbols, initChunks);
   const chunkedInitInputParams = chunk(initInputParams, initChunks);
 
-  const configurator = await getLendingPoolConfiguratorProxy('0x752Ab2B06AACA63A347eD6d87e5D8821bfEe15f4');
+  const configurator = await getLendingPoolConfiguratorProxy('0x741919447fFAa3f1038D881Ff9EEA9Fc908a2C30');
 
   console.log(`- Reserves initialization in ${chunkedInitInputParams.length} txs`);
   for (let chunkIndex = 0; chunkIndex < chunkedInitInputParams.length; chunkIndex++) {
@@ -174,8 +174,8 @@ export const configureReservesByHelper = async (
   helpers: ViniumProtocolDataProvider,
   admin: tEthereumAddress
 ) => {
-  const addressProvider = await getLendingPoolAddressesProvider('0x253aAaB984f1E56D0D04DC067Bb73C5BAeC214c7');
-  const vitokenAndRatesDeployer = await getViTokensAndRatesHelper('0x11Ba75c7C440e6560a1Bbe85AA99798871577822');
+  const addressProvider = await getLendingPoolAddressesProvider('0x8FC2aA21e1963CE9C12F07fc27AFe7681Dc3969b');
+  const vitokenAndRatesDeployer = await getViTokensAndRatesHelper('0xae3Be832c83CfDcae4fe494a7F998759B2c74832');
   const tokens: string[] = [];
   const symbols: string[] = [];
 

@@ -2,13 +2,37 @@
 pragma solidity 0.8.12;
 pragma experimental ABIEncoderV2;
 
+import './IOnwardIncentivesController.sol';
+
 interface IChefIncentivesController {
-  /**
-   * @dev Called by the corresponding asset on any update that affects the rewards distribution
-   * @param user The address of the user
-   * @param userBalance The balance of the user of the asset in the lending pool
-   * @param totalSupply The total supply of the asset in the lending pool
-   **/
+  struct UserInfo {
+    uint amount;
+    uint rewardDebt;
+  }
+  struct PoolInfo {
+    uint totalSupply;
+    uint allocPoint; // How many allocation points assigned to this pool.
+    uint lastRewardTime; // Last second that reward distribution occurs.
+    uint accRewardPerShare; // Accumulated rewards per share, times 1e12. See below.
+    IOnwardIncentivesController onwardIncentives;
+  }
+
+  function mintedTokens() external view returns (uint);
+
+  function rewardsPerSecond() external view returns (uint);
+
+  function startTime() external view returns (uint);
+
+  function poolInfo(address token) external view returns (PoolInfo memory);
+
+  function registeredTokens(uint idx) external view returns (address);
+
+  function poolLength() external view returns (uint);
+
+  function userInfo(address token, address user) external view returns (UserInfo memory);
+
+  function userBaseClaimable(address user) external view returns (uint);
+
   function handleAction(address user, uint256 userBalance, uint256 totalSupply) external;
 
   function addPool(address _token, uint256 _allocPoint) external;

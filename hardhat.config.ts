@@ -112,6 +112,16 @@ const buidlerConfig: HardhatUserConfig = {
         },
       },
       {
+        version: '0.7.6',
+        settings: {
+          evmVersion: 'istanbul',
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
+      {
         version: '0.6.12',
         settings: {
           evmVersion: 'istanbul',
@@ -168,7 +178,7 @@ const buidlerConfig: HardhatUserConfig = {
     fuji: getCommonNetworkConfig(eAvalancheNetwork.fuji, 43113),
     goerli: getCommonNetworkConfig(eEthereumNetwork.goerli, 5),
     hardhat: {
-      hardfork: 'berlin',
+      // hardfork: 'istanbul',
       blockGasLimit: DEFAULT_BLOCK_GAS_LIMIT,
       gas: DEFAULT_BLOCK_GAS_LIMIT,
       gasPrice: 8000000000,
@@ -180,10 +190,10 @@ const buidlerConfig: HardhatUserConfig = {
         privateKey: secretKey,
         balance,
       })),
-      forking: buildForkConfig(),
+      // forking: buildForkConfig(),
     },
     buidlerevm_docker: {
-      hardfork: 'berlin',
+      hardfork: 'istanbul',
       blockGasLimit: 9500000,
       gas: 9500000,
       gasPrice: 8000000000,

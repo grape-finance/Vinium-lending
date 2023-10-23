@@ -1,4 +1,4 @@
-import { BigNumberish, Contract } from 'ethers';
+import { BigNumberish, Contract, ContractFactory } from 'ethers';
 // import { ethers, upgrades } from 'hardhat';
 import { DRE, notFalsyOrZeroAddress } from './misc-utils';
 import {
@@ -67,6 +67,7 @@ import {
   ChefIncentivesControllerFactory,
   EligibilityDataProviderFactory,
   MulticallFactory,
+  LeveragerFactory,
 } from '../types';
 import {
   withSaveAndVerify,
@@ -307,10 +308,12 @@ export const deployLockerList = async (verify?: boolean) => {
   return withSaveAndVerify(LockerList, eContractid.LockerList, [], verify);
 };
 
-export const deployMultiFeeDistribution = async (args: [tEthereumAddress], verify?: boolean) => {
-  const multiFeeDistribution = await new MultiFeeDistributionFactory(await getFirstSigner()).deploy(...args);
+export const deployMultiFeeDistribution = async (args: [tEthereumAddress, tEthereumAddress], verify?: boolean) => {
+  // const multiFeeDistribution = await new MultiFeeDistributionFactory(await getFirstSigner()).deploy(...args);
+  const MultiFeeDistribution = await DRE.ethers.getContractFactory('MultiFeeDistribution');
+  const multiFeeDistribution = await DRE.upgrades.deployProxy(MultiFeeDistribution, [args[0], args[1]]);
   await insertContractAddressInDb(eContractid.MultiFeeDistribution, multiFeeDistribution.address);
-  return withSaveAndVerify(multiFeeDistribution, eContractid.MultiFeeDistribution, [args[0]], verify);
+  return withSaveAndVerify(multiFeeDistribution, eContractid.MultiFeeDistribution, [], verify);
 };
 
 export const deployMiddleFeeDistribution = async (args: [tEthereumAddress, tEthereumAddress, tEthereumAddress], verify?: boolean) => {
@@ -327,19 +330,28 @@ export const deployEligibilityDataProvider = async (args: [tEthereumAddress, tEt
   return withSaveAndVerify(eligibilityDataProvider, eContractid.EligibilityDataProvider, [], verify);
 };
 
-export const deployChefIncentivesController = async (args: [BigNumberish, tEthereumAddress, tEthereumAddress, BigNumberish], verify?: boolean) => {
-  const ChefIncentivesController = await new ChefIncentivesControllerFactory(await getFirstSigner()).deploy(...args);
-  // const ChefIncentivesController = await DRE.ethers.getContractFactory('ChefIncentivesController');
-  // const chefIncentivesController = await DRE.upgrades.deployProxy(ChefIncentivesController, [args[0], args[1], args[2], args[3]]);
+export const deployChefIncentivesController = async (
+  args: [string[], string[], tEthereumAddress, tEthereumAddress, BigNumberish],
+  verify?: boolean
+) => {
+  const ChefIncentivesController = await DRE.ethers.getContractFactory('ChefIncentivesController');
+  const chefIncentivesController = await DRE.upgrades.deployProxy(ChefIncentivesController, [args[0], args[1], args[2], args[3], args[4]]);
 
   await insertContractAddressInDb(eContractid.ChefIncentivesController, ChefIncentivesController.address);
-  return withSaveAndVerify(
-    ChefIncentivesController,
-    eContractid.ChefIncentivesController,
-    [args[0].toString(), args[1], args[2], args[3].toString()],
-    verify
-  );
+  return withSaveAndVerify(chefIncentivesController, eContractid.ChefIncentivesController, [], verify);
 };
+
+export const upgradeChefIncentivesController = async (args: [string], verify?: boolean) => {
+  const ChefIncentivesController = await DRE.ethers.getContractFactory('ChefIncentivesController');
+  const ChefIncentivesController_Deployed = await DRE.upgrades.upgradeProxy(args[0], ChefIncentivesController);
+  await ChefIncentivesController_Deployed.deployed();
+
+  await insertContractAddressInDb(eContractid.ChefIncentivesController, ChefIncentivesController.address);
+  return withSaveAndVerify(ChefIncentivesController_Deployed, eContractid.ChefIncentivesController, [], verify);
+};
+
+export const deployLeverager = async (lendingPool: tEthereumAddress, verify?: boolean) =>
+  withSaveAndVerify(await new LeveragerFactory(await getFirstSigner()).deploy(lendingPool), eContractid.Leverager, [lendingPool], verify);
 
 // export const deployMintableDelegationERC20 = async (
 //   args: [string, string, string],

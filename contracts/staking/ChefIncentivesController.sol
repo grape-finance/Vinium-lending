@@ -1,17 +1,18 @@
-// SPDX-License-Identifier: agpl-3.0
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
-pragma solidity 0.8.12;
+import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
+import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
+import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
 import '../interfaces/IMultiFeeDistribution.sol';
 import '../interfaces/IOnwardIncentivesController.sol';
-// import "../dependencies/openzeppelin/contracts/IERC20.sol";
-import '../dependencies/openzeppelin/contracts/SafeERC20.sol';
-import '../dependencies/openzeppelin/contracts/SafeMath.sol';
-import '../dependencies/openzeppelin/contracts/Ownable.sol';
+import '../interfaces/IChefIncentivesController.sol';
 
-// based on the Sushi MasterChef
-// https://github.com/sushiswap/sushiswap/blob/master/contracts/MasterChef.sol
-contract ChefIncentivesController is Ownable {
+contract ChefIncentivesController is Initializable, PausableUpgradeable, OwnableUpgradeable {
   using SafeMath for uint256;
   using SafeERC20 for IERC20;
 
@@ -28,24 +29,33 @@ contract ChefIncentivesController is Ownable {
     uint256 accRewardPerShare; // Accumulated rewards per share, times 1e12. See below.
     IOnwardIncentivesController onwardIncentives;
   }
+  // Info about token emissions for a given time period.
+  struct EmissionPoint {
+    uint128 startTimeOffset;
+    uint128 rewardsPerSecond;
+  }
 
   address public poolConfigurator;
 
   IMultiFeeDistribution public rewardMinter;
   uint256 public rewardsPerSecond;
-  uint256 public immutable maxMintableTokens;
+  uint256 public maxMintableTokens;
   uint256 public mintedTokens;
 
   // Info of each pool.
   address[] public registeredTokens;
   mapping(address => PoolInfo) public poolInfo;
 
+  // Data about the future reward rates. emissionSchedule stored in reverse chronological order,
+  // whenever the number of blocks since the start block exceeds the next block offset a new
+  // reward rate is applied.
+  EmissionPoint[] public emissionSchedule;
   // token => user => Info of each user that stakes LP tokens.
   mapping(address => mapping(address => UserInfo)) public userInfo;
   // user => base claimable balance
   mapping(address => uint256) public userBaseClaimable;
   // Total allocation poitns. Must be the sum of all allocation points in all pools.
-  uint256 public totalAllocPoint = 0;
+  uint256 public totalAllocPoint;
   // The block number when reward mining starts.
   uint256 public startTime;
 
@@ -54,23 +64,35 @@ contract ChefIncentivesController is Ownable {
   // this is used to aid 3rd party contract integrations
   mapping(address => address) public claimReceiver;
 
-  event BalanceUpdated(
-    address indexed token,
-    address indexed user,
-    uint256 balance,
-    uint256 totalSupply
-  );
+  event BalanceUpdated(address indexed token, address indexed user, uint256 balance, uint256 totalSupply);
 
-  constructor(
-    uint256 _rewardsPerSecond,
+  function initialize(
+    uint128[] memory _startTimeOffset,
+    uint128[] memory _rewardsPerSecond,
     address _poolConfigurator,
     IMultiFeeDistribution _rewardMinter,
     uint256 _maxMintable
-  ) Ownable() {
+  ) public initializer {
+    __Pausable_init();
+    __Ownable_init();
     poolConfigurator = _poolConfigurator;
     rewardMinter = _rewardMinter;
-    rewardsPerSecond = _rewardsPerSecond;
+    uint256 length = _startTimeOffset.length;
+    for (uint256 i = length; i > 0; i--) {
+      emissionSchedule.push(EmissionPoint({startTimeOffset: _startTimeOffset[i - 1], rewardsPerSecond: _rewardsPerSecond[i - 1]}));
+    }
     maxMintableTokens = _maxMintable;
+    totalAllocPoint = 0;
+  }
+
+  function changeEmissionSchedule(uint128[] memory _startTimeOffset, uint128[] memory _rewardsPerSecond) public {
+    for (uint256 i = 0; i < emissionSchedule.length; i++) {
+      emissionSchedule.pop();
+    }
+    uint256 length = _startTimeOffset.length;
+    for (uint256 i = length; i > 0; i--) {
+      emissionSchedule.push(EmissionPoint({startTimeOffset: _startTimeOffset[i - 1], rewardsPerSecond: _rewardsPerSecond[i - 1]}));
+    }
   }
 
   // Start the party
@@ -83,6 +105,7 @@ contract ChefIncentivesController is Ownable {
   function addPool(address _token, uint256 _allocPoint) external {
     require(msg.sender == poolConfigurator);
     require(poolInfo[_token].lastRewardTime == 0);
+    _updateEmissions();
     totalAllocPoint = totalAllocPoint.add(_allocPoint);
     registeredTokens.push(_token);
     poolInfo[_token] = PoolInfo({
@@ -95,10 +118,7 @@ contract ChefIncentivesController is Ownable {
   }
 
   // Update the given pool's allocation point. Can only be called by the owner.
-  function batchUpdateAllocPoint(
-    address[] calldata _tokens,
-    uint256[] calldata _allocPoints
-  ) public onlyOwner {
+  function batchUpdateAllocPoint(address[] calldata _tokens, uint256[] calldata _allocPoints) public onlyOwner {
     require(_tokens.length == _allocPoints.length);
     _massUpdatePools();
     uint256 _totalAllocPoint = totalAllocPoint;
@@ -111,10 +131,7 @@ contract ChefIncentivesController is Ownable {
     totalAllocPoint = _totalAllocPoint;
   }
 
-  function setOnwardIncentives(
-    address _token,
-    IOnwardIncentivesController _incentives
-  ) external onlyOwner {
+  function setOnwardIncentives(address _token, IOnwardIncentivesController _incentives) external onlyOwner {
     require(poolInfo[_token].lastRewardTime != 0);
     poolInfo[_token].onwardIncentives = _incentives;
   }
@@ -128,10 +145,7 @@ contract ChefIncentivesController is Ownable {
     return registeredTokens.length;
   }
 
-  function claimableReward(
-    address _user,
-    address[] calldata _tokens
-  ) external view returns (uint256[] memory) {
+  function claimableReward(address _user, address[] calldata _tokens) external view returns (uint256[] memory) {
     uint256[] memory claimable = new uint256[](_tokens.length);
     for (uint256 i = 0; i < _tokens.length; i++) {
       address token = _tokens[i];
@@ -147,6 +161,18 @@ contract ChefIncentivesController is Ownable {
       claimable[i] = user.amount.mul(accRewardPerShare).div(1e12).sub(user.rewardDebt);
     }
     return claimable;
+  }
+
+  function _updateEmissions() internal {
+    uint256 length = emissionSchedule.length;
+    if (startTime > 0 && length > 0) {
+      EmissionPoint memory e = emissionSchedule[length - 1];
+      if (block.timestamp.sub(startTime) > e.startTimeOffset) {
+        _massUpdatePools();
+        rewardsPerSecond = uint256(e.rewardsPerSecond);
+        emissionSchedule.pop();
+      }
+    }
   }
 
   // Update reward variables for all pools
@@ -183,13 +209,14 @@ contract ChefIncentivesController is Ownable {
       mintedTokens = minted.add(_amount);
       address receiver = claimReceiver[_user];
       if (receiver == address(0)) receiver = _user;
-      rewardMinter.mint(receiver, _amount, true);
+      rewardMinter.mint(receiver, _amount);
     }
   }
 
   function handleAction(address _user, uint256 _balance, uint256 _totalSupply) external {
     PoolInfo storage pool = poolInfo[msg.sender];
     require(pool.lastRewardTime > 0);
+    _updateEmissions();
     _updatePool(pool, totalAllocPoint);
     UserInfo storage user = userInfo[msg.sender][_user];
     uint256 amount = user.amount;
@@ -211,7 +238,8 @@ contract ChefIncentivesController is Ownable {
 
   // Claim pending rewards for one or more pools.
   // Rewards are not received directly, they are minted by the rewardMinter.
-  function claim(address _user, address[] calldata _tokens) external {
+  function claim(address _user, address[] calldata _tokens) external whenNotPaused {
+    _updateEmissions();
     uint256 pending = userBaseClaimable[_user];
     userBaseClaimable[_user] = 0;
     uint256 _totalAllocPoint = totalAllocPoint;
@@ -225,5 +253,13 @@ contract ChefIncentivesController is Ownable {
       user.rewardDebt = rewardDebt;
     }
     _mint(_user, pending);
+  }
+
+  function pause() public onlyOwner {
+    _pause();
+  }
+
+  function unpause() public onlyOwner {
+    _unpause();
   }
 }

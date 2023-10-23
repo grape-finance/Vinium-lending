@@ -40,9 +40,6 @@ task('full:initialize-incentive-controller', 'Deploy Incentive Controller')
         poolConfig as ICommonConfiguration;
 
       let oftTreasury = await getParamPerNetwork(OFTTreasury, network);
-      let lendingPool = await getParamPerNetwork(LendingPool, network);
-      let lendingPoolConfigurator = await getParamPerNetwork(LendingPoolConfigurator, network);
-
       let oftTokenAddress = await getParamPerNetwork(OFTTokenAddress, network);
       let multiFeeDistribution = await getParamPerNetwork(MultiFeeDistribution, network);
       let incentivesController = await getParamPerNetwork(IncentivesController, network);
@@ -54,10 +51,7 @@ task('full:initialize-incentive-controller', 'Deploy Incentive Controller')
       console.log('incentivesController :>> ', incentivesController);
       // await OFTTokenContract.setMinter(multiFeeDistribution!);
       await MultiFeeDistributionContract.setMinters([oftTreasury!, incentivesController!]);
-      await MultiFeeDistributionContract.setIncentivesController(incentivesController!);
-      await MultiFeeDistributionContract.setLendingPoolConfigurator(lendingPoolConfigurator!);
-
-      // const LendingPoolConfiguratorContract = await LendingPoolConfiguratorFactory.connect(lendingPoolConfigurator, await getFirstSigner());
+      // await MultiFeeDistributionContract.setIncentivesController(incentivesController!);
     } catch (err) {
       console.error(err);
       exit(1);
