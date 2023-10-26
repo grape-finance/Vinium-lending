@@ -316,6 +316,15 @@ export const deployMultiFeeDistribution = async (args: [tEthereumAddress, tEther
   return withSaveAndVerify(multiFeeDistribution, eContractid.MultiFeeDistribution, [], verify);
 };
 
+export const upgradeMultiFeeDistribution = async (args: [string], verify?: boolean) => {
+  const MultiFeeDistribution = await DRE.ethers.getContractFactory('MultiFeeDistribution');
+  const multiFeeDistribution = await DRE.upgrades.upgradeProxy(args[0], MultiFeeDistribution);
+  await multiFeeDistribution.deployed();
+
+  await insertContractAddressInDb(eContractid.MultiFeeDistribution, multiFeeDistribution.address);
+  return withSaveAndVerify(multiFeeDistribution, eContractid.MultiFeeDistribution, [], verify);
+};
+
 export const deployMiddleFeeDistribution = async (args: [tEthereumAddress, tEthereumAddress, tEthereumAddress], verify?: boolean) => {
   const MiddleFeeDistribution = await DRE.ethers.getContractFactory('MiddleFeeDistribution');
   const middleFeeDistribution = await DRE.upgrades.deployProxy(MiddleFeeDistribution, [args[0], args[1], args[2]]);

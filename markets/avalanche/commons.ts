@@ -247,6 +247,6 @@ export const CommonsConfig: ICommonConfiguration = {
   Leverager: {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '',
+    [eEthereumNetwork.goerli]: '0xaFEC67611d2EAD0d86BF343e7e0206e4Aad7F923',
   },
 };

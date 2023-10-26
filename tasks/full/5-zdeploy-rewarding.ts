@@ -18,6 +18,7 @@ import {
   deployEligibilityDataProvider,
   deployLendingPoolAddressesProvider,
   upgradeChefIncentivesController,
+  upgradeMultiFeeDistribution,
 } from '../../helpers/contracts-deployments';
 import { loadPoolConfig, ConfigNames, getTreasuryAddress } from '../../helpers/configuration';
 import { getFirstSigner, getWETHGateway } from '../../helpers/contracts-getters';
@@ -109,6 +110,8 @@ task('full:deploy-incentive-controller', 'Deploy Incentive Controller')
 
       // const ChefIncentivesController = ChefIncentivesControllerFactory.connect(incentivesController, await getFirstSigner());
       // await ChefIncentivesController.changeEmissionSchedule(startTimeOffset, rewardsPerSecond);
+
+      await upgradeMultiFeeDistribution([multiFeeDistribution!], verify);
     } catch (err) {
       console.error(err);
       exit(1);

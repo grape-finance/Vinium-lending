@@ -167,11 +167,12 @@ contract MultiFeeDistribution is IMultiFeeDistribution, Initializable, PausableU
     return (total, earningsData);
   }
 
-  function withdrawableBalance(address user) public view returns (uint256 amount, uint256 penaltyAmount, uint256 treausryAmount) {
+  function withdrawableBalance(
+    address user
+  ) public view returns (uint256 amount, uint256 penaltyAmount, uint256 treausryAmount, uint256 amountWithoutPenalty) {
     Balances storage bal = balances[user];
     uint256 earned = bal.earned;
     if (earned > 0) {
-      uint256 amountWithoutPenalty;
       uint256 length = userEarnings[user].length;
       for (uint256 i = 0; i < length; i++) {
         uint256 earnedAmount = userEarnings[user][i].amount;
@@ -273,7 +274,7 @@ contract MultiFeeDistribution is IMultiFeeDistribution, Initializable, PausableU
   function exitEarly(address onBehalfOf) external whenNotPaused {
     require(onBehalfOf == msg.sender || exitDelegatee[onBehalfOf] == msg.sender);
     _updateReward(onBehalfOf);
-    (uint256 amount, uint256 penaltyAmount, uint256 treasuryAmount) = withdrawableBalance(onBehalfOf);
+    (uint256 amount, uint256 penaltyAmount, uint256 treasuryAmount, ) = withdrawableBalance(onBehalfOf);
     delete userEarnings[onBehalfOf];
     Balances storage bal = balances[onBehalfOf];
     bal.earned = 0;

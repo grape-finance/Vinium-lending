@@ -28,24 +28,25 @@ task('full:deploy-leverager', 'Initialize lending pool configuration.')
         leverager = Leverager.address;
       }
 
-      console.log('leverager :>> ', leverager);
+      // console.log('leverager :>> ', leverager);
 
-      const ERC20Addr = '0x5810ecE5108924a8d793Dce0620fbF60C596aF77';
-      const ERC20Contract = await MintableDelegationERC20Factory.connect(ERC20Addr, await getFirstSigner());
-      await ERC20Contract.approve(leverager, ethers.constants.MaxInt256);
+      const ERC20Addr = '0x0B3924aBe2A9856e9b685c7788d15fFD465C3Dd4';
+      // const ERC20Contract = await MintableDelegationERC20Factory.connect(ERC20Addr, await getFirstSigner());
+      // await ERC20Contract.approve(leverager, ethers.constants.MaxInt256);
 
-      console.log('approved');
+      // console.log('approved');
 
       const leveragerContract = await LeveragerFactory.connect(leverager, await getFirstSigner());
 
       const debtToken = await leveragerContract.getVDebtToken(ERC20Addr);
+      console.log('debtToken :>> ', debtToken);
       const debtTokenContract = await VariableVdTokenFactory.connect(debtToken, await getFirstSigner());
 
-      let tx = await debtTokenContract.approveDelegation(leveragerContract.address, ethers.constants.MaxInt256);
-      await tx.wait();
+      // let tx = await debtTokenContract.approveDelegation(leveragerContract.address, ethers.constants.MaxInt256);
+      // await tx.wait();
       console.log('approveDelegate');
 
-      tx = await leveragerContract.loop(ERC20Addr, ethers.utils.parseEther('1'), 2, 5000, 2);
+      let tx = await leveragerContract.loop(ERC20Addr, ethers.utils.parseUnits('100', 6), 2, 5000, 2);
       await tx.wait();
       console.log('loop');
     } catch (err) {

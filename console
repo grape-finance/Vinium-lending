@@ -38,7 +38,7 @@ yarn hardhat --network goerli full:multicall --verify
 // ViniumProtocolDataProvider 0xa8e02BEc402AA21eA9c1B3704aE05f8203dee789
 
 // WETHGateway 0xe2ebf2D930D0Bf680A7167bAaF623e9B312E6a06
- 
+
 // DefaultReserveInterestRateStrategy 0x16d40C5783acbA44931d188401c92472BFe88287
 // 0x27810894A3Fa1F9a4165afBDB2a4203e94Bb1F98
 
@@ -53,6 +53,6 @@ yarn hardhat --network goerli full:multicall --verify
 // Vinium-ETH LP 0xa8e21cbe7c32cb2131a1a25c56042e2dd4f1b1ce
 // MultiFeeDistribution 0x2134E090f1172383eEcCd77B2d63f32e689b9a82
 // ChefIncentiveController 0x283eB941249d80ABCFdB3e244BFAabd4c8C893fa
-// Leverager 0x16Ec37e2618535C0888084285104a08cd6C494Ba
+// Leverager 0xaFEC67611d2EAD0d86BF343e7e0206e4Aad7F923
 
 // Old Incentive Controller 0xDf405Ef49410a6c4D2bc95D48f78416a1582E256
