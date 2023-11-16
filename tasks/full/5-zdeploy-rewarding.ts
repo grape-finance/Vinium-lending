@@ -66,14 +66,14 @@ task('full:deploy-incentive-controller', 'Deploy Incentive Controller')
       // let chainlinkAggregator = await getParamPerNetwork(ChainlinkAggregator, network);
 
       let oftTokenAddress = await getParamPerNetwork(OFTTokenAddress, network);
-      if (!notFalsyOrZeroAddress(oftTokenAddress)) {
-        const OFTTokenAddress = await deployOFTToken(
-          ['ViniumOFT', 'ViniumOFT', oftEndpoint!, oftTreasury!, oftTreasury!, ethers.utils.parseEther('100000').toString()],
-          verify
-        );
-        oftTokenAddress = OFTTokenAddress.address;
-      }
-      console.log('oftTokenAddress :>> ', oftTokenAddress);
+      // if (!notFalsyOrZeroAddress(oftTokenAddress)) {
+      //   const OFTTokenAddress = await deployOFTToken(
+      //     ['ViniumOFT', 'ViniumOFT', oftEndpoint!, oftTreasury!, oftTreasury!, ethers.utils.parseEther('100000').toString()],
+      //     verify
+      //   );
+      //   oftTokenAddress = OFTTokenAddress.address;
+      // }
+      // console.log('oftTokenAddress :>> ', oftTokenAddress);
 
       const ViniumETHLP = '0xa8e21cbe7c32cb2131a1a25c56042e2dd4f1b1ce';
 

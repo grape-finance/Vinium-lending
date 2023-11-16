@@ -3,6 +3,13 @@ yarn hardhat --network goerli full:deploy-lending-pool --pool Commons --verify
 yarn hardhat --network goerli full:deploy-oracles --pool Commons --verify
 yarn hardhat --network goerli full:data-provider --verify
 yarn hardhat --network goerli full-deploy-weth-gateway --pool Commons --verify
+
+yarn hardhat --network goerli full:deploy-oft --pool Commons --targetnetwork fuji --verify
+yarn hardhat --network fuji full:deploy-oft --pool Commons --targetnetwork goerli --verify
+
+// yarn hardhat --network goerli full:deploy-oft-send --pool Commons --targetnetwork fuji --verify
+// yarn hardhat --network fuji full:deploy-oft-send --pool Commons --targetnetwork goerli --verify
+
 yarn hardhat --network goerli full:deploy-incentive-controller --pool Commons --verify
 yarn hardhat --network goerli full:initialize-incentive-controller --pool Commons --verify
 yarn hardhat --network goerli full:initialize-lending-pool --pool Commons --verify
@@ -49,7 +56,9 @@ yarn hardhat --network goerli full:multicall --verify
 // UiIncentiveDataProviderV2 0xC20bda162d06431ab8891C9810a37F5585EA5147
 // Multicall 0xf7Bb9EFeABd7129fE9E77D234DFB33Aa12b2f851
 
-// ViniumOFT 0x2f058f16223d0c74a1A2e6a9a47ba9c78f8776b8
+// ViniumOFT 0x2f058f16223d0c74a1A2e6a9a47ba9c78f8776b8 // goerli
+// ViniumOFT 0xE988564a40AFF91123B54fEb7554aEA7e37eD7E5 // fuji
+
 // Vinium-ETH LP 0xa8e21cbe7c32cb2131a1a25c56042e2dd4f1b1ce
 // MultiFeeDistribution 0x2134E090f1172383eEcCd77B2d63f32e689b9a82
 // ChefIncentiveController 0x283eB941249d80ABCFdB3e244BFAabd4c8C893fa

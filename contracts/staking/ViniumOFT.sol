@@ -61,16 +61,14 @@ contract ViniumOFT is OFTV2, Pausable {
     }
   }
 
-  function setMinter(address _multiFeeDistribution) external returns (bool) {
+  function setMinter(address _multiFeeDistribution) external onlyOwner {
     require(_multiFeeDistribution != address(0));
     multiFeeDistribution = _multiFeeDistribution;
-    return true;
   }
 
-  function mint(address _to, uint256 _value) external returns (bool) {
+  function mint(address _to, uint256 _value) external {
     require(msg.sender == multiFeeDistribution, 'VniumOFT: Only MultiFee contract can mint'); // minter must be multifee contract
     _mint(_to, _value);
-    return true;
   }
 
   function burn(uint256 _amount) public {

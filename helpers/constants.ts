@@ -14,8 +14,7 @@ export const WAD_RAY_RATIO = Math.pow(10, 9).toString();
 export const oneEther = new BigNumber(Math.pow(10, 18));
 export const oneUsd = new BigNumber(Math.pow(10, 8));
 export const oneRay = new BigNumber(Math.pow(10, 27));
-export const MAX_UINT_AMOUNT =
-  '115792089237316195423570985008687907853269984665640564039457584007913129639935';
+export const MAX_UINT_AMOUNT = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
 export const ONE_YEAR = '31536000';
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 export const ONE_ADDRESS = '0x0000000000000000000000000000000000000001';
@@ -103,4 +102,24 @@ export const chainlinkEthUsdAggregatorProxy = {
   arbitrum: '0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612',
   rinkeby: '0x8A753747A1Fa494EC906cE90E9f37563A8AF630e',
   goerli: '0x1d35C7e9AEA65e8C3bC1B31CcAdeEB598Fdd685b',
+};
+
+export const OFTChains = {
+  ethereum: 101,
+  bsc: 102,
+  avalanche: 106,
+  polygon: 109,
+  arbitrum: 110,
+  optimism: 111,
+  fantom: 112,
+
+  goerli: 10121,
+  'bsc-testnet': 10102,
+  fuji: 10106,
+  mumbai: 10109,
+  'arbitrum-goerli': 10143,
+  'optimism-goerli': 10132,
+  'fantom-testnet': 10112,
+  'meter-testnet': 10156,
+  'zksync-testnet': 10165,
 };

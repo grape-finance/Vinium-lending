@@ -152,7 +152,8 @@ const buidlerConfig: HardhatUserConfig = {
     target: 'ethers-v5',
   },
   etherscan: {
-    apiKey: ETHERSCAN_KEY,
+    // apiKey: ETHERSCAN_KEY,
+    apiKey: 'WN8CWW97AHIYUBC665Y4HZ4E5V4GUJZR2Y',    
   },
   mocha: {
     timeout: 0,

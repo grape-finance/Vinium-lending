@@ -7,7 +7,7 @@ import {
   MOCK_CHAINLINK_AGGREGATORS_PRICES,
   oneUsd,
 } from '../../helpers/constants';
-import { ICommonConfiguration, eAvalancheNetwork, eBaseNetwork, eEthereumNetwork } from '../../helpers/types';
+import { ICommonConfiguration, eAvalancheNetwork, eBaseNetwork, eEthereumNetwork, ePolygonNetwork } from '../../helpers/types';
 import {
   strategySAVAX,
   strategyUSDC,
@@ -216,21 +216,24 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.goerli]: '', // MultiFee Distribution Address
   },
   OFTEndpoint: {
-    [eAvalancheNetwork.avalanche]: '',
-    [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '0xbfD2135BFfbb0B5378b56643c2Df8a87552Bfa23',
+    [eEthereumNetwork.main]: '0x66A71Dcef29A0fFBDBE3c6a460a3B5BC225Cd675',
+    [ePolygonNetwork.matic]: '0x3c2269811836af69497E5F486A85D7316753cf62',
+    [eAvalancheNetwork.avalanche]: '0x3c2269811836af69497E5F486A85D7316753cf62',
     [eBaseNetwork.base]: '0xb6319cC6c8c27A8F5dAF0dD3DF91EA35C4720dd7',
+    [eEthereumNetwork.goerli]: '0xbfD2135BFfbb0B5378b56643c2Df8a87552Bfa23',
+    [ePolygonNetwork.mumbai]: '0xf69186dfBa60DdB133E91E9A4B5673624293d8F8',
+    [eAvalancheNetwork.fuji]: '0x93f54D755A063cE7bB9e6Ac47Eccc8e33411d706',
   },
   OFTTreasury: {
     [eAvalancheNetwork.avalanche]: '',
-    [eAvalancheNetwork.fuji]: '',
+    [eAvalancheNetwork.fuji]: '0x4Aa6Da4ca5d76e8d5e3ACD11B92Ab22D564F1fcb',
     [eEthereumNetwork.goerli]: '0x4Aa6Da4ca5d76e8d5e3ACD11B92Ab22D564F1fcb',
     [eBaseNetwork.base]: '',
   },
   OFTTokenAddress: {
     [eAvalancheNetwork.avalanche]: '',
-    [eAvalancheNetwork.fuji]: '',
     [eEthereumNetwork.goerli]: '0x2f058f16223d0c74a1A2e6a9a47ba9c78f8776b8',
+    [eAvalancheNetwork.fuji]: '0xE988564a40AFF91123B54fEb7554aEA7e37eD7E5',
     [eBaseNetwork.base]: '',
   },
   MultiFeeDistribution: {
