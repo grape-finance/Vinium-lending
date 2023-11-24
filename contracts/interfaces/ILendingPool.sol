@@ -14,13 +14,7 @@ interface ILendingPool {
    * @param amount The amount deposited
    * @param referral The referral code used
    **/
-  event Deposit(
-    address indexed reserve,
-    address user,
-    address indexed onBehalfOf,
-    uint256 amount,
-    uint16 indexed referral
-  );
+  event Deposit(address indexed reserve, address user, address indexed onBehalfOf, uint256 amount, uint16 indexed referral);
 
   /**
    * @dev Emitted on withdraw()
@@ -59,12 +53,7 @@ interface ILendingPool {
    * @param repayer The address of the user initiating the repay(), providing the funds
    * @param amount The amount repaid
    **/
-  event Repay(
-    address indexed reserve,
-    address indexed user,
-    address indexed repayer,
-    uint256 amount
-  );
+  event Repay(address indexed reserve, address indexed user, address indexed repayer, uint256 amount);
 
   /**
    * @dev Emitted on swapBorrowRateMode()
@@ -104,14 +93,7 @@ interface ILendingPool {
    * @param premium The fee flash borrowed
    * @param referralCode The referral code used
    **/
-  event FlashLoan(
-    address indexed target,
-    address indexed initiator,
-    address indexed asset,
-    uint256 amount,
-    uint256 premium,
-    uint16 referralCode
-  );
+  event FlashLoan(address indexed target, address indexed initiator, address indexed asset, uint256 amount, uint256 premium, uint16 referralCode);
 
   /**
    * @dev Emitted when the pause is triggered.
@@ -208,13 +190,7 @@ interface ILendingPool {
    * calling the function if he wants to borrow against his own collateral, or the address of the credit delegator
    * if he has been given credit delegation allowance
    **/
-  function borrow(
-    address asset,
-    uint256 amount,
-    uint256 interestRateMode,
-    uint16 referralCode,
-    address onBehalfOf
-  ) external;
+  function borrow(address asset, uint256 amount, uint256 interestRateMode, uint16 referralCode, address onBehalfOf) external;
 
   /**
    * @notice Repays a borrowed `amount` on a specific reserve, burning the equivalent debt tokens owned
@@ -228,12 +204,7 @@ interface ILendingPool {
    * other borrower whose debt should be removed
    * @return The final amount repaid
    **/
-  function repay(
-    address asset,
-    uint256 amount,
-    uint256 rateMode,
-    address onBehalfOf
-  ) external returns (uint256);
+  function repay(address asset, uint256 amount, uint256 rateMode, address onBehalfOf) external returns (uint256);
 
   /**
    * @dev Allows a borrower to swap his debt between stable and variable mode, or viceversa
@@ -271,13 +242,7 @@ interface ILendingPool {
    * @param receiveViToken `true` if the liquidators wants to receive the collateral viTokens, `false` if he wants
    * to receive the underlying collateral asset directly
    **/
-  function liquidationCall(
-    address collateralAsset,
-    address debtAsset,
-    address user,
-    uint256 debtToCover,
-    bool receiveViToken
-  ) external;
+  function liquidationCall(address collateralAsset, address debtAsset, address user, uint256 debtToCover, bool receiveViToken) external;
 
   /**
    * @dev Allows smartcontracts to access the liquidity of the pool within one transaction,
@@ -338,10 +303,7 @@ interface ILendingPool {
     address interestRateStrategyAddress
   ) external;
 
-  function setReserveInterestRateStrategyAddress(
-    address reserve,
-    address rateStrategyAddress
-  ) external;
+  function setReserveInterestRateStrategyAddress(address reserve, address rateStrategyAddress) external;
 
   function setConfiguration(address reserve, uint256 configuration) external;
 
@@ -350,18 +312,14 @@ interface ILendingPool {
    * @param asset The address of the underlying asset of the reserve
    * @return The configuration of the reserve
    **/
-  function getConfiguration(
-    address asset
-  ) external view returns (DataTypes.ReserveConfigurationMap memory);
+  function getConfiguration(address asset) external view returns (DataTypes.ReserveConfigurationMap memory);
 
   /**
    * @dev Returns the configuration of the user across all the reserves
    * @param user The user address
    * @return The configuration of the user
    **/
-  function getUserConfiguration(
-    address user
-  ) external view returns (DataTypes.UserConfigurationMap memory);
+  function getUserConfiguration(address user) external view returns (DataTypes.UserConfigurationMap memory);
 
   /**
    * @dev Returns the normalized income normalized income of the reserve
@@ -384,14 +342,7 @@ interface ILendingPool {
    **/
   function getReserveData(address asset) external view returns (DataTypes.ReserveData memory);
 
-  function finalizeTransfer(
-    address asset,
-    address from,
-    address to,
-    uint256 amount,
-    uint256 balanceFromAfter,
-    uint256 balanceToBefore
-  ) external;
+  function finalizeTransfer(address asset, address from, address to, uint256 amount, uint256 balanceFromAfter, uint256 balanceToBefore) external;
 
   function getReservesList() external view returns (address[] memory);
 

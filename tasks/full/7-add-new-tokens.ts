@@ -31,6 +31,7 @@ task('full:add-new-tokens', 'Initialize lending pool configuration.')
         ReserveAssets,
         ReservesConfig,
         LendingPoolCollateralManager,
+        MultiFeeDistribution,
         WethGateway,
         IncentivesController,
       } = poolConfig as ICommonConfiguration;
@@ -48,6 +49,7 @@ task('full:add-new-tokens', 'Initialize lending pool configuration.')
         throw 'Reserve assets is undefined. Check ReserveAssets configuration at config directory';
       }
 
+      const multiFeeDistribution = await getParamPerNetwork(MultiFeeDistribution, network);
       const treasuryAddress = await getTreasuryAddress(poolConfig);
 
       console.log('treasuryAddress: ', treasuryAddress);
@@ -60,48 +62,34 @@ task('full:add-new-tokens', 'Initialize lending pool configuration.')
         VariableVdTokenNamePrefix,
         SymbolPrefix,
         admin,
-        treasuryAddress,
+        multiFeeDistribution!, // treasury address
         incentivesController,
+        '1000',
         pool,
         verify
       );
-      await configureReservesByHelper(ReservesConfig, reserveAssets, testHelpers, admin);
+      // await configureReservesByHelper(ReservesConfig, reserveAssets, testHelpers, admin);
 
-      //
-      // let collateralManagerAddress = await getParamPerNetwork(
-      //   LendingPoolCollateralManager,
-      //   network
-      // );
+      // let collateralManagerAddress = await getParamPerNetwork(LendingPoolCollateralManager, network);
       // if (!notFalsyOrZeroAddress(collateralManagerAddress)) {
       //   const collateralManager = await deployLendingPoolCollateralManager(verify);
       //   collateralManagerAddress = collateralManager.address;
       // }
       // // Seems unnecessary to register the collateral manager in the JSON db
-      //
-      // console.log(
-      //   '\tSetting lending pool collateral manager implementation with address',
-      //   collateralManagerAddress
-      // );
-      // await waitForTx(
-      //   await addressesProvider.setLendingPoolCollateralManager(collateralManagerAddress)
-      // );
-      //
-      // console.log(
-      //   '\tSetting ViniumProtocolDataProvider at AddressesProvider at id: 0x01',
-      //   collateralManagerAddress
-      // );
+
+      // console.log('\tSetting lending pool collateral manager implementation with address', collateralManagerAddress);
+      // await waitForTx(await addressesProvider.setLendingPoolCollateralManager(collateralManagerAddress));
+
+      // console.log('\tSetting ViniumProtocolDataProvider at AddressesProvider at id: 0x01', collateralManagerAddress);
       // const viniumProtocolDataProvider = await getViniumProtocolDataProvider();
       // await waitForTx(
-      //   await addressesProvider.setAddress(
-      //     '0x0100000000000000000000000000000000000000000000000000000000000000',
-      //     viniumProtocolDataProvider.address
-      //   )
+      //   await addressesProvider.setAddress('0x0100000000000000000000000000000000000000000000000000000000000000', viniumProtocolDataProvider.address)
       // );
-      //
+
       // await deployWalletBalancerProvider(verify);
-      //
+
       // const lendingPoolAddress = await addressesProvider.getLendingPool();
-      //
+
       // let gateWay = getParamPerNetwork(WethGateway, network);
       // if (!notFalsyOrZeroAddress(gateWay)) {
       //   gateWay = (await getWETHGateway()).address;

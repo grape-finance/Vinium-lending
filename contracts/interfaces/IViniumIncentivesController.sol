@@ -7,12 +7,7 @@ interface IViniumIncentivesController {
 
   event RewardsClaimed(address indexed user, address indexed to, uint256 amount);
 
-  event RewardsClaimed(
-    address indexed user,
-    address indexed to,
-    address indexed claimer,
-    uint256 amount
-  );
+  event RewardsClaimed(address indexed user, address indexed to, address indexed claimer, uint256 amount);
 
   event ClaimerSet(address indexed user, address indexed claimer);
 
@@ -50,10 +45,7 @@ interface IViniumIncentivesController {
    * @param assets The assets to incentivize
    * @param emissionsPerSecond The emission for each asset
    */
-  function configureAssets(
-    address[] calldata assets,
-    uint256[] calldata emissionsPerSecond
-  ) external;
+  function configureAssets(address[] calldata assets, uint256[] calldata emissionsPerSecond) external;
 
   /**
    * @dev Called by the corresponding asset on any update that affects the rewards distribution
@@ -68,10 +60,7 @@ interface IViniumIncentivesController {
    * @param user The address of the user
    * @return The rewards
    **/
-  function getRewardsBalance(
-    address[] calldata assets,
-    address user
-  ) external view returns (uint256);
+  function getRewardsBalance(address[] calldata assets, address user) external view returns (uint256);
 
   /**
    * @dev Claims reward for an user, on all the assets of the lending pool, accumulating the pending rewards
@@ -79,11 +68,7 @@ interface IViniumIncentivesController {
    * @param to Address that will be receiving the rewards
    * @return Rewards claimed
    **/
-  function claimRewards(
-    address[] calldata assets,
-    uint256 amount,
-    address to
-  ) external returns (uint256);
+  function claimRewards(address[] calldata assets, uint256 amount, address to) external returns (uint256);
 
   /**
    * @dev Claims reward for an user on behalf, on all the assets of the lending pool, accumulating the pending rewards. The caller must
@@ -93,12 +78,7 @@ interface IViniumIncentivesController {
    * @param to Address that will be receiving the rewards
    * @return Rewards claimed
    **/
-  function claimRewardsOnBehalf(
-    address[] calldata assets,
-    uint256 amount,
-    address user,
-    address to
-  ) external returns (uint256);
+  function claimRewardsOnBehalf(address[] calldata assets, uint256 amount, address user, address to) external returns (uint256);
 
   /**
    * @dev returns the unclaimed rewards of the user

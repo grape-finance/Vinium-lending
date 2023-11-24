@@ -26,11 +26,7 @@ contract StableAndVariableTokensHelper is Ownable {
     }
   }
 
-  function setOracleBorrowRates(
-    address[] calldata assets,
-    uint256[] calldata rates,
-    address oracle
-  ) external onlyOwner {
+  function setOracleBorrowRates(address[] calldata assets, uint256[] calldata rates, address oracle) external onlyOwner {
     require(assets.length == rates.length, 'Arrays not same length');
 
     for (uint256 i = 0; i < assets.length; i++) {

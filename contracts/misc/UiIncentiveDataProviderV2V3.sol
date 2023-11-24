@@ -24,12 +24,7 @@ contract UiIncentiveDataProviderV2V3 is IUiIncentiveDataProviderV3 {
   function getFullReservesIncentiveData(
     ILendingPoolAddressesProvider provider,
     address user
-  )
-    external
-    view
-    override
-    returns (AggregatedReserveIncentiveData[] memory, UserReserveIncentiveData[] memory)
-  {
+  ) external view override returns (AggregatedReserveIncentiveData[] memory, UserReserveIncentiveData[] memory) {
     return (_getReservesIncentivesData(provider), _getUserReservesIncentivesData(provider, user));
   }
 
@@ -39,13 +34,10 @@ contract UiIncentiveDataProviderV2V3 is IUiIncentiveDataProviderV3 {
     return _getReservesIncentivesData(provider);
   }
 
-  function _getReservesIncentivesData(
-    ILendingPoolAddressesProvider provider
-  ) private view returns (AggregatedReserveIncentiveData[] memory) {
+  function _getReservesIncentivesData(ILendingPoolAddressesProvider provider) private view returns (AggregatedReserveIncentiveData[] memory) {
     ILendingPool lendingPool = ILendingPool(provider.getLendingPool());
     address[] memory reserves = lendingPool.getReservesList();
-    AggregatedReserveIncentiveData[]
-      memory reservesIncentiveData = new AggregatedReserveIncentiveData[](reserves.length);
+    AggregatedReserveIncentiveData[] memory reservesIncentiveData = new AggregatedReserveIncentiveData[](reserves.length);
 
     for (uint256 i = 0; i < reserves.length; i++) {
       AggregatedReserveIncentiveData memory reserveIncentiveData = reservesIncentiveData[i];
@@ -53,9 +45,7 @@ contract UiIncentiveDataProviderV2V3 is IUiIncentiveDataProviderV3 {
 
       DataTypes.ReserveData memory baseData = lendingPool.getReserveData(reserves[i]);
 
-      try IViToken(baseData.viTokenAddress).getIncentivesController() returns (
-        IViniumIncentivesController viTokenIncentiveController
-      ) {
+      try IViToken(baseData.viTokenAddress).getIncentivesController() returns (IViniumIncentivesController viTokenIncentiveController) {
         RewardInfo[] memory aRewardsInformation = new RewardInfo[](1);
         if (address(viTokenIncentiveController) != address(0)) {
           address aRewardToken = viTokenIncentiveController.REWARD_TOKEN();
@@ -78,17 +68,11 @@ contract UiIncentiveDataProviderV2V3 is IUiIncentiveDataProviderV3 {
               viTokenIncentiveController.PRECISION(),
               0
             );
-            reserveIncentiveData.aIncentiveData = IncentiveData(
-              baseData.viTokenAddress,
-              address(viTokenIncentiveController),
-              aRewardsInformation
-            );
+            reserveIncentiveData.aIncentiveData = IncentiveData(baseData.viTokenAddress, address(viTokenIncentiveController), aRewardsInformation);
           } catch (bytes memory /*lowLevelData*/) {
-            (
-              uint256 aEmissionPerSecond,
-              uint256 aIncentivesLastUpdateTimestamp,
-              uint256 viTokenIncentivesIndex
-            ) = viTokenIncentiveController.assets(baseData.viTokenAddress);
+            (uint256 aEmissionPerSecond, uint256 aIncentivesLastUpdateTimestamp, uint256 viTokenIncentivesIndex) = viTokenIncentiveController.assets(
+              baseData.viTokenAddress
+            );
             aRewardsInformation[0] = RewardInfo(
               getSymbol(aRewardToken),
               aRewardToken,
@@ -103,20 +87,14 @@ contract UiIncentiveDataProviderV2V3 is IUiIncentiveDataProviderV3 {
               0
             );
 
-            reserveIncentiveData.aIncentiveData = IncentiveData(
-              baseData.viTokenAddress,
-              address(viTokenIncentiveController),
-              aRewardsInformation
-            );
+            reserveIncentiveData.aIncentiveData = IncentiveData(baseData.viTokenAddress, address(viTokenIncentiveController), aRewardsInformation);
           }
         }
       } catch (bytes memory /*lowLevelData*/) {
         // Will not get here
       }
 
-      try IStableVdToken(baseData.stableVdTokenAddress).getIncentivesController() returns (
-        IViniumIncentivesController sTokenIncentiveController
-      ) {
+      try IStableVdToken(baseData.stableVdTokenAddress).getIncentivesController() returns (IViniumIncentivesController sTokenIncentiveController) {
         RewardInfo[] memory sRewardsInformation = new RewardInfo[](1);
         if (address(sTokenIncentiveController) != address(0)) {
           address sRewardToken = sTokenIncentiveController.REWARD_TOKEN();
@@ -145,11 +123,9 @@ contract UiIncentiveDataProviderV2V3 is IUiIncentiveDataProviderV3 {
               sRewardsInformation
             );
           } catch (bytes memory /*lowLevelData*/) {
-            (
-              uint256 sEmissionPerSecond,
-              uint256 sIncentivesLastUpdateTimestamp,
-              uint256 sTokenIncentivesIndex
-            ) = sTokenIncentiveController.assets(baseData.stableVdTokenAddress);
+            (uint256 sEmissionPerSecond, uint256 sIncentivesLastUpdateTimestamp, uint256 sTokenIncentivesIndex) = sTokenIncentiveController.assets(
+              baseData.stableVdTokenAddress
+            );
 
             sRewardsInformation[0] = RewardInfo(
               getSymbol(sRewardToken),
@@ -208,11 +184,9 @@ contract UiIncentiveDataProviderV2V3 is IUiIncentiveDataProviderV3 {
               vRewardsInformation
             );
           } catch (bytes memory /*lowLevelData*/) {
-            (
-              uint256 vEmissionPerSecond,
-              uint256 vIncentivesLastUpdateTimestamp,
-              uint256 vTokenIncentivesIndex
-            ) = vTokenIncentiveController.assets(baseData.variableVdTokenAddress);
+            (uint256 vEmissionPerSecond, uint256 vIncentivesLastUpdateTimestamp, uint256 vTokenIncentivesIndex) = vTokenIncentiveController.assets(
+              baseData.variableVdTokenAddress
+            );
 
             vRewardsInformation[0] = RewardInfo(
               getSymbol(vRewardToken),
@@ -256,9 +230,7 @@ contract UiIncentiveDataProviderV2V3 is IUiIncentiveDataProviderV3 {
     ILendingPool lendingPool = ILendingPool(provider.getLendingPool());
     address[] memory reserves = lendingPool.getReservesList();
 
-    UserReserveIncentiveData[] memory userReservesIncentivesData = new UserReserveIncentiveData[](
-      user != address(0) ? reserves.length : 0
-    );
+    UserReserveIncentiveData[] memory userReservesIncentivesData = new UserReserveIncentiveData[](user != address(0) ? reserves.length : 0);
 
     for (uint256 i = 0; i < reserves.length; i++) {
       DataTypes.ReserveData memory baseData = lendingPool.getReserveData(reserves[i]);
@@ -266,9 +238,7 @@ contract UiIncentiveDataProviderV2V3 is IUiIncentiveDataProviderV3 {
       // user reserve data
       userReservesIncentivesData[i].underlyingAsset = reserves[i];
 
-      try IViToken(baseData.viTokenAddress).getIncentivesController() returns (
-        IViniumIncentivesController viTokenIncentiveController
-      ) {
+      try IViToken(baseData.viTokenAddress).getIncentivesController() returns (IViniumIncentivesController viTokenIncentiveController) {
         if (address(viTokenIncentiveController) != address(0)) {
           UserRewardInfo[] memory aUserRewardsInformation = new UserRewardInfo[](1);
 
@@ -320,9 +290,7 @@ contract UiIncentiveDataProviderV2V3 is IUiIncentiveDataProviderV3 {
         }
       } catch (bytes memory /*lowLevelData*/) {}
 
-      try IStableVdToken(baseData.stableVdTokenAddress).getIncentivesController() returns (
-        IViniumIncentivesController sTokenIncentiveController
-      ) {
+      try IStableVdToken(baseData.stableVdTokenAddress).getIncentivesController() returns (IViniumIncentivesController sTokenIncentiveController) {
         if (address(sTokenIncentiveController) != address(0)) {
           UserRewardInfo[] memory sUserRewardsInformation = new UserRewardInfo[](1);
 

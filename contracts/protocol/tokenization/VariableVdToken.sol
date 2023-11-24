@@ -23,9 +23,7 @@ contract VariableVdToken is VdTokenBase, IVariableVdToken {
   // address internal _underlyingAsset;
   IViniumIncentivesController internal _incentivesController;
 
-  function setIncentivesController(
-    IViniumIncentivesController incentivesController
-  ) external override onlyLendingPool {
+  function setIncentivesController(IViniumIncentivesController incentivesController) external override onlyLendingPool {
     _incentivesController = incentivesController;
   }
 
@@ -55,15 +53,7 @@ contract VariableVdToken is VdTokenBase, IVariableVdToken {
     _underlyingAsset = underlyingAsset;
     _incentivesController = incentivesController;
 
-    emit Initialized(
-      underlyingAsset,
-      address(pool),
-      address(incentivesController),
-      vdTokenDecimals,
-      vdTokenName,
-      vdTokenSymbol,
-      params
-    );
+    emit Initialized(underlyingAsset, address(pool), address(incentivesController), vdTokenDecimals, vdTokenName, vdTokenSymbol, params);
   }
 
   /**
@@ -98,12 +88,7 @@ contract VariableVdToken is VdTokenBase, IVariableVdToken {
    * @param index The variable debt index of the reserve
    * @return `true` if the the previous balance of the user is 0
    **/
-  function mint(
-    address user,
-    address onBehalfOf,
-    uint256 amount,
-    uint256 index
-  ) external override onlyLendingPool returns (bool) {
+  function mint(address user, address onBehalfOf, uint256 amount, uint256 index) external override onlyLendingPool returns (bool) {
     if (user != onBehalfOf) {
       _decreaseBorrowAllowance(onBehalfOf, user, amount);
     }
@@ -167,9 +152,7 @@ contract VariableVdToken is VdTokenBase, IVariableVdToken {
    * @return The principal balance of the user
    * @return The principal total supply
    **/
-  function getScaledUserBalanceAndSupply(
-    address user
-  ) external view override returns (uint256, uint256) {
+  function getScaledUserBalanceAndSupply(address user) external view override returns (uint256, uint256) {
     return (super.balanceOf(user), super.totalSupply());
   }
 

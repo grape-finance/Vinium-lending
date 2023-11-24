@@ -31,9 +31,7 @@ contract StableVdToken is IStableVdToken, VdTokenBase {
   // address internal _underlyingAsset;
   IViniumIncentivesController internal _incentivesController;
 
-  function setIncentivesController(
-    IViniumIncentivesController incentivesController
-  ) external override onlyLendingPool {
+  function setIncentivesController(IViniumIncentivesController incentivesController) external override onlyLendingPool {
     _incentivesController = incentivesController;
   }
 
@@ -63,15 +61,7 @@ contract StableVdToken is IStableVdToken, VdTokenBase {
     _underlyingAsset = underlyingAsset;
     _incentivesController = incentivesController;
 
-    emit Initialized(
-      underlyingAsset,
-      address(pool),
-      address(incentivesController),
-      vdTokenDecimals,
-      vdTokenName,
-      vdTokenSymbol,
-      params
-    );
+    emit Initialized(underlyingAsset, address(pool), address(incentivesController), vdTokenDecimals, vdTokenName, vdTokenSymbol, params);
   }
 
   /**
@@ -117,10 +107,7 @@ contract StableVdToken is IStableVdToken, VdTokenBase {
     if (accountBalance == 0) {
       return 0;
     }
-    uint256 cumulatedInterest = MathUtils.calculateCompoundedInterest(
-      stableRate,
-      _timestamps[account]
-    );
+    uint256 cumulatedInterest = MathUtils.calculateCompoundedInterest(stableRate, _timestamps[account]);
     return accountBalance.rayMul(cumulatedInterest);
   }
 
@@ -143,12 +130,7 @@ contract StableVdToken is IStableVdToken, VdTokenBase {
    * @param amount The amount of debt tokens to mint
    * @param rate The rate of the debt being minted
    **/
-  function mint(
-    address user,
-    address onBehalfOf,
-    uint256 amount,
-    uint256 rate
-  ) external override onlyLendingPool returns (bool) {
+  function mint(address user, address onBehalfOf, uint256 amount, uint256 rate) external override onlyLendingPool returns (bool) {
     MintLocalVars memory vars;
 
     if (user != onBehalfOf) {
@@ -163,10 +145,9 @@ contract StableVdToken is IStableVdToken, VdTokenBase {
 
     vars.amountInRay = amount.wadToRay();
 
-    vars.newStableRate = _usersStableRate[onBehalfOf]
-      .rayMul(currentBalance.wadToRay())
-      .add(vars.amountInRay.rayMul(rate))
-      .rayDiv(currentBalance.add(amount).wadToRay());
+    vars.newStableRate = _usersStableRate[onBehalfOf].rayMul(currentBalance.wadToRay()).add(vars.amountInRay.rayMul(rate)).rayDiv(
+      currentBalance.add(amount).wadToRay()
+    );
 
     require(vars.newStableRate <= type(uint128).max, Errors.SDT_STABLE_DEBT_OVERFLOW);
     _usersStableRate[onBehalfOf] = vars.newStableRate;
@@ -185,16 +166,7 @@ contract StableVdToken is IStableVdToken, VdTokenBase {
 
     emit Transfer(address(0), onBehalfOf, amount);
 
-    emit Mint(
-      user,
-      onBehalfOf,
-      amount,
-      currentBalance,
-      balanceIncrease,
-      vars.newStableRate,
-      vars.currentAvgStableRate,
-      vars.nextSupply
-    );
+    emit Mint(user, onBehalfOf, amount, currentBalance, balanceIncrease, vars.newStableRate, vars.currentAvgStableRate, vars.nextSupply);
 
     return currentBalance == 0;
   }
@@ -247,16 +219,7 @@ contract StableVdToken is IStableVdToken, VdTokenBase {
     if (balanceIncrease > amount) {
       uint256 amountToMint = balanceIncrease.sub(amount);
       _mint(user, amountToMint, previousSupply);
-      emit Mint(
-        user,
-        user,
-        amountToMint,
-        currentBalance,
-        balanceIncrease,
-        userStableRate,
-        newAvgStableRate,
-        nextSupply
-      );
+      emit Mint(user, user, amountToMint, currentBalance, balanceIncrease, userStableRate, newAvgStableRate, nextSupply);
     } else {
       uint256 amountToBurn = amount.sub(balanceIncrease);
       _burn(user, amountToBurn, previousSupply);
@@ -271,9 +234,7 @@ contract StableVdToken is IStableVdToken, VdTokenBase {
    * @param user The address of the user for which the interest is being accumulated
    * @return The previous principal balance, the new principal balance and the balance increase
    **/
-  function _calculateBalanceIncrease(
-    address user
-  ) internal view returns (uint256, uint256, uint256) {
+  function _calculateBalanceIncrease(address user) internal view returns (uint256, uint256, uint256) {
     uint256 previousPrincipalBalance = super.balanceOf(user);
 
     if (previousPrincipalBalance == 0) {
@@ -283,11 +244,7 @@ contract StableVdToken is IStableVdToken, VdTokenBase {
     // Calculation of the accrued interest since the last accumulation
     uint256 balanceIncrease = balanceOf(user).sub(previousPrincipalBalance);
 
-    return (
-      previousPrincipalBalance,
-      previousPrincipalBalance.add(balanceIncrease),
-      balanceIncrease
-    );
+    return (previousPrincipalBalance, previousPrincipalBalance.add(balanceIncrease), balanceIncrease);
   }
 
   /**
@@ -383,10 +340,7 @@ contract StableVdToken is IStableVdToken, VdTokenBase {
       return 0;
     }
 
-    uint256 cumulatedInterest = MathUtils.calculateCompoundedInterest(
-      avgRate,
-      _totalSupplyTimestamp
-    );
+    uint256 cumulatedInterest = MathUtils.calculateCompoundedInterest(avgRate, _totalSupplyTimestamp);
 
     return principalSupply.rayMul(cumulatedInterest);
   }

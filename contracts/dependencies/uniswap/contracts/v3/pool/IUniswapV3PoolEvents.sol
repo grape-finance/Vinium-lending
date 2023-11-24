@@ -34,14 +34,7 @@ interface IUniswapV3PoolEvents {
   /// @param tickUpper The upper tick of the position
   /// @param amount0 The amount of token0 fees collected
   /// @param amount1 The amount of token1 fees collected
-  event Collect(
-    address indexed owner,
-    address recipient,
-    int24 indexed tickLower,
-    int24 indexed tickUpper,
-    uint128 amount0,
-    uint128 amount1
-  );
+  event Collect(address indexed owner, address recipient, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount0, uint128 amount1);
 
   /// @notice Emitted when a position's liquidity is removed
   /// @dev Does not withdraw any fees earned by the liquidity position, which must be withdrawn via #collect
@@ -51,14 +44,7 @@ interface IUniswapV3PoolEvents {
   /// @param amount The amount of liquidity to remove
   /// @param amount0 The amount of token0 withdrawn
   /// @param amount1 The amount of token1 withdrawn
-  event Burn(
-    address indexed owner,
-    int24 indexed tickLower,
-    int24 indexed tickUpper,
-    uint128 amount,
-    uint256 amount0,
-    uint256 amount1
-  );
+  event Burn(address indexed owner, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount, uint256 amount0, uint256 amount1);
 
   /// @notice Emitted by the pool for any swaps between token0 and token1
   /// @param sender The address that initiated the swap call, and that received the callback
@@ -68,15 +54,7 @@ interface IUniswapV3PoolEvents {
   /// @param sqrtPriceX96 The sqrt(price) of the pool after the swap, as a Q64.96
   /// @param liquidity The liquidity of the pool after the swap
   /// @param tick The log base 1.0001 of price of the pool after the swap
-  event Swap(
-    address indexed sender,
-    address indexed recipient,
-    int256 amount0,
-    int256 amount1,
-    uint160 sqrtPriceX96,
-    uint128 liquidity,
-    int24 tick
-  );
+  event Swap(address indexed sender, address indexed recipient, int256 amount0, int256 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick);
 
   /// @notice Emitted by the pool for any flashes of token0/token1
   /// @param sender The address that initiated the swap call, and that received the callback
@@ -85,46 +63,26 @@ interface IUniswapV3PoolEvents {
   /// @param amount1 The amount of token1 that was flashed
   /// @param paid0 The amount of token0 paid for the flash, which can exceed the amount0 plus the fee
   /// @param paid1 The amount of token1 paid for the flash, which can exceed the amount1 plus the fee
-  event Flash(
-    address indexed sender,
-    address indexed recipient,
-    uint256 amount0,
-    uint256 amount1,
-    uint256 paid0,
-    uint256 paid1
-  );
+  event Flash(address indexed sender, address indexed recipient, uint256 amount0, uint256 amount1, uint256 paid0, uint256 paid1);
 
   /// @notice Emitted by the pool for increases to the number of observations that can be stored
   /// @dev observationCardinalityNext is not the observation cardinality until an observation is written at the index
   /// just before a mint/swap/burn.
   /// @param observationCardinalityNextOld The previous value of the next observation cardinality
   /// @param observationCardinalityNextNew The updated value of the next observation cardinality
-  event IncreaseObservationCardinalityNext(
-    uint16 observationCardinalityNextOld,
-    uint16 observationCardinalityNextNew
-  );
+  event IncreaseObservationCardinalityNext(uint16 observationCardinalityNextOld, uint16 observationCardinalityNextNew);
 
   /// @notice Emitted when the protocol fee is changed by the pool
   /// @param feeProtocol0Old The previous value of the token0 protocol fee
   /// @param feeProtocol1Old The previous value of the token1 protocol fee
   /// @param feeProtocol0New The updated value of the token0 protocol fee
   /// @param feeProtocol1New The updated value of the token1 protocol fee
-  event SetFeeProtocol(
-    uint8 feeProtocol0Old,
-    uint8 feeProtocol1Old,
-    uint8 feeProtocol0New,
-    uint8 feeProtocol1New
-  );
+  event SetFeeProtocol(uint8 feeProtocol0Old, uint8 feeProtocol1Old, uint8 feeProtocol0New, uint8 feeProtocol1New);
 
   /// @notice Emitted when the collected protocol fees are withdrawn by the factory owner
   /// @param sender The address that collects the protocol fees
   /// @param recipient The address that receives the collected protocol fees
   /// @param amount0 The amount of token0 protocol fees that is withdrawn
   /// @param amount0 The amount of token1 protocol fees that is withdrawn
-  event CollectProtocol(
-    address indexed sender,
-    address indexed recipient,
-    uint128 amount0,
-    uint128 amount1
-  );
+  event CollectProtocol(address indexed sender, address indexed recipient, uint128 amount0, uint128 amount1);
 }

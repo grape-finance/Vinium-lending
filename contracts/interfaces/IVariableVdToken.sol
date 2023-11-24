@@ -29,12 +29,7 @@ interface IVariableVdToken is IScaledBalanceToken, IInitializableVdToken {
    * @param index The variable debt index of the reserve
    * @return `true` if the the previous balance of the user is 0
    **/
-  function mint(
-    address user,
-    address onBehalfOf,
-    uint256 amount,
-    uint256 index
-  ) external returns (bool);
+  function mint(address user, address onBehalfOf, uint256 amount, uint256 index) external returns (bool);
 
   /**
    * @dev Emitted when variable debt is burnt

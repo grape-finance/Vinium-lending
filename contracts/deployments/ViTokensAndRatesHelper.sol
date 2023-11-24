@@ -67,10 +67,7 @@ contract ViTokensAndRatesHelper is Ownable {
       );
 
       if (inputParams[i].borrowingEnabled) {
-        configurator.enableBorrowingOnReserve(
-          inputParams[i].asset,
-          inputParams[i].stableBorrowingEnabled
-        );
+        configurator.enableBorrowingOnReserve(inputParams[i].asset, inputParams[i].stableBorrowingEnabled);
       }
       configurator.setReserveFactor(inputParams[i].asset, inputParams[i].reserveFactor);
     }

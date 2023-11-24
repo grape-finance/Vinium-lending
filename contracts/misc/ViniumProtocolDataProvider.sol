@@ -42,10 +42,7 @@ contract ViniumProtocolDataProvider {
         reservesTokens[i] = TokenData({symbol: 'ETH', tokenAddress: reserves[i]});
         continue;
       }
-      reservesTokens[i] = TokenData({
-        symbol: IERC20Detailed(reserves[i]).symbol(),
-        tokenAddress: reserves[i]
-      });
+      reservesTokens[i] = TokenData({symbol: IERC20Detailed(reserves[i]).symbol(), tokenAddress: reserves[i]});
     }
     return reservesTokens;
   }
@@ -56,10 +53,7 @@ contract ViniumProtocolDataProvider {
     TokenData[] memory viTokens = new TokenData[](reserves.length);
     for (uint256 i = 0; i < reserves.length; i++) {
       DataTypes.ReserveData memory reserveData = pool.getReserveData(reserves[i]);
-      viTokens[i] = TokenData({
-        symbol: IERC20Detailed(reserveData.viTokenAddress).symbol(),
-        tokenAddress: reserveData.viTokenAddress
-      });
+      viTokens[i] = TokenData({symbol: IERC20Detailed(reserveData.viTokenAddress).symbol(), tokenAddress: reserveData.viTokenAddress});
     }
     return viTokens;
   }
@@ -82,15 +76,11 @@ contract ViniumProtocolDataProvider {
       bool isFrozen
     )
   {
-    DataTypes.ReserveConfigurationMap memory configuration = ILendingPool(
-      ADDRESSES_PROVIDER.getLendingPool()
-    ).getConfiguration(asset);
+    DataTypes.ReserveConfigurationMap memory configuration = ILendingPool(ADDRESSES_PROVIDER.getLendingPool()).getConfiguration(asset);
 
-    (ltv, liquidationThreshold, liquidationBonus, decimals, reserveFactor) = configuration
-      .getParamsMemory();
+    (ltv, liquidationThreshold, liquidationBonus, decimals, reserveFactor) = configuration.getParamsMemory();
 
-    (isActive, isFrozen, borrowingEnabled, stableBorrowRateEnabled) = configuration
-      .getFlagsMemory();
+    (isActive, isFrozen, borrowingEnabled, stableBorrowRateEnabled) = configuration.getFlagsMemory();
 
     usageAsCollateralEnabled = liquidationThreshold > 0;
   }
@@ -113,8 +103,7 @@ contract ViniumProtocolDataProvider {
       uint40 lastUpdateTimestamp
     )
   {
-    DataTypes.ReserveData memory reserve = ILendingPool(ADDRESSES_PROVIDER.getLendingPool())
-      .getReserveData(asset);
+    DataTypes.ReserveData memory reserve = ILendingPool(ADDRESSES_PROVIDER.getLendingPool()).getReserveData(asset);
 
     return (
       IERC20Detailed(asset).balanceOf(reserve.viTokenAddress),
@@ -148,12 +137,9 @@ contract ViniumProtocolDataProvider {
       bool usageAsCollateralEnabled
     )
   {
-    DataTypes.ReserveData memory reserve = ILendingPool(ADDRESSES_PROVIDER.getLendingPool())
-      .getReserveData(asset);
+    DataTypes.ReserveData memory reserve = ILendingPool(ADDRESSES_PROVIDER.getLendingPool()).getReserveData(asset);
 
-    DataTypes.UserConfigurationMap memory userConfig = ILendingPool(
-      ADDRESSES_PROVIDER.getLendingPool()
-    ).getUserConfiguration(user);
+    DataTypes.UserConfigurationMap memory userConfig = ILendingPool(ADDRESSES_PROVIDER.getLendingPool()).getUserConfiguration(user);
 
     currentViTokenBalance = IERC20Detailed(reserve.viTokenAddress).balanceOf(user);
     currentVariableDebt = IERC20Detailed(reserve.variableVdTokenAddress).balanceOf(user);
@@ -168,13 +154,8 @@ contract ViniumProtocolDataProvider {
 
   function getReserveTokensAddresses(
     address asset
-  )
-    external
-    view
-    returns (address viTokenAddress, address stableVdTokenAddress, address variableVdTokenAddress)
-  {
-    DataTypes.ReserveData memory reserve = ILendingPool(ADDRESSES_PROVIDER.getLendingPool())
-      .getReserveData(asset);
+  ) external view returns (address viTokenAddress, address stableVdTokenAddress, address variableVdTokenAddress) {
+    DataTypes.ReserveData memory reserve = ILendingPool(ADDRESSES_PROVIDER.getLendingPool()).getReserveData(asset);
 
     return (reserve.viTokenAddress, reserve.stableVdTokenAddress, reserve.variableVdTokenAddress);
   }

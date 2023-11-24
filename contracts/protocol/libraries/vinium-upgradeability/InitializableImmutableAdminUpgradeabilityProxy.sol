@@ -8,10 +8,7 @@ import '../../../dependencies/openzeppelin/upgradeability/InitializableUpgradeab
  * @title InitializableAdminUpgradeabilityProxy
  * @dev Extends BaseAdminUpgradeabilityProxy with an initializer function
  */
-contract InitializableImmutableAdminUpgradeabilityProxy is
-  BaseImmutableAdminUpgradeabilityProxy,
-  InitializableUpgradeabilityProxy
-{
+contract InitializableImmutableAdminUpgradeabilityProxy is BaseImmutableAdminUpgradeabilityProxy, InitializableUpgradeabilityProxy {
   constructor(address admin) public BaseImmutableAdminUpgradeabilityProxy(admin) {}
 
   /**

@@ -62,10 +62,7 @@ library FixedPoint {
 
   // multiply a UQ112x112 by a UQ112x112, returning a UQ112x112
   // lossy
-  function muluq(
-    uq112x112 memory self,
-    uq112x112 memory other
-  ) internal pure returns (uq112x112 memory) {
+  function muluq(uq112x112 memory self, uq112x112 memory other) internal pure returns (uq112x112 memory) {
     if (self._x == 0 || other._x == 0) {
       return uq112x112(0);
     }
@@ -84,10 +81,7 @@ library FixedPoint {
     require(upper <= type(uint112).max, 'FixedPoint::muluq: upper overflow');
 
     // this cannot exceed 256 bits, all values are 224 bits
-    uint256 sum = uint256(upper << RESOLUTION) +
-      uppers_lowero +
-      uppero_lowers +
-      (lower >> RESOLUTION);
+    uint256 sum = uint256(upper << RESOLUTION) + uppers_lowero + uppero_lowers + (lower >> RESOLUTION);
 
     // so the cast does not overflow
     require(sum <= type(uint224).max, 'FixedPoint::muluq: sum overflow');
@@ -96,10 +90,7 @@ library FixedPoint {
   }
 
   // divide a UQ112x112 by a UQ112x112, returning a UQ112x112
-  function divuq(
-    uq112x112 memory self,
-    uq112x112 memory other
-  ) internal pure returns (uq112x112 memory) {
+  function divuq(uq112x112 memory self, uq112x112 memory other) internal pure returns (uq112x112 memory) {
     require(other._x > 0, 'FixedPoint::divuq: division by zero');
     if (self._x == other._x) {
       return uq112x112(uint224(Q112));
@@ -117,10 +108,7 @@ library FixedPoint {
 
   // returns a UQ112x112 which represents the ratio of the numerator to the denominator
   // can be lossy
-  function fraction(
-    uint256 numerator,
-    uint256 denominator
-  ) internal pure returns (uq112x112 memory) {
+  function fraction(uint256 numerator, uint256 denominator) internal pure returns (uq112x112 memory) {
     require(denominator > 0, 'FixedPoint::fraction: division by zero');
     if (numerator == 0) return FixedPoint.uq112x112(0);
 
@@ -153,9 +141,6 @@ library FixedPoint {
 
     uint8 safeShiftBits = 255 - BitMath.mostSignificantBit(self._x);
     safeShiftBits -= safeShiftBits % 2;
-    return
-      uq112x112(
-        uint224(Babylonian.sqrt(uint256(self._x) << safeShiftBits) << ((112 - safeShiftBits) / 2))
-      );
+    return uq112x112(uint224(Babylonian.sqrt(uint256(self._x) << safeShiftBits) << ((112 - safeShiftBits) / 2)));
   }
 }

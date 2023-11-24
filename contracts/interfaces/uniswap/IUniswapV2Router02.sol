@@ -34,12 +34,7 @@ interface IUniswapV2Router02 is IUniswapV2Router01 {
     uint deadline
   ) external;
 
-  function swapExactETHForTokensSupportingFeeOnTransferTokens(
-    uint amountOutMin,
-    address[] calldata path,
-    address to,
-    uint deadline
-  ) external payable;
+  function swapExactETHForTokensSupportingFeeOnTransferTokens(uint amountOutMin, address[] calldata path, address to, uint deadline) external payable;
 
   function swapExactTokensForETHSupportingFeeOnTransferTokens(
     uint amountIn,

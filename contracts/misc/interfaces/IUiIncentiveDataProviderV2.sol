@@ -40,9 +40,7 @@ interface IUiIncentiveDataProviderV2 {
     uint8 rewardTokenDecimals;
   }
 
-  function getReservesIncentivesData(
-    ILendingPoolAddressesProvider provider
-  ) external view returns (AggregatedReserveIncentiveData[] memory);
+  function getReservesIncentivesData(ILendingPoolAddressesProvider provider) external view returns (AggregatedReserveIncentiveData[] memory);
 
   function getUserReservesIncentivesData(
     ILendingPoolAddressesProvider provider,
@@ -53,8 +51,5 @@ interface IUiIncentiveDataProviderV2 {
   function getFullReservesIncentiveData(
     ILendingPoolAddressesProvider provider,
     address user
-  )
-    external
-    view
-    returns (AggregatedReserveIncentiveData[] memory, UserReserveIncentiveData[] memory);
+  ) external view returns (AggregatedReserveIncentiveData[] memory, UserReserveIncentiveData[] memory);
 }

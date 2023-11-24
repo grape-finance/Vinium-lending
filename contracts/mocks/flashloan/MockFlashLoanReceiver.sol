@@ -64,14 +64,9 @@ contract MockFlashLoanReceiver is FlashLoanReceiverBase {
       MintableERC20 token = MintableERC20(assets[i]);
 
       //check the contract has the specified balance
-      require(
-        amounts[i] <= IERC20(assets[i]).balanceOf(address(this)),
-        'Invalid balance for the contract'
-      );
+      require(amounts[i] <= IERC20(assets[i]).balanceOf(address(this)), 'Invalid balance for the contract');
 
-      uint256 amountToReturn = (_amountToApprove != 0)
-        ? _amountToApprove
-        : amounts[i].add(premiums[i]);
+      uint256 amountToReturn = (_amountToApprove != 0) ? _amountToApprove : amounts[i].add(premiums[i]);
       //execution does not fail - mint tokens and return them to the _destination
 
       token.mint(premiums[i]);

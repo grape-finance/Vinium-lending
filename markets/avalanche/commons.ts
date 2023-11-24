@@ -15,7 +15,7 @@ import {
   strategyDAI,
   strategyWETH,
   strategyBTCB,
-  strategyGRAPE, strategyWAVAX, strategyWBTC,
+  strategyGRAPE, strategyWAVAX, strategyWBTC, strategySDAI, strategyFRAX, strategySFRAX, strategySTETH,
 } from './reservesConfigs';
 
 // ----------------
@@ -188,7 +188,11 @@ export const CommonsConfig: ICommonConfiguration = {
     WETH: strategyWETH,
     WBTC: strategyWBTC,
     DAI: strategyDAI,
-    USDT: strategyUSDT
+    USDT: strategyUSDT,
+    // SDAI: strategySDAI,
+    // FRAX: strategyFRAX,
+    // SFRAX: strategySFRAX,
+    // STETH: strategySTETH,
   },
   ViToken:{
     [eAvalancheNetwork.avalanche]: '',

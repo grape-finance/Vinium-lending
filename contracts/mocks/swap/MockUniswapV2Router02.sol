@@ -54,21 +54,11 @@ contract MockUniswapV2Router02 is IUniswapV2Router02 {
     amounts[1] = amountOut;
   }
 
-  function setAmountOut(
-    uint256 amountIn,
-    address reserveIn,
-    address reserveOut,
-    uint256 amountOut
-  ) public {
+  function setAmountOut(uint256 amountIn, address reserveIn, address reserveOut, uint256 amountOut) public {
     _amountsOut[reserveIn][reserveOut][amountIn] = amountOut;
   }
 
-  function setAmountIn(
-    uint256 amountOut,
-    address reserveIn,
-    address reserveOut,
-    uint256 amountIn
-  ) public {
+  function setAmountIn(uint256 amountOut, address reserveIn, address reserveOut, uint256 amountIn) public {
     _amountsIn[reserveIn][reserveOut][amountOut] = amountIn;
   }
 
@@ -76,26 +66,16 @@ contract MockUniswapV2Router02 is IUniswapV2Router02 {
     defaultMockValue = value;
   }
 
-  function getAmountsOut(
-    uint256 amountIn,
-    address[] calldata path
-  ) external view override returns (uint256[] memory) {
+  function getAmountsOut(uint256 amountIn, address[] calldata path) external view override returns (uint256[] memory) {
     uint256[] memory amounts = new uint256[](path.length);
     amounts[0] = amountIn;
-    amounts[1] = _amountsOut[path[0]][path[1]][amountIn] > 0
-      ? _amountsOut[path[0]][path[1]][amountIn]
-      : defaultMockValue;
+    amounts[1] = _amountsOut[path[0]][path[1]][amountIn] > 0 ? _amountsOut[path[0]][path[1]][amountIn] : defaultMockValue;
     return amounts;
   }
 
-  function getAmountsIn(
-    uint256 amountOut,
-    address[] calldata path
-  ) external view override returns (uint256[] memory) {
+  function getAmountsIn(uint256 amountOut, address[] calldata path) external view override returns (uint256[] memory) {
     uint256[] memory amounts = new uint256[](path.length);
-    amounts[0] = _amountsIn[path[0]][path[1]][amountOut] > 0
-      ? _amountsIn[path[0]][path[1]][amountOut]
-      : defaultMockValue;
+    amounts[0] = _amountsIn[path[0]][path[1]][amountOut] > 0 ? _amountsIn[path[0]][path[1]][amountOut] : defaultMockValue;
     amounts[1] = amountOut;
     return amounts;
   }

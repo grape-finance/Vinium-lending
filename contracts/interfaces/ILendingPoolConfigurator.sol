@@ -78,12 +78,7 @@ interface ILendingPoolConfigurator {
    * @param liquidationThreshold The threshold at which loans using this asset as collateral will be considered undercollateralized
    * @param liquidationBonus The bonus liquidators receive to liquidate this asset
    **/
-  event CollateralConfigurationChanged(
-    address indexed asset,
-    uint256 ltv,
-    uint256 liquidationThreshold,
-    uint256 liquidationBonus
-  );
+  event CollateralConfigurationChanged(address indexed asset, uint256 ltv, uint256 liquidationThreshold, uint256 liquidationBonus);
 
   /**
    * @dev Emitted when stable rate borrowing is enabled on a reserve
@@ -148,11 +143,7 @@ interface ILendingPoolConfigurator {
    * @param proxy The viToken proxy address
    * @param implementation The new viToken implementation
    **/
-  event ViTokenUpgraded(
-    address indexed asset,
-    address indexed proxy,
-    address indexed implementation
-  );
+  event ViTokenUpgraded(address indexed asset, address indexed proxy, address indexed implementation);
 
   /**
    * @dev Emitted when the implementation of a stable debt token is upgraded
@@ -160,11 +151,7 @@ interface ILendingPoolConfigurator {
    * @param proxy The stable debt token proxy address
    * @param implementation The new viToken implementation
    **/
-  event StableVdTokenUpgraded(
-    address indexed asset,
-    address indexed proxy,
-    address indexed implementation
-  );
+  event StableVdTokenUpgraded(address indexed asset, address indexed proxy, address indexed implementation);
 
   /**
    * @dev Emitted when the implementation of a variable debt token is upgraded
@@ -172,9 +159,5 @@ interface ILendingPoolConfigurator {
    * @param proxy The variable debt token proxy address
    * @param implementation The new viToken implementation
    **/
-  event VariableVdTokenUpgraded(
-    address indexed asset,
-    address indexed proxy,
-    address indexed implementation
-  );
+  event VariableVdTokenUpgraded(address indexed asset, address indexed proxy, address indexed implementation);
 }

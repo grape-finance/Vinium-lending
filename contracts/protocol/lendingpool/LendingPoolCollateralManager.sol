@@ -29,11 +29,7 @@ import {LendingPoolStorage} from './LendingPoolStorage.sol';
  * IMPORTANT This contract will run always via DELEGATECALL, through the LendingPool, so the chain of inheritance
  * is the same as the LendingPool, to have compatible storage layouts
  **/
-contract LendingPoolCollateralManager is
-  ILendingPoolCollateralManager,
-  VersionedInitializable,
-  LendingPoolStorage
-{
+contract LendingPoolCollateralManager is ILendingPoolCollateralManager, VersionedInitializable, LendingPoolStorage {
   using SafeERC20 for IERC20;
   using SafeMath for uint256;
   using WadRayMath for uint256;
@@ -125,18 +121,11 @@ contract LendingPoolCollateralManager is
 
     vars.userCollateralBalance = vars.collateralVitoken.balanceOf(user);
 
-    vars.maxLiquidatableDebt = vars.userStableDebt.add(vars.userVariableDebt).percentMul(
-      LIQUIDATION_CLOSE_FACTOR_PERCENT
-    );
+    vars.maxLiquidatableDebt = vars.userStableDebt.add(vars.userVariableDebt).percentMul(LIQUIDATION_CLOSE_FACTOR_PERCENT);
 
-    vars.actualDebtToLiquidate = debtToCover > vars.maxLiquidatableDebt
-      ? vars.maxLiquidatableDebt
-      : debtToCover;
+    vars.actualDebtToLiquidate = debtToCover > vars.maxLiquidatableDebt ? vars.maxLiquidatableDebt : debtToCover;
 
-    (
-      vars.maxCollateralToLiquidate,
-      vars.debtAmountNeeded
-    ) = _calculateAvailableCollateralToLiquidate(
+    (vars.maxCollateralToLiquidate, vars.debtAmountNeeded) = _calculateAvailableCollateralToLiquidate(
       collateralReserve,
       debtReserve,
       collateralAsset,
@@ -156,46 +145,25 @@ contract LendingPoolCollateralManager is
     // If the liquidator reclaims the underlying asset, we make sure there is enough available liquidity in the
     // collateral reserve
     if (!receiveViToken) {
-      uint256 currentAvailableCollateral = IERC20(collateralAsset).balanceOf(
-        address(vars.collateralVitoken)
-      );
+      uint256 currentAvailableCollateral = IERC20(collateralAsset).balanceOf(address(vars.collateralVitoken));
       if (currentAvailableCollateral < vars.maxCollateralToLiquidate) {
-        return (
-          uint256(Errors.CollateralManagerErrors.NOT_ENOUGH_LIQUIDITY),
-          Errors.LPCM_NOT_ENOUGH_LIQUIDITY_TO_LIQUIDATE
-        );
+        return (uint256(Errors.CollateralManagerErrors.NOT_ENOUGH_LIQUIDITY), Errors.LPCM_NOT_ENOUGH_LIQUIDITY_TO_LIQUIDATE);
       }
     }
 
     debtReserve.updateState();
 
     if (vars.userVariableDebt >= vars.actualDebtToLiquidate) {
-      IVariableVdToken(debtReserve.variableVdTokenAddress).burn(
-        user,
-        vars.actualDebtToLiquidate,
-        debtReserve.variableBorrowIndex
-      );
+      IVariableVdToken(debtReserve.variableVdTokenAddress).burn(user, vars.actualDebtToLiquidate, debtReserve.variableBorrowIndex);
     } else {
       // If the user doesn't have variable debt, no need to try to burn variable debt tokens
       if (vars.userVariableDebt > 0) {
-        IVariableVdToken(debtReserve.variableVdTokenAddress).burn(
-          user,
-          vars.userVariableDebt,
-          debtReserve.variableBorrowIndex
-        );
+        IVariableVdToken(debtReserve.variableVdTokenAddress).burn(user, vars.userVariableDebt, debtReserve.variableBorrowIndex);
       }
-      IStableVdToken(debtReserve.stableVdTokenAddress).burn(
-        user,
-        vars.actualDebtToLiquidate.sub(vars.userVariableDebt)
-      );
+      IStableVdToken(debtReserve.stableVdTokenAddress).burn(user, vars.actualDebtToLiquidate.sub(vars.userVariableDebt));
     }
 
-    debtReserve.updateInterestRates(
-      debtAsset,
-      debtReserve.viTokenAddress,
-      vars.actualDebtToLiquidate,
-      0
-    );
+    debtReserve.updateInterestRates(debtAsset, debtReserve.viTokenAddress, vars.actualDebtToLiquidate, 0);
 
     if (receiveViToken) {
       vars.liquidatorPreviousViTokenBalance = IERC20(vars.collateralVitoken).balanceOf(msg.sender);
@@ -208,20 +176,10 @@ contract LendingPoolCollateralManager is
       }
     } else {
       collateralReserve.updateState();
-      collateralReserve.updateInterestRates(
-        collateralAsset,
-        address(vars.collateralVitoken),
-        0,
-        vars.maxCollateralToLiquidate
-      );
+      collateralReserve.updateInterestRates(collateralAsset, address(vars.collateralVitoken), 0, vars.maxCollateralToLiquidate);
 
       // Burn the equivalent amount of viToken, sending the underlying to the liquidator
-      vars.collateralVitoken.burn(
-        user,
-        msg.sender,
-        vars.maxCollateralToLiquidate,
-        collateralReserve.liquidityIndex
-      );
+      vars.collateralVitoken.burn(user, msg.sender, vars.maxCollateralToLiquidate, collateralReserve.liquidityIndex);
     }
 
     // If the collateral being liquidated is equal to the user balance,
@@ -232,21 +190,9 @@ contract LendingPoolCollateralManager is
     }
 
     // Transfers the debt asset being repaid to the viToken, where the liquidity is kept
-    IERC20(debtAsset).safeTransferFrom(
-      msg.sender,
-      debtReserve.viTokenAddress,
-      vars.actualDebtToLiquidate
-    );
+    IERC20(debtAsset).safeTransferFrom(msg.sender, debtReserve.viTokenAddress, vars.actualDebtToLiquidate);
 
-    emit LiquidationCall(
-      collateralAsset,
-      debtAsset,
-      user,
-      vars.actualDebtToLiquidate,
-      vars.maxCollateralToLiquidate,
-      msg.sender,
-      receiveViToken
-    );
+    emit LiquidationCall(collateralAsset, debtAsset, user, vars.actualDebtToLiquidate, vars.maxCollateralToLiquidate, msg.sender, receiveViToken);
 
     return (uint256(Errors.CollateralManagerErrors.NO_ERROR), Errors.LPCM_NO_ERRORS);
   }
@@ -293,9 +239,7 @@ contract LendingPoolCollateralManager is
     vars.collateralPrice = oracle.getAssetPrice(collateralAsset);
     vars.debtAssetPrice = oracle.getAssetPrice(debtAsset);
 
-    (, , vars.liquidationBonus, vars.collateralDecimals, ) = collateralReserve
-      .configuration
-      .getParams();
+    (, , vars.liquidationBonus, vars.collateralDecimals, ) = collateralReserve.configuration.getParams();
     vars.debtAssetDecimals = debtReserve.configuration.getDecimals();
 
     // This is the maximum possible amount of the selected collateral that can be liquidated, given the

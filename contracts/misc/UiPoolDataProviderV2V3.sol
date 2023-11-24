@@ -50,15 +50,12 @@ contract UiPoolDataProviderV2V3 is IUiPoolDataProviderV3 {
     interestRates.baseVariableBorrowRate = interestRateStrategy.baseVariableBorrowRate();
     interestRates.optimalUsageRatio = interestRateStrategy.OPTIMAL_UTILIZATION_RATE();
 
-    interestRates.baseStableBorrowRate = ILendingRateOracle(provider.getLendingRateOracle())
-      .getMarketBorrowRate(reserve);
+    interestRates.baseStableBorrowRate = ILendingRateOracle(provider.getLendingRateOracle()).getMarketBorrowRate(reserve);
 
     return interestRates;
   }
 
-  function getReservesList(
-    ILendingPoolAddressesProvider provider
-  ) public view override returns (address[] memory) {
+  function getReservesList(ILendingPoolAddressesProvider provider) public view override returns (address[] memory) {
     ILendingPool lendingPool = ILendingPool(provider.getLendingPool());
     return lendingPool.getReservesList();
   }
@@ -76,9 +73,7 @@ contract UiPoolDataProviderV2V3 is IUiPoolDataProviderV3 {
       reserveData.underlyingAsset = reserves[i];
 
       // reserve current state
-      DataTypes.ReserveData memory baseData = lendingPool.getReserveData(
-        reserveData.underlyingAsset
-      );
+      DataTypes.ReserveData memory baseData = lendingPool.getReserveData(reserveData.underlyingAsset);
       reserveData.liquidityIndex = baseData.liquidityIndex;
       reserveData.variableBorrowIndex = baseData.variableBorrowIndex;
       reserveData.liquidityRate = baseData.currentLiquidityRate;
@@ -89,22 +84,14 @@ contract UiPoolDataProviderV2V3 is IUiPoolDataProviderV3 {
       reserveData.stableVdTokenAddress = baseData.stableVdTokenAddress;
       reserveData.variableVdTokenAddress = baseData.variableVdTokenAddress;
       reserveData.interestRateStrategyAddress = baseData.interestRateStrategyAddress;
-      reserveData.priceInMarketReferenceCurrency = oracle.getAssetPrice(
-        reserveData.underlyingAsset
-      );
+      reserveData.priceInMarketReferenceCurrency = oracle.getAssetPrice(reserveData.underlyingAsset);
       reserveData.priceOracle = oracle.getSourceOfAsset(reserveData.underlyingAsset);
 
-      reserveData.availableLiquidity = IERC20Detailed(reserveData.underlyingAsset).balanceOf(
-        reserveData.viTokenAddress
-      );
-      (
-        reserveData.totalPrincipalStableDebt,
-        ,
-        reserveData.averageStableRate,
-        reserveData.stableDebtLastUpdateTimestamp
-      ) = IStableVdToken(reserveData.stableVdTokenAddress).getSupplyData();
-      reserveData.totalScaledVariableDebt = IVariableVdToken(reserveData.variableVdTokenAddress)
-        .scaledTotalSupply();
+      reserveData.availableLiquidity = IERC20Detailed(reserveData.underlyingAsset).balanceOf(reserveData.viTokenAddress);
+      (reserveData.totalPrincipalStableDebt, , reserveData.averageStableRate, reserveData.stableDebtLastUpdateTimestamp) = IStableVdToken(
+        reserveData.stableVdTokenAddress
+      ).getSupplyData();
+      reserveData.totalScaledVariableDebt = IVariableVdToken(reserveData.variableVdTokenAddress).scaledTotalSupply();
 
       if (address(reserveData.underlyingAsset) == address(MKRAddress)) {
         bytes32 symbol = IERC20DetailedBytes(reserveData.underlyingAsset).symbol();
@@ -123,12 +110,9 @@ contract UiPoolDataProviderV2V3 is IUiPoolDataProviderV3 {
         reserveData.decimals,
         reserveData.reserveFactor
       ) = baseData.configuration.getParamsMemory();
-      (
-        reserveData.isActive,
-        reserveData.isFrozen,
-        reserveData.borrowingEnabled,
-        reserveData.stableBorrowRateEnabled
-      ) = baseData.configuration.getFlagsMemory();
+      (reserveData.isActive, reserveData.isFrozen, reserveData.borrowingEnabled, reserveData.stableBorrowRateEnabled) = baseData
+        .configuration
+        .getFlagsMemory();
       reserveData.usageAsCollateralEnabled = reserveData.baseLTVasCollateral != 0;
 
       InterestRates memory interestRates = getInterestRateStrategySlopes(
@@ -147,26 +131,20 @@ contract UiPoolDataProviderV2V3 is IUiPoolDataProviderV3 {
     }
 
     BaseCurrencyInfo memory baseCurrencyInfo;
-    baseCurrencyInfo.networkBaseTokenPriceInUsd = networkBaseTokenPriceInUsdProxyAggregator
-      .latestAnswer();
-    baseCurrencyInfo.networkBaseTokenPriceDecimals = networkBaseTokenPriceInUsdProxyAggregator
-      .decimals();
+    baseCurrencyInfo.networkBaseTokenPriceInUsd = networkBaseTokenPriceInUsdProxyAggregator.latestAnswer();
+    baseCurrencyInfo.networkBaseTokenPriceDecimals = networkBaseTokenPriceInUsdProxyAggregator.decimals();
 
     try oracle.BASE_CURRENCY_UNIT() returns (uint256 baseCurrencyUnit) {
       if (ETH_CURRENCY_UNIT == baseCurrencyUnit) {
         baseCurrencyInfo.marketReferenceCurrencyUnit = ETH_CURRENCY_UNIT;
-        baseCurrencyInfo
-          .marketReferenceCurrencyPriceInUsd = marketReferenceCurrencyPriceInUsdProxyAggregator
-          .latestAnswer();
+        baseCurrencyInfo.marketReferenceCurrencyPriceInUsd = marketReferenceCurrencyPriceInUsdProxyAggregator.latestAnswer();
       } else {
         baseCurrencyInfo.marketReferenceCurrencyUnit = baseCurrencyUnit;
         baseCurrencyInfo.marketReferenceCurrencyPriceInUsd = int256(baseCurrencyUnit);
       }
     } catch (bytes memory /*lowLevelData*/) {
       baseCurrencyInfo.marketReferenceCurrencyUnit = ETH_CURRENCY_UNIT;
-      baseCurrencyInfo
-        .marketReferenceCurrencyPriceInUsd = marketReferenceCurrencyPriceInUsdProxyAggregator
-        .latestAnswer();
+      baseCurrencyInfo.marketReferenceCurrencyPriceInUsd = marketReferenceCurrencyPriceInUsdProxyAggregator.latestAnswer();
     }
 
     return (reservesData, baseCurrencyInfo);
@@ -180,31 +158,22 @@ contract UiPoolDataProviderV2V3 is IUiPoolDataProviderV3 {
     address[] memory reserves = lendingPool.getReservesList();
     DataTypes.UserConfigurationMap memory userConfig = lendingPool.getUserConfiguration(user);
 
-    UserReserveData[] memory userReservesData = new UserReserveData[](
-      user != address(0) ? reserves.length : 0
-    );
+    UserReserveData[] memory userReservesData = new UserReserveData[](user != address(0) ? reserves.length : 0);
 
     for (uint256 i = 0; i < reserves.length; i++) {
       DataTypes.ReserveData memory baseData = lendingPool.getReserveData(reserves[i]);
 
       // user reserve data
       userReservesData[i].underlyingAsset = reserves[i];
-      userReservesData[i].scaledViTokenBalance = IViToken(baseData.viTokenAddress).scaledBalanceOf(
-        user
-      );
+      userReservesData[i].scaledViTokenBalance = IViToken(baseData.viTokenAddress).scaledBalanceOf(user);
       userReservesData[i].usageAsCollateralEnabledOnUser = userConfig.isUsingAsCollateral(i);
 
       if (userConfig.isBorrowing(i)) {
-        userReservesData[i].scaledVariableDebt = IVariableVdToken(baseData.variableVdTokenAddress)
-          .scaledBalanceOf(user);
-        userReservesData[i].principalStableDebt = IStableVdToken(baseData.stableVdTokenAddress)
-          .principalBalanceOf(user);
+        userReservesData[i].scaledVariableDebt = IVariableVdToken(baseData.variableVdTokenAddress).scaledBalanceOf(user);
+        userReservesData[i].principalStableDebt = IStableVdToken(baseData.stableVdTokenAddress).principalBalanceOf(user);
         if (userReservesData[i].principalStableDebt != 0) {
-          userReservesData[i].stableBorrowRate = IStableVdToken(baseData.stableVdTokenAddress)
-            .getUserStableRate(user);
-          userReservesData[i].stableBorrowLastUpdateTimestamp = IStableVdToken(
-            baseData.stableVdTokenAddress
-          ).getUserLastUpdated(user);
+          userReservesData[i].stableBorrowRate = IStableVdToken(baseData.stableVdTokenAddress).getUserStableRate(user);
+          userReservesData[i].stableBorrowLastUpdateTimestamp = IStableVdToken(baseData.stableVdTokenAddress).getUserLastUpdated(user);
         }
       }
     }

@@ -23,10 +23,7 @@ abstract contract BaseParaSwapSellAdapter is BaseParaSwapAdapter {
 
   IParaSwapAugustusRegistry public immutable AUGUSTUS_REGISTRY;
 
-  constructor(
-    ILendingPoolAddressesProvider addressesProvider,
-    IParaSwapAugustusRegistry augustusRegistry
-  ) BaseParaSwapAdapter(addressesProvider) {
+  constructor(ILendingPoolAddressesProvider addressesProvider, IParaSwapAugustusRegistry augustusRegistry) BaseParaSwapAdapter(addressesProvider) {
     // Do something on Augustus registry to check the right contract was passed
     require(!augustusRegistry.isValidAugustus(address(0)));
     AUGUSTUS_REGISTRY = augustusRegistry;
@@ -80,10 +77,7 @@ abstract contract BaseParaSwapSellAdapter is BaseParaSwapAdapter {
     if (fromAmountOffset != 0) {
       // Ensure 256 bit (32 bytes) fromAmount value is within bounds of the
       // calldata, not overlapping with the first 4 bytes (function selector).
-      require(
-        fromAmountOffset >= 4 && fromAmountOffset <= swapCalldata.length.sub(32),
-        'FROM_AMOUNT_OFFSET_OUT_OF_RANGE'
-      );
+      require(fromAmountOffset >= 4 && fromAmountOffset <= swapCalldata.length.sub(32), 'FROM_AMOUNT_OFFSET_OUT_OF_RANGE');
       // Overwrite the fromAmount with the correct amount for the swap.
       // In memory, swapCalldata consists of a 256 bit length field, followed by
       // the actual bytes data, that is why 32 is added to the byte offset.
@@ -99,10 +93,7 @@ abstract contract BaseParaSwapSellAdapter is BaseParaSwapAdapter {
         revert(0, returndatasize())
       }
     }
-    require(
-      assetToSwapFrom.balanceOf(address(this)) == balanceBeforeAssetFrom - amountToSwap,
-      'WRONG_BALANCE_AFTER_SWAP'
-    );
+    require(assetToSwapFrom.balanceOf(address(this)) == balanceBeforeAssetFrom - amountToSwap, 'WRONG_BALANCE_AFTER_SWAP');
     amountReceived = assetToSwapTo.balanceOf(address(this)).sub(balanceBeforeAssetTo);
     require(amountReceived >= minAmountToReceive, 'INSUFFICIENT_AMOUNT_RECEIVED');
 

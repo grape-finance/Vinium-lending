@@ -73,9 +73,7 @@ interface IUiPoolDataProvider {
     uint256 emissionEndTimestamp;
   }
 
-  function getReservesList(
-    ILendingPoolAddressesProvider provider
-  ) external view returns (address[] memory);
+  function getReservesList(ILendingPoolAddressesProvider provider) external view returns (address[] memory);
 
   function incentivesController() external view returns (IViniumIncentivesController);
 
@@ -105,13 +103,5 @@ interface IUiPoolDataProvider {
   function getReservesData(
     ILendingPoolAddressesProvider provider,
     address user
-  )
-    external
-    view
-    returns (
-      AggregatedReserveData[] memory,
-      UserReserveData[] memory,
-      uint256,
-      IncentivesControllerData memory
-    );
+  ) external view returns (AggregatedReserveData[] memory, UserReserveData[] memory, uint256, IncentivesControllerData memory);
 }

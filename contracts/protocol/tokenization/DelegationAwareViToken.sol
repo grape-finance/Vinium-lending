@@ -13,10 +13,7 @@ import {ViToken} from './ViToken.sol';
  */
 contract DelegationAwareViToken is ViToken {
   modifier onlyPoolAdmin() {
-    require(
-      _msgSender() == ILendingPool(_pool).getAddressesProvider().getPoolAdmin(),
-      Errors.CALLER_NOT_POOL_ADMIN
-    );
+    require(_msgSender() == ILendingPool(_pool).getAddressesProvider().getPoolAdmin(), Errors.CALLER_NOT_POOL_ADMIN);
     _;
   }
 

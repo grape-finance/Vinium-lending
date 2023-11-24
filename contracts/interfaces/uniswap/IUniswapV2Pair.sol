@@ -29,26 +29,11 @@ interface IUniswapV2Pair {
 
   function nonces(address owner) external view returns (uint);
 
-  function permit(
-    address owner,
-    address spender,
-    uint value,
-    uint deadline,
-    uint8 v,
-    bytes32 r,
-    bytes32 s
-  ) external;
+  function permit(address owner, address spender, uint value, uint deadline, uint8 v, bytes32 r, bytes32 s) external;
 
   event Mint(address indexed sender, uint amount0, uint amount1);
   event Burn(address indexed sender, uint amount0, uint amount1, address indexed to);
-  event Swap(
-    address indexed sender,
-    uint amount0In,
-    uint amount1In,
-    uint amount0Out,
-    uint amount1Out,
-    address indexed to
-  );
+  event Swap(address indexed sender, uint amount0In, uint amount1In, uint amount0Out, uint amount1Out, address indexed to);
   event Sync(uint112 reserve0, uint112 reserve1);
 
   function MINIMUM_LIQUIDITY() external pure returns (uint);
@@ -59,10 +44,7 @@ interface IUniswapV2Pair {
 
   function token1() external view returns (address);
 
-  function getReserves()
-    external
-    view
-    returns (uint256 reserve0, uint256 reserve1, uint256 blockTimestampLast);
+  function getReserves() external view returns (uint256 reserve0, uint256 reserve1, uint256 blockTimestampLast);
 
   function price0CumulativeLast() external view returns (uint);
 

@@ -24,13 +24,7 @@ contract MockParaSwapAugustus is IParaSwapAugustus {
     return address(TOKEN_TRANSFER_PROXY);
   }
 
-  function expectSwap(
-    address fromToken,
-    address toToken,
-    uint256 fromAmountMin,
-    uint256 fromAmountMax,
-    uint256 receivedAmount
-  ) external {
+  function expectSwap(address fromToken, address toToken, uint256 fromAmountMin, uint256 fromAmountMax, uint256 receivedAmount) external {
     _expectingSwap = true;
     _expectedFromToken = fromToken;
     _expectedToToken = toToken;
@@ -39,19 +33,11 @@ contract MockParaSwapAugustus is IParaSwapAugustus {
     _receivedAmount = receivedAmount;
   }
 
-  function swap(
-    address fromToken,
-    address toToken,
-    uint256 fromAmount,
-    uint256 toAmount
-  ) external returns (uint256) {
+  function swap(address fromToken, address toToken, uint256 fromAmount, uint256 toAmount) external returns (uint256) {
     require(_expectingSwap, 'Not expecting swap');
     require(fromToken == _expectedFromToken, 'Unexpected from token');
     require(toToken == _expectedToToken, 'Unexpected to token');
-    require(
-      fromAmount >= _expectedFromAmountMin && fromAmount <= _expectedFromAmountMax,
-      'From amount out of range'
-    );
+    require(fromAmount >= _expectedFromAmountMin && fromAmount <= _expectedFromAmountMax, 'From amount out of range');
     require(_receivedAmount >= toAmount, 'Received amount of tokens are less than expected');
     TOKEN_TRANSFER_PROXY.transferFrom(fromToken, msg.sender, address(this), fromAmount);
     MintableERC20(toToken).mint(_receivedAmount);

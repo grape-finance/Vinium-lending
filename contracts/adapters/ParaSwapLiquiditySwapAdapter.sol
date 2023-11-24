@@ -52,10 +52,7 @@ contract ParaSwapLiquiditySwapAdapter is BaseParaSwapSellAdapter, ReentrancyGuar
     bytes calldata params
   ) external override nonReentrant returns (bool) {
     require(msg.sender == address(LENDING_POOL), 'CALLER_MUST_BE_LENDING_POOL');
-    require(
-      assets.length == 1 && amounts.length == 1 && premiums.length == 1,
-      'FLASHLOAN_MULTIPLE_ASSETS_NOT_SUPPORTED'
-    );
+    require(assets.length == 1 && amounts.length == 1 && premiums.length == 1, 'FLASHLOAN_MULTIPLE_ASSETS_NOT_SUPPORTED');
 
     uint256 flashLoanAmount = amounts[0];
     uint256 premium = premiums[0];
@@ -68,10 +65,7 @@ contract ParaSwapLiquiditySwapAdapter is BaseParaSwapSellAdapter, ReentrancyGuar
       bytes memory swapCalldata,
       IParaSwapAugustus augustus,
       PermitSignature memory permitParams
-    ) = abi.decode(
-        params,
-        (IERC20Detailed, uint256, uint256, bytes, IParaSwapAugustus, PermitSignature)
-      );
+    ) = abi.decode(params, (IERC20Detailed, uint256, uint256, bytes, IParaSwapAugustus, PermitSignature));
 
     _swapLiquidity(
       swapAllBalanceOffset,
@@ -112,9 +106,7 @@ contract ParaSwapLiquiditySwapAdapter is BaseParaSwapSellAdapter, ReentrancyGuar
     IParaSwapAugustus augustus,
     PermitSignature calldata permitParams
   ) external nonReentrant {
-    IERC20WithPermit viToken = IERC20WithPermit(
-      _getReserveData(address(assetToSwapFrom)).viTokenAddress
-    );
+    IERC20WithPermit viToken = IERC20WithPermit(_getReserveData(address(assetToSwapFrom)).viTokenAddress);
 
     if (swapAllBalanceOffset != 0) {
       uint256 balance = viToken.balanceOf(msg.sender);
@@ -122,13 +114,7 @@ contract ParaSwapLiquiditySwapAdapter is BaseParaSwapSellAdapter, ReentrancyGuar
       amountToSwap = balance;
     }
 
-    _pullViTokenAndWithdraw(
-      address(assetToSwapFrom),
-      viToken,
-      msg.sender,
-      amountToSwap,
-      permitParams
-    );
+    _pullViTokenAndWithdraw(address(assetToSwapFrom), viToken, msg.sender, amountToSwap, permitParams);
 
     uint256 amountReceived = _sellOnParaSwap(
       swapAllBalanceOffset,
@@ -170,9 +156,7 @@ contract ParaSwapLiquiditySwapAdapter is BaseParaSwapSellAdapter, ReentrancyGuar
     IERC20Detailed assetToSwapTo,
     uint256 minAmountToReceive
   ) internal {
-    IERC20WithPermit viToken = IERC20WithPermit(
-      _getReserveData(address(assetToSwapFrom)).viTokenAddress
-    );
+    IERC20WithPermit viToken = IERC20WithPermit(_getReserveData(address(assetToSwapFrom)).viTokenAddress);
     uint256 amountToSwap = flashLoanAmount;
 
     uint256 balance = viToken.balanceOf(initiator);
@@ -198,13 +182,7 @@ contract ParaSwapLiquiditySwapAdapter is BaseParaSwapSellAdapter, ReentrancyGuar
     assetToSwapTo.safeApprove(address(LENDING_POOL), amountReceived);
     LENDING_POOL.deposit(address(assetToSwapTo), amountReceived, initiator, 0);
 
-    _pullViTokenAndWithdraw(
-      address(assetToSwapFrom),
-      viToken,
-      initiator,
-      amountToSwap.add(premium),
-      permitParams
-    );
+    _pullViTokenAndWithdraw(address(assetToSwapFrom), viToken, initiator, amountToSwap.add(premium), permitParams);
 
     // Repay flash loan
     assetToSwapFrom.safeApprove(address(LENDING_POOL), 0);

@@ -18,20 +18,14 @@ import {IViniumIncentivesController} from '../../interfaces/IViniumIncentivesCon
  * @dev Implementation of the interest bearing token for the Vinium protocol
  * @author Vinium
  */
-contract ViToken is
-  VersionedInitializable,
-  IncentivizedERC20('VITOKEN_IMPL', 'VITOKEN_IMPL', 0),
-  IViToken
-{
+contract ViToken is VersionedInitializable, IncentivizedERC20('VITOKEN_IMPL', 'VITOKEN_IMPL', 0), IViToken {
   using SafeMath for uint256;
   using WadRayMath for uint256;
   using SafeERC20 for IERC20;
 
   bytes public constant EIP712_REVISION = bytes('1');
-  bytes32 internal constant EIP712_DOMAIN =
-    keccak256('EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)');
-  bytes32 public constant PERMIT_TYPEHASH =
-    keccak256('Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)');
+  bytes32 internal constant EIP712_DOMAIN = keccak256('EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)');
+  bytes32 public constant PERMIT_TYPEHASH = keccak256('Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)');
 
   uint256 public constant VITOKEN_REVISION = 0x1;
 
@@ -54,9 +48,7 @@ contract ViToken is
     return VITOKEN_REVISION;
   }
 
-  function setIncentivesController(
-    IViniumIncentivesController incentivesController
-  ) external override onlyLendingPool {
+  function setIncentivesController(IViniumIncentivesController incentivesController) external override onlyLendingPool {
     _incentivesController = incentivesController;
   }
 
@@ -87,15 +79,7 @@ contract ViToken is
       chainId := chainid()
     }
 
-    DOMAIN_SEPARATOR = keccak256(
-      abi.encode(
-        EIP712_DOMAIN,
-        keccak256(bytes(viTokenName)),
-        keccak256(EIP712_REVISION),
-        chainId,
-        address(this)
-      )
-    );
+    DOMAIN_SEPARATOR = keccak256(abi.encode(EIP712_DOMAIN, keccak256(bytes(viTokenName)), keccak256(EIP712_REVISION), chainId, address(this)));
 
     _setName(viTokenName);
     _setSymbol(viTokenSymbol);
@@ -106,16 +90,7 @@ contract ViToken is
     _underlyingAsset = underlyingAsset;
     _incentivesController = incentivesController;
 
-    emit Initialized(
-      underlyingAsset,
-      address(pool),
-      treasury,
-      address(incentivesController),
-      viTokenDecimals,
-      viTokenName,
-      viTokenSymbol,
-      params
-    );
+    emit Initialized(underlyingAsset, address(pool), treasury, address(incentivesController), viTokenDecimals, viTokenName, viTokenSymbol, params);
   }
 
   /**
@@ -126,12 +101,7 @@ contract ViToken is
    * @param amount The amount being burned
    * @param index The new liquidity index of the reserve
    **/
-  function burn(
-    address user,
-    address receiverOfUnderlying,
-    uint256 amount,
-    uint256 index
-  ) external override onlyLendingPool {
+  function burn(address user, address receiverOfUnderlying, uint256 amount, uint256 index) external override onlyLendingPool {
     uint256 amountScaled = amount.rayDiv(index);
     require(amountScaled != 0, Errors.CT_INVALID_BURN_AMOUNT);
     _burn(user, amountScaled);
@@ -150,11 +120,7 @@ contract ViToken is
    * @param index The new liquidity index of the reserve
    * @return `true` if the the previous balance of the user was 0
    */
-  function mint(
-    address user,
-    uint256 amount,
-    uint256 index
-  ) external override onlyLendingPool returns (bool) {
+  function mint(address user, uint256 amount, uint256 index) external override onlyLendingPool returns (bool) {
     uint256 previousBalance = super.balanceOf(user);
 
     uint256 amountScaled = amount.rayDiv(index);
@@ -197,11 +163,7 @@ contract ViToken is
    * @param to The recipient
    * @param value The amount of tokens getting transferred
    **/
-  function transferOnLiquidation(
-    address from,
-    address to,
-    uint256 value
-  ) external override onlyLendingPool {
+  function transferOnLiquidation(address from, address to, uint256 value) external override onlyLendingPool {
     // Being a normal transfer, the Transfer() and BalanceTransfer() are emitted
     // so no need to emit a specific event here
     _transfer(from, to, value, false);
@@ -214,9 +176,7 @@ contract ViToken is
    * @param user The user whose balance is calculated
    * @return The balance of the user
    **/
-  function balanceOf(
-    address user
-  ) public view override(IncentivizedERC20, IERC20) returns (uint256) {
+  function balanceOf(address user) public view override(IncentivizedERC20, IERC20) returns (uint256) {
     return super.balanceOf(user).rayMul(_pool.getReserveNormalizedIncome(_underlyingAsset));
   }
 
@@ -236,9 +196,7 @@ contract ViToken is
    * @return The scaled balance of the user
    * @return The scaled balance and the scaled total supply
    **/
-  function getScaledUserBalanceAndSupply(
-    address user
-  ) external view override returns (uint256, uint256) {
+  function getScaledUserBalanceAndSupply(address user) external view override returns (uint256, uint256) {
     return (super.balanceOf(user), super.totalSupply());
   }
 
@@ -308,10 +266,7 @@ contract ViToken is
    * @param amount The amount getting transferred
    * @return The amount transferred
    **/
-  function transferUnderlyingTo(
-    address target,
-    uint256 amount
-  ) external override onlyLendingPool returns (uint256) {
+  function transferUnderlyingTo(address target, uint256 amount) external override onlyLendingPool returns (uint256) {
     IERC20(_underlyingAsset).safeTransfer(target, amount);
     return amount;
   }
@@ -334,25 +289,13 @@ contract ViToken is
    * @param s Signature param
    * @param r Signature param
    */
-  function permit(
-    address owner,
-    address spender,
-    uint256 value,
-    uint256 deadline,
-    uint8 v,
-    bytes32 r,
-    bytes32 s
-  ) external {
+  function permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external {
     require(owner != address(0), 'INVALID_OWNER');
     //solium-disable-next-line
     require(block.timestamp <= deadline, 'INVALID_EXPIRATION');
     uint256 currentValidNonce = _nonces[owner];
     bytes32 digest = keccak256(
-      abi.encodePacked(
-        '\x19\x01',
-        DOMAIN_SEPARATOR,
-        keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, value, currentValidNonce, deadline))
-      )
+      abi.encodePacked('\x19\x01', DOMAIN_SEPARATOR, keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, value, currentValidNonce, deadline)))
     );
     require(owner == ecrecover(digest, v, r, s), 'INVALID_SIGNATURE');
     _nonces[owner] = currentValidNonce.add(1);

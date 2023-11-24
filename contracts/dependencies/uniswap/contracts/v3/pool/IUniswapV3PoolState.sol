@@ -91,13 +91,7 @@ interface IUniswapV3PoolState {
   )
     external
     view
-    returns (
-      uint128 _liquidity,
-      uint256 feeGrowthInside0LastX128,
-      uint256 feeGrowthInside1LastX128,
-      uint128 tokensOwed0,
-      uint128 tokensOwed1
-    );
+    returns (uint128 _liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, uint128 tokensOwed0, uint128 tokensOwed1);
 
   /// @notice Returns data about a specific observation index
   /// @param index The element of the observations array to fetch
@@ -109,13 +103,5 @@ interface IUniswapV3PoolState {
   /// Returns initialized whether the observation has been initialized and the values are safe to use
   function observations(
     uint256 index
-  )
-    external
-    view
-    returns (
-      uint32 blockTimestamp,
-      int56 tickCumulative,
-      uint160 secondsPerLiquidityCumulativeX128,
-      bool initialized
-    );
+  ) external view returns (uint32 blockTimestamp, int56 tickCumulative, uint160 secondsPerLiquidityCumulativeX128, bool initialized);
 }

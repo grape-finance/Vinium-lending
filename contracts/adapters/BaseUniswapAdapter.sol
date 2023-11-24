@@ -64,13 +64,7 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
   ) external view override returns (uint256, uint256, uint256, uint256, address[] memory) {
     AmountCalc memory results = _getAmountsOutData(reserveIn, reserveOut, amountIn);
 
-    return (
-      results.calculatedAmount,
-      results.relativePrice,
-      results.amountInUsd,
-      results.amountOutUsd,
-      results.path
-    );
+    return (results.calculatedAmount, results.relativePrice, results.amountInUsd, results.amountOutUsd, results.path);
   }
 
   /**
@@ -90,13 +84,7 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
   ) external view override returns (uint256, uint256, uint256, uint256, address[] memory) {
     AmountCalc memory results = _getAmountsInData(reserveIn, reserveOut, amountOut);
 
-    return (
-      results.calculatedAmount,
-      results.relativePrice,
-      results.amountInUsd,
-      results.amountOutUsd,
-      results.path
-    );
+    return (results.calculatedAmount, results.relativePrice, results.amountInUsd, results.amountOutUsd, results.path);
   }
 
   /**
@@ -142,13 +130,7 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
       path[0] = assetToSwapFrom;
       path[1] = assetToSwapTo;
     }
-    uint256[] memory amounts = UNISWAP_ROUTER.swapExactTokensForTokens(
-      amountToSwap,
-      minAmountOut,
-      path,
-      address(this),
-      block.timestamp
-    );
+    uint256[] memory amounts = UNISWAP_ROUTER.swapExactTokensForTokens(amountToSwap, minAmountOut, path, address(this), block.timestamp);
 
     emit Swapped(assetToSwapFrom, assetToSwapTo, amounts[0], amounts[amounts.length - 1]);
 
@@ -200,13 +182,7 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
       path[1] = assetToSwapTo;
     }
 
-    uint256[] memory amounts = UNISWAP_ROUTER.swapTokensForExactTokens(
-      amountToReceive,
-      maxAmountToSwap,
-      path,
-      address(this),
-      block.timestamp
-    );
+    uint256[] memory amounts = UNISWAP_ROUTER.swapTokensForExactTokens(amountToReceive, maxAmountToSwap, path, address(this), block.timestamp);
 
     emit Swapped(assetToSwapFrom, assetToSwapTo, amounts[0], amounts[amounts.length - 1]);
 
@@ -246,13 +222,7 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
    * @param amount of tokens to be transferred to the contract
    * @param permitSignature struct containing the permit signature
    */
-  function _pullViToken(
-    address reserve,
-    address reserveViToken,
-    address user,
-    uint256 amount,
-    PermitSignature memory permitSignature
-  ) internal {
+  function _pullViToken(address reserve, address reserveViToken, address user, uint256 amount, PermitSignature memory permitSignature) internal {
     if (_usePermit(permitSignature)) {
       IERC20WithPermit(reserveViToken).permit(
         user,
@@ -279,8 +249,7 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
    * @return whether or not permit should be called
    */
   function _usePermit(PermitSignature memory signature) internal pure returns (bool) {
-    return
-      !(uint256(signature.deadline) == uint256(signature.v) && uint256(signature.deadline) == 0);
+    return !(uint256(signature.deadline) == uint256(signature.v) && uint256(signature.deadline) == 0);
   }
 
   /**
@@ -290,11 +259,7 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
    * @param decimals Decimals of the reserve
    * @return whether or not permit should be called
    */
-  function _calcUsdValue(
-    address reserve,
-    uint256 amount,
-    uint256 decimals
-  ) internal view returns (uint256) {
+  function _calcUsdValue(address reserve, uint256 amount, uint256 decimals) internal view returns (uint256) {
     uint256 ethUsdPrice = _getPrice(USD_ADDRESS);
     uint256 reservePrice = _getPrice(reserve);
 
@@ -312,11 +277,7 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
    *   uint256 In amount of reserveIn value denominated in USD (8 decimals)
    *   uint256 Out amount of reserveOut value denominated in USD (8 decimals)
    */
-  function _getAmountsOutData(
-    address reserveIn,
-    address reserveOut,
-    uint256 amountIn
-  ) internal view returns (AmountCalc memory) {
+  function _getAmountsOutData(address reserveIn, address reserveOut, uint256 amountIn) internal view returns (AmountCalc memory) {
     // Subtract flash loan fee
     uint256 finalAmountIn = amountIn.sub(amountIn.mul(FLASHLOAN_PREMIUM_TOTAL).div(10000));
 
@@ -348,9 +309,7 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
       pathWithWeth[1] = WETH_ADDRESS;
       pathWithWeth[2] = reserveOut;
 
-      try UNISWAP_ROUTER.getAmountsOut(finalAmountIn, pathWithWeth) returns (
-        uint256[] memory resultsWithWeth
-      ) {
+      try UNISWAP_ROUTER.getAmountsOut(finalAmountIn, pathWithWeth) returns (uint256[] memory resultsWithWeth) {
         amountsWithWeth = resultsWithWeth;
       } catch {
         amountsWithWeth = new uint256[](3);
@@ -360,14 +319,10 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
     }
 
     uint256 bestAmountOut;
-    try UNISWAP_ROUTER.getAmountsOut(finalAmountIn, simplePath) returns (
-      uint256[] memory resultAmounts
-    ) {
+    try UNISWAP_ROUTER.getAmountsOut(finalAmountIn, simplePath) returns (uint256[] memory resultAmounts) {
       amountsWithoutWeth = resultAmounts;
 
-      bestAmountOut = (amountsWithWeth[2] > amountsWithoutWeth[1])
-        ? amountsWithWeth[2]
-        : amountsWithoutWeth[1];
+      bestAmountOut = (amountsWithWeth[2] > amountsWithoutWeth[1]) ? amountsWithWeth[2] : amountsWithoutWeth[1];
     } catch {
       amountsWithoutWeth = new uint256[](2);
       bestAmountOut = amountsWithWeth[2];
@@ -376,9 +331,7 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
     uint256 reserveInDecimals = _getDecimals(reserveIn);
     uint256 reserveOutDecimals = _getDecimals(reserveOut);
 
-    uint256 outPerInPrice = finalAmountIn.mul(10 ** 18).mul(10 ** reserveOutDecimals).div(
-      bestAmountOut.mul(10 ** reserveInDecimals)
-    );
+    uint256 outPerInPrice = finalAmountIn.mul(10 ** 18).mul(10 ** reserveOutDecimals).div(bestAmountOut.mul(10 ** reserveInDecimals));
 
     return
       AmountCalc(
@@ -386,9 +339,7 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
         outPerInPrice,
         _calcUsdValue(reserveIn, amountIn, reserveInDecimals),
         _calcUsdValue(reserveOut, bestAmountOut, reserveOutDecimals),
-        (bestAmountOut == 0) ? new address[](2) : (bestAmountOut == amountsWithoutWeth[1])
-          ? simplePath
-          : pathWithWeth
+        (bestAmountOut == 0) ? new address[](2) : (bestAmountOut == amountsWithoutWeth[1]) ? simplePath : pathWithWeth
       );
   }
 
@@ -403,11 +354,7 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
    *   uint256 In amount of reserveIn value denominated in USD (8 decimals)
    *   uint256 Out amount of reserveOut value denominated in USD (8 decimals)
    */
-  function _getAmountsInData(
-    address reserveIn,
-    address reserveOut,
-    uint256 amountOut
-  ) internal view returns (AmountCalc memory) {
+  function _getAmountsInData(address reserveIn, address reserveOut, uint256 amountOut) internal view returns (AmountCalc memory) {
     if (reserveIn == reserveOut) {
       // Add flash loan fee
       uint256 amountIn = amountOut.add(amountOut.mul(FLASHLOAN_PREMIUM_TOTAL).div(10000));
@@ -425,11 +372,7 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
         );
     }
 
-    (uint256[] memory amounts, address[] memory path) = _getAmountsInAndPath(
-      reserveIn,
-      reserveOut,
-      amountOut
-    );
+    (uint256[] memory amounts, address[] memory path) = _getAmountsInAndPath(reserveIn, reserveOut, amountOut);
 
     // Add flash loan fee
     uint256 finalAmountIn = amounts[0].add(amounts[0].mul(FLASHLOAN_PREMIUM_TOTAL).div(10000));
@@ -437,9 +380,7 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
     uint256 reserveInDecimals = _getDecimals(reserveIn);
     uint256 reserveOutDecimals = _getDecimals(reserveOut);
 
-    uint256 inPerOutPrice = amountOut.mul(10 ** 18).mul(10 ** reserveInDecimals).div(
-      finalAmountIn.mul(10 ** reserveOutDecimals)
-    );
+    uint256 inPerOutPrice = amountOut.mul(10 ** 18).mul(10 ** reserveInDecimals).div(finalAmountIn.mul(10 ** reserveOutDecimals));
 
     return
       AmountCalc(
@@ -458,11 +399,7 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
    * @param amountOut Amount of reserveOut
    * @return uint256[] amounts Array containing the amountIn and amountOut for a swap
    */
-  function _getAmountsInAndPath(
-    address reserveIn,
-    address reserveOut,
-    uint256 amountOut
-  ) internal view returns (uint256[] memory, address[] memory) {
+  function _getAmountsInAndPath(address reserveIn, address reserveOut, uint256 amountOut) internal view returns (uint256[] memory, address[] memory) {
     address[] memory simplePath = new address[](2);
     simplePath[0] = reserveIn;
     simplePath[1] = reserveOut;
@@ -476,9 +413,7 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
       pathWithWeth[1] = WETH_ADDRESS;
       pathWithWeth[2] = reserveOut;
 
-      try UNISWAP_ROUTER.getAmountsIn(amountOut, pathWithWeth) returns (
-        uint256[] memory resultsWithWeth
-      ) {
+      try UNISWAP_ROUTER.getAmountsIn(amountOut, pathWithWeth) returns (uint256[] memory resultsWithWeth) {
         amountsWithWeth = resultsWithWeth;
       } catch {
         amountsWithWeth = new uint256[](3);
@@ -487,15 +422,11 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
       amountsWithWeth = new uint256[](3);
     }
 
-    try UNISWAP_ROUTER.getAmountsIn(amountOut, simplePath) returns (
-      uint256[] memory resultAmounts
-    ) {
+    try UNISWAP_ROUTER.getAmountsIn(amountOut, simplePath) returns (uint256[] memory resultAmounts) {
       amountsWithoutWeth = resultAmounts;
 
       return
-        (amountsWithWeth[0] < amountsWithoutWeth[0] && amountsWithWeth[0] != 0)
-          ? (amountsWithWeth, pathWithWeth)
-          : (amountsWithoutWeth, simplePath);
+        (amountsWithWeth[0] < amountsWithoutWeth[0] && amountsWithWeth[0] != 0) ? (amountsWithWeth, pathWithWeth) : (amountsWithoutWeth, simplePath);
     } catch {
       return (amountsWithWeth, pathWithWeth);
     }
@@ -508,12 +439,7 @@ abstract contract BaseUniswapAdapter is FlashLoanReceiverBase, IBaseUniswapAdapt
    * @param amountOut Amount of reserveOut
    * @return uint256[] amounts Array containing the amountIn and amountOut for a swap
    */
-  function _getAmountsIn(
-    address reserveIn,
-    address reserveOut,
-    uint256 amountOut,
-    bool useEthPath
-  ) internal view returns (uint256[] memory) {
+  function _getAmountsIn(address reserveIn, address reserveOut, uint256 amountOut, bool useEthPath) internal view returns (uint256[] memory) {
     address[] memory path;
 
     if (useEthPath) {

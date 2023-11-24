@@ -38,11 +38,7 @@ contract WETHGateway is IWETHGateway, Ownable {
    * @param onBehalfOf address of the user who will receive the viTokens representing the deposit
    * @param referralCode integrators are assigned a referral code and can potentially receive rewards.
    **/
-  function depositETH(
-    address lendingPool,
-    address onBehalfOf,
-    uint16 referralCode
-  ) external payable override {
+  function depositETH(address lendingPool, address onBehalfOf, uint16 referralCode) external payable override {
     WETH.deposit{value: msg.value}();
     ILendingPool(lendingPool).deposit(address(WETH), msg.value, onBehalfOf, referralCode);
   }
@@ -54,9 +50,7 @@ contract WETHGateway is IWETHGateway, Ownable {
    * @param to address of the user who will receive native ETH
    */
   function withdrawETH(address lendingPool, uint256 amount, address to) external override {
-    IViToken aWETH = IViToken(
-      ILendingPool(lendingPool).getReserveData(address(WETH)).viTokenAddress
-    );
+    IViToken aWETH = IViToken(ILendingPool(lendingPool).getReserveData(address(WETH)).viTokenAddress);
     uint256 userBalance = aWETH.balanceOf(msg.sender);
     uint256 amountToWithdraw = amount;
 
@@ -77,21 +71,13 @@ contract WETHGateway is IWETHGateway, Ownable {
    * @param rateMode the rate mode to repay
    * @param onBehalfOf the address for which msg.sender is repaying
    */
-  function repayETH(
-    address lendingPool,
-    uint256 amount,
-    uint256 rateMode,
-    address onBehalfOf
-  ) external payable override {
+  function repayETH(address lendingPool, uint256 amount, uint256 rateMode, address onBehalfOf) external payable override {
     (uint256 stableDebt, uint256 variableDebt) = Helpers.getUserCurrentDebtMemory(
       onBehalfOf,
       ILendingPool(lendingPool).getReserveData(address(WETH))
     );
 
-    uint256 paybackAmount = DataTypes.InterestRateMode(rateMode) ==
-      DataTypes.InterestRateMode.STABLE
-      ? stableDebt
-      : variableDebt;
+    uint256 paybackAmount = DataTypes.InterestRateMode(rateMode) == DataTypes.InterestRateMode.STABLE ? stableDebt : variableDebt;
 
     if (amount < paybackAmount) {
       paybackAmount = amount;
@@ -111,19 +97,8 @@ contract WETHGateway is IWETHGateway, Ownable {
    * @param interesRateMode the interest rate mode
    * @param referralCode integrators are assigned a referral code and can potentially receive rewards
    */
-  function borrowETH(
-    address lendingPool,
-    uint256 amount,
-    uint256 interesRateMode,
-    uint16 referralCode
-  ) external override {
-    ILendingPool(lendingPool).borrow(
-      address(WETH),
-      amount,
-      interesRateMode,
-      referralCode,
-      msg.sender
-    );
+  function borrowETH(address lendingPool, uint256 amount, uint256 interesRateMode, uint16 referralCode) external override {
+    ILendingPool(lendingPool).borrow(address(WETH), amount, interesRateMode, referralCode, msg.sender);
     WETH.withdraw(amount);
     _safeTransferETH(msg.sender, amount);
   }

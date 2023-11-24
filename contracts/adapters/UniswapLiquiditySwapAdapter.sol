@@ -153,17 +153,9 @@ contract UniswapLiquiditySwapAdapter is BaseUniswapAdapter {
       vars.viToken = _getReserveData(assetToSwapFromList[vars.i]).viTokenAddress;
 
       vars.viTokenInitiatorBalance = IERC20(vars.viToken).balanceOf(msg.sender);
-      vars.amountToSwap = amountToSwapList[vars.i] > vars.viTokenInitiatorBalance
-        ? vars.viTokenInitiatorBalance
-        : amountToSwapList[vars.i];
+      vars.amountToSwap = amountToSwapList[vars.i] > vars.viTokenInitiatorBalance ? vars.viTokenInitiatorBalance : amountToSwapList[vars.i];
 
-      _pullViToken(
-        assetToSwapFromList[vars.i],
-        vars.viToken,
-        msg.sender,
-        vars.amountToSwap,
-        permitParams[vars.i]
-      );
+      _pullViToken(assetToSwapFromList[vars.i], vars.viToken, msg.sender, vars.amountToSwap, permitParams[vars.i]);
 
       vars.receivedAmount = _swapExactTokensForTokens(
         assetToSwapFromList[vars.i],
@@ -217,17 +209,9 @@ contract UniswapLiquiditySwapAdapter is BaseUniswapAdapter {
     vars.viToken = _getReserveData(assetFrom).viTokenAddress;
 
     vars.viTokenInitiatorBalance = IERC20(vars.viToken).balanceOf(initiator);
-    vars.amountToSwap = swapAllBalance && vars.viTokenInitiatorBalance.sub(premium) <= amount
-      ? vars.viTokenInitiatorBalance.sub(premium)
-      : amount;
+    vars.amountToSwap = swapAllBalance && vars.viTokenInitiatorBalance.sub(premium) <= amount ? vars.viTokenInitiatorBalance.sub(premium) : amount;
 
-    vars.receivedAmount = _swapExactTokensForTokens(
-      assetFrom,
-      assetTo,
-      vars.amountToSwap,
-      minAmountToReceive,
-      useEthPath
-    );
+    vars.receivedAmount = _swapExactTokensForTokens(assetFrom, assetTo, vars.amountToSwap, minAmountToReceive, useEthPath);
 
     // Deposit new reserve
     IERC20(assetTo).safeApprove(address(LENDING_POOL), 0);
@@ -269,18 +253,8 @@ contract UniswapLiquiditySwapAdapter is BaseUniswapAdapter {
       bytes32[] memory r,
       bytes32[] memory s,
       bool[] memory useEthPath
-    ) = abi.decode(
-        params,
-        (address[], uint256[], bool[], uint256[], uint256[], uint8[], bytes32[], bytes32[], bool[])
-      );
+    ) = abi.decode(params, (address[], uint256[], bool[], uint256[], uint256[], uint8[], bytes32[], bytes32[], bool[]));
 
-    return
-      SwapParams(
-        assetToSwapToList,
-        minAmountsToReceive,
-        swapAllBalance,
-        PermitParams(permitAmount, deadline, v, r, s),
-        useEthPath
-      );
+    return SwapParams(assetToSwapToList, minAmountsToReceive, swapAllBalance, PermitParams(permitAmount, deadline, v, r, s), useEthPath);
   }
 }

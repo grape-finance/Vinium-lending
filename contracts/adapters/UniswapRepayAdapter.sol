@@ -118,34 +118,17 @@ contract UniswapRepayAdapter is BaseUniswapAdapter {
       }
 
       // Get exact collateral needed for the swap to avoid leftovers
-      uint256[] memory amounts = _getAmountsIn(
-        collateralAsset,
-        debtAsset,
-        amountToRepay,
-        useEthPath
-      );
+      uint256[] memory amounts = _getAmountsIn(collateralAsset, debtAsset, amountToRepay, useEthPath);
       require(amounts[0] <= maxCollateralToSwap, 'slippage too high');
 
       // Pull viTokens from user
-      _pullViToken(
-        collateralAsset,
-        collateralReserveData.viTokenAddress,
-        msg.sender,
-        amounts[0],
-        permitSignature
-      );
+      _pullViToken(collateralAsset, collateralReserveData.viTokenAddress, msg.sender, amounts[0], permitSignature);
 
       // Swap collateral for debt asset
       _swapTokensForExactTokens(collateralAsset, debtAsset, amounts[0], amountToRepay, useEthPath);
     } else {
       // Pull viTokens from user
-      _pullViToken(
-        collateralAsset,
-        collateralReserveData.viTokenAddress,
-        msg.sender,
-        amountToRepay,
-        permitSignature
-      );
+      _pullViToken(collateralAsset, collateralReserveData.viTokenAddress, msg.sender, amountToRepay, permitSignature);
     }
 
     // Repay debt. Approves 0 first to comply with tokens that implement the anti frontrunning approval fix
@@ -193,40 +176,17 @@ contract UniswapRepayAdapter is BaseUniswapAdapter {
       }
 
       uint256 neededForFlashLoanDebt = repaidAmount.add(premium);
-      uint256[] memory amounts = _getAmountsIn(
-        collateralAsset,
-        debtAsset,
-        neededForFlashLoanDebt,
-        useEthPath
-      );
+      uint256[] memory amounts = _getAmountsIn(collateralAsset, debtAsset, neededForFlashLoanDebt, useEthPath);
       require(amounts[0] <= maxCollateralToSwap, 'slippage too high');
 
       // Pull viTokens from user
-      _pullViToken(
-        collateralAsset,
-        collateralReserveData.viTokenAddress,
-        initiator,
-        amounts[0],
-        permitSignature
-      );
+      _pullViToken(collateralAsset, collateralReserveData.viTokenAddress, initiator, amounts[0], permitSignature);
 
       // Swap collateral asset to the debt asset
-      _swapTokensForExactTokens(
-        collateralAsset,
-        debtAsset,
-        amounts[0],
-        neededForFlashLoanDebt,
-        useEthPath
-      );
+      _swapTokensForExactTokens(collateralAsset, debtAsset, amounts[0], neededForFlashLoanDebt, useEthPath);
     } else {
       // Pull viTokens from user
-      _pullViToken(
-        collateralAsset,
-        collateralReserveData.viTokenAddress,
-        initiator,
-        repaidAmount.add(premium),
-        permitSignature
-      );
+      _pullViToken(collateralAsset, collateralReserveData.viTokenAddress, initiator, repaidAmount.add(premium), permitSignature);
     }
 
     // Repay flashloan. Approves for 0 first to comply with tokens that implement the anti frontrunning approval fix.
@@ -259,18 +219,8 @@ contract UniswapRepayAdapter is BaseUniswapAdapter {
       bytes32 r,
       bytes32 s,
       bool useEthPath
-    ) = abi.decode(
-        params,
-        (address, uint256, uint256, uint256, uint256, uint8, bytes32, bytes32, bool)
-      );
+    ) = abi.decode(params, (address, uint256, uint256, uint256, uint256, uint8, bytes32, bytes32, bool));
 
-    return
-      RepayParams(
-        collateralAsset,
-        collateralAmount,
-        rateMode,
-        PermitSignature(permitAmount, deadline, v, r, s),
-        useEthPath
-      );
+    return RepayParams(collateralAsset, collateralAmount, rateMode, PermitSignature(permitAmount, deadline, v, r, s), useEthPath);
   }
 }

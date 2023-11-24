@@ -34,13 +34,7 @@ contract ViniumOracle is IPriceOracleGetter, Ownable {
   ///        aggregator is not consistent
   /// @param baseCurrency the base currency used for the price quotes. If USD is used, base currency is 0x0
   /// @param baseCurrencyUnit the unit of the base currency
-  constructor(
-    address[] memory assets,
-    address[] memory sources,
-    address fallbackOracle,
-    address baseCurrency,
-    uint256 baseCurrencyUnit
-  ) public {
+  constructor(address[] memory assets, address[] memory sources, address fallbackOracle, address baseCurrency, uint256 baseCurrencyUnit) public {
     _setFallbackOracle(fallbackOracle);
     _setAssetsSources(assets, sources);
     BASE_CURRENCY = baseCurrency;
@@ -51,10 +45,7 @@ contract ViniumOracle is IPriceOracleGetter, Ownable {
   /// @notice External function called by the Vinium governance to set or replace sources of assets
   /// @param assets The addresses of the assets
   /// @param sources The address of the source of each asset
-  function setAssetSources(
-    address[] calldata assets,
-    address[] calldata sources
-  ) external onlyOwner {
+  function setAssetSources(address[] calldata assets, address[] calldata sources) external onlyOwner {
     _setAssetsSources(assets, sources);
   }
 

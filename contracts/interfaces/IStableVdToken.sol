@@ -43,14 +43,7 @@ interface IStableVdToken is IInitializableVdToken {
    * @param avgStableRate The new average stable rate after the burning
    * @param newTotalSupply The new total supply of the stable debt token after the action
    **/
-  event Burn(
-    address indexed user,
-    uint256 amount,
-    uint256 currentBalance,
-    uint256 balanceIncrease,
-    uint256 avgStableRate,
-    uint256 newTotalSupply
-  );
+  event Burn(address indexed user, uint256 amount, uint256 currentBalance, uint256 balanceIncrease, uint256 avgStableRate, uint256 newTotalSupply);
 
   /**
    * @dev Mints debt token to the `onBehalfOf` address.
@@ -62,12 +55,7 @@ interface IStableVdToken is IInitializableVdToken {
    * @param amount The amount of debt tokens to mint
    * @param rate The rate of the debt being minted
    **/
-  function mint(
-    address user,
-    address onBehalfOf,
-    uint256 amount,
-    uint256 rate
-  ) external returns (bool);
+  function mint(address user, address onBehalfOf, uint256 amount, uint256 rate) external returns (bool);
 
   /**
    * @dev Burns debt of `user`

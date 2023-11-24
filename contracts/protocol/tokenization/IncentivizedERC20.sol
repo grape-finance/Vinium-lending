@@ -94,10 +94,7 @@ abstract contract IncentivizedERC20 is Context, IERC20, IERC20Detailed {
    * @param spender The user allowed to spend the owner's tokens
    * @return The amount of owner's tokens spender is allowed to spend
    **/
-  function allowance(
-    address owner,
-    address spender
-  ) public view virtual override returns (uint256) {
+  function allowance(address owner, address spender) public view virtual override returns (uint256) {
     return _allowances[owner][spender];
   }
 
@@ -118,17 +115,9 @@ abstract contract IncentivizedERC20 is Context, IERC20, IERC20Detailed {
    * @param amount The amount of tokens being transferred
    * @return `true` if the transfer succeeds, `false` otherwise
    **/
-  function transferFrom(
-    address sender,
-    address recipient,
-    uint256 amount
-  ) public virtual override returns (bool) {
+  function transferFrom(address sender, address recipient, uint256 amount) public virtual override returns (bool) {
     _transfer(sender, recipient, amount);
-    _approve(
-      sender,
-      _msgSender(),
-      _allowances[sender][_msgSender()].sub(amount, 'ERC20: transfer amount exceeds allowance')
-    );
+    _approve(sender, _msgSender(), _allowances[sender][_msgSender()].sub(amount, 'ERC20: transfer amount exceeds allowance'));
     emit Transfer(sender, recipient, amount);
     return true;
   }
@@ -150,18 +139,8 @@ abstract contract IncentivizedERC20 is Context, IERC20, IERC20Detailed {
    * @param subtractedValue The amount being subtracted to the allowance
    * @return `true`
    **/
-  function decreaseAllowance(
-    address spender,
-    uint256 subtractedValue
-  ) public virtual returns (bool) {
-    _approve(
-      _msgSender(),
-      spender,
-      _allowances[_msgSender()][spender].sub(
-        subtractedValue,
-        'ERC20: decreased allowance below zero'
-      )
-    );
+  function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool) {
+    _approve(_msgSender(), spender, _allowances[_msgSender()][spender].sub(subtractedValue, 'ERC20: decreased allowance below zero'));
     return true;
   }
 

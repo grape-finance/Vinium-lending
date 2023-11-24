@@ -14,11 +14,7 @@ import {Errors} from '../../libraries/helpers/Errors.sol';
  * @author Vinium
  */
 
-abstract contract VdTokenBase is
-  IncentivizedERC20('VDTOKEN_IMPL', 'VDTOKEN_IMPL', 0),
-  VersionedInitializable,
-  ICreditDelegationToken
-{
+abstract contract VdTokenBase is IncentivizedERC20('VDTOKEN_IMPL', 'VDTOKEN_IMPL', 0), VersionedInitializable, ICreditDelegationToken {
   using SafeMath for uint256;
   mapping(address => mapping(address => uint256)) internal _borrowAllowances;
 
@@ -48,10 +44,7 @@ abstract contract VdTokenBase is
    * @param toUser The user to give allowance to
    * @return the current allowance of toUser
    **/
-  function borrowAllowance(
-    address fromUser,
-    address toUser
-  ) external view override returns (uint256) {
+  function borrowAllowance(address fromUser, address toUser) external view override returns (uint256) {
     return _borrowAllowances[fromUser][toUser];
   }
 
@@ -65,10 +58,7 @@ abstract contract VdTokenBase is
     revert('TRANSFER_NOT_SUPPORTED');
   }
 
-  function allowance(
-    address owner,
-    address spender
-  ) public view virtual override returns (uint256) {
+  function allowance(address owner, address spender) public view virtual override returns (uint256) {
     owner;
     spender;
     revert('ALLOWANCE_NOT_SUPPORTED');
@@ -80,40 +70,27 @@ abstract contract VdTokenBase is
     revert('APPROVAL_NOT_SUPPORTED');
   }
 
-  function transferFrom(
-    address sender,
-    address recipient,
-    uint256 amount
-  ) public virtual override returns (bool) {
+  function transferFrom(address sender, address recipient, uint256 amount) public virtual override returns (bool) {
     sender;
     recipient;
     amount;
     revert('TRANSFER_NOT_SUPPORTED');
   }
 
-  function increaseAllowance(
-    address spender,
-    uint256 addedValue
-  ) public virtual override returns (bool) {
+  function increaseAllowance(address spender, uint256 addedValue) public virtual override returns (bool) {
     spender;
     addedValue;
     revert('ALLOWANCE_NOT_SUPPORTED');
   }
 
-  function decreaseAllowance(
-    address spender,
-    uint256 subtractedValue
-  ) public virtual override returns (bool) {
+  function decreaseAllowance(address spender, uint256 subtractedValue) public virtual override returns (bool) {
     spender;
     subtractedValue;
     revert('ALLOWANCE_NOT_SUPPORTED');
   }
 
   function _decreaseBorrowAllowance(address delegator, address delegatee, uint256 amount) internal {
-    uint256 newAllowance = _borrowAllowances[delegator][delegatee].sub(
-      amount,
-      Errors.BORROW_ALLOWANCE_NOT_ENOUGH
-    );
+    uint256 newAllowance = _borrowAllowances[delegator][delegatee].sub(amount, Errors.BORROW_ALLOWANCE_NOT_ENOUGH);
 
     _borrowAllowances[delegator][delegatee] = newAllowance;
 
