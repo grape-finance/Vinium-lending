@@ -70,6 +70,7 @@ export enum eContractid {
   MockAggregator = 'MockAggregator',
   LendingRateOracle = 'LendingRateOracle',
   ViniumOracle = 'ViniumOracle',
+  VaultTokenChainlinkPriceAdapter = 'VaultTokenChainlinkPriceAdapter',
   DefaultReserveInterestRateStrategy = 'DefaultReserveInterestRateStrategy',
   LendingPoolCollateralManager = 'LendingPoolCollateralManager',
   InitializableAdminUpgradeabilityProxy = 'InitializableAdminUpgradeabilityProxy',

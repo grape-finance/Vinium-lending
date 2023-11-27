@@ -13,6 +13,8 @@ yarn hardhat --network goerli deploy-UiPoolDataProviderV2 --verify
 yarn hardhat --network goerli deploy-UiIncentiveDataProviderV2 --verify
 yarn hardhat --network goerli full:multicall --verify
 
+yarn hardhat --network goerli dev:vault-oracle --vault 0xd8134205b0328f5676aaefb3b2a0dc15f4029d8c --oracle 0x0d79df66BE487753B02D015Fb622DED7f0E9798d  --verify 
+
 // LendingPoolAddressesProvider registry 0x810C2009F54C68EB0c90db4F14de20CDf9BD586F
 // LendingPoolAddressesProvider 0x8FC2aA21e1963CE9C12F07fc27AFe7681Dc3969b
 

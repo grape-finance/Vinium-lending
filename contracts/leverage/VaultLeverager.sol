@@ -59,17 +59,17 @@ contract Leverager {
   }
 
   /**
-   * @dev Loop the deposit and borrow of an asset
-   * @param vaultAsset depoist vault Asset to Lending pool
-   * @param underlyingAsset borrow underlyingAsset and mint to VaultContract to get vaultAsset
+   * @dev Loop the deposit and borrow
+   * deposit vaultAsset ( sDAI or sFrax ) to lending pool and borrow underlyingAsset ( dai or frax)
+   * mint underlyingAsset to erc4626 vaultContract and redeem vaultAsset
    * @param amount for the initial deposit
    * @param interestRateMode stable or variable borrow mode
    * @param borrowRatio Ratio of tokens to borrow
    * @param loopCount Repeat count for loop
    **/
   function vaultLoop(
-    address vaultAsset,
     address underlyingAsset,
+    address vaultAsset,
     uint256 amount,
     uint256 interestRateMode,
     uint256 borrowRatio,
@@ -94,7 +94,9 @@ contract Leverager {
   }
 
   /**
-   * @dev Loop the deposit and borrow of an asset
+   * @dev Loop the deposit and borrow
+   * deposit shareAsset ( stETH ) to lending pool and borrow underlyingAsset ( ETH )
+   * submit underlyingAsset to Lido Contract to get shareAsset
    * @param asset borrow ETH and submit Lido to get stETH
    * @param shareAsset deposit stETH to lendingPool and borrow ETH
    * @param amount for the initial deposit

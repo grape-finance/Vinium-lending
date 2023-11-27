@@ -68,6 +68,7 @@ import {
   EligibilityDataProviderFactory,
   MulticallFactory,
   LeveragerFactory,
+  VaultTokenChainlinkPriceAdapterFactory,
 } from '../types';
 import {
   withSaveAndVerify,
@@ -232,6 +233,14 @@ export const deployViniumOracle = async (
   args: [tEthereumAddress[], tEthereumAddress[], tEthereumAddress, tEthereumAddress, string],
   verify?: boolean
 ) => withSaveAndVerify(await new ViniumOracleFactory(await getFirstSigner()).deploy(...args), eContractid.ViniumOracle, args, verify);
+
+export const deployVaultPriceOracle = async (args: [tEthereumAddress, tEthereumAddress], verify?: boolean) =>
+  withSaveAndVerify(
+    await new VaultTokenChainlinkPriceAdapterFactory(await getFirstSigner()).deploy(...args),
+    eContractid.VaultTokenChainlinkPriceAdapter,
+    args,
+    verify
+  );
 
 export const deployLendingPoolCollateralManager = async (verify?: boolean) => {
   const collateralManagerImpl = await new LendingPoolCollateralManagerFactory(await getFirstSigner()).deploy();
