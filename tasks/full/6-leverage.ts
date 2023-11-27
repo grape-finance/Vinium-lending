@@ -28,25 +28,60 @@ task('full:deploy-leverager', 'Initialize lending pool configuration.')
         leverager = Leverager.address;
       }
 
-      // console.log('leverager :>> ', leverager);
+      console.log('leverager :>> ', leverager);
 
-      const ERC20Addr = '0x0B3924aBe2A9856e9b685c7788d15fFD465C3Dd4';
-      // const ERC20Contract = await MintableDelegationERC20Factory.connect(ERC20Addr, await getFirstSigner());
-      // await ERC20Contract.approve(leverager, ethers.constants.MaxInt256);
+      /************ Single Loop *************/
 
-      // console.log('approved');
+      // const ERC20Addr = '0xd8134205b0328f5676aaefb3b2a0dc15f4029d8c';
+      // // const ERC20Contract = await MintableDelegationERC20Factory.connect(ERC20Addr, await getFirstSigner());
+      // // await ERC20Contract.approve(leverager, ethers.constants.MaxInt256);
+
+      // // console.log('approved');
+
+      // const leveragerContract = await LeveragerFactory.connect(leverager, await getFirstSigner());
+
+      // // const debtToken = await leveragerContract.getVDebtToken(ERC20Addr);
+      // // console.log('debtToken :>> ', debtToken);
+      // // const debtTokenContract = await VariableVdTokenFactory.connect(debtToken, await getFirstSigner());
+
+      // // let tx = await debtTokenContract.approveDelegation(leveragerContract.address, ethers.constants.MaxInt256);
+      // // await tx.wait();
+      // console.log('approveDelegate');
+
+      // let tx = await leveragerContract.singleLoop(ERC20Addr, ethers.utils.parseUnits('50', 18), 2, 5000, 1);
+      // await tx.wait();
+      // console.log('loop');
+
+      /************ Vault Loop *************/
+
+      const underlyingAsset = '0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844';
+      const vaultAsset = '0xd8134205b0328f5676aaefb3b2a0dc15f4029d8c';
+      const vaultContract = await MintableDelegationERC20Factory.connect(vaultAsset, await getFirstSigner());
+      await vaultContract.approve(leverager, ethers.constants.MaxInt256);
+      // const underlyingContract = await MintableDelegationERC20Factory.connect(underlyingAsset, await getFirstSigner());
+      // await underlyingContract.approve(vaultAsset, ethers.constants.MaxInt256);
+
+      console.log('approved');
 
       const leveragerContract = await LeveragerFactory.connect(leverager, await getFirstSigner());
 
-      const debtToken = await leveragerContract.getVDebtToken(ERC20Addr);
-      console.log('debtToken :>> ', debtToken);
-      const debtTokenContract = await VariableVdTokenFactory.connect(debtToken, await getFirstSigner());
+      // let debtToken = await leveragerContract.getVDebtToken(underlyingAsset);
+      // console.log('debtToken :>> ', debtToken);
+      // let debtTokenContract = await VariableVdTokenFactory.connect(debtToken, await getFirstSigner());
 
       // let tx = await debtTokenContract.approveDelegation(leveragerContract.address, ethers.constants.MaxInt256);
       // await tx.wait();
-      console.log('approveDelegate');
+      // console.log('approveDelegate');
 
-      let tx = await leveragerContract.loop(ERC20Addr, ethers.utils.parseUnits('100', 6), 2, 5000, 2);
+      // debtToken = await leveragerContract.getVDebtToken(vaultAsset);
+      // console.log('debtToken :>> ', debtToken);
+      // debtTokenContract = await VariableVdTokenFactory.connect(debtToken, await getFirstSigner());
+
+      // tx = await debtTokenContract.approveDelegation(leveragerContract.address, ethers.constants.MaxInt256);
+      // await tx.wait();
+      // console.log('approveDelegate');
+
+      let tx = await leveragerContract.vaultLoop(underlyingAsset, vaultAsset, ethers.utils.parseUnits('50', 18), 2, 5000, 2);
       await tx.wait();
       console.log('loop');
     } catch (err) {

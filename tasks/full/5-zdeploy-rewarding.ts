@@ -29,7 +29,7 @@ import { chainlinkAggregatorProxy, chainlinkEthUsdAggregatorProxy } from '../../
 import { ethers } from 'ethers';
 import { ChefIncentivesControllerFactory, MultiFeeDistributionFactory } from '../../types';
 
-task('full:deploy-incentive-controller', 'Deploy Incentive Controller')
+task('full:deploy-rewarding', 'Deploy Incentive Controller')
   .addFlag('verify', 'Verify contracts at Etherscan')
   .addParam('pool', `Pool name to retrieve configuration, supported: ${Object.values(ConfigNames)}`)
   .setAction(async ({ verify, pool }, localBRE) => {
@@ -37,25 +37,8 @@ task('full:deploy-incentive-controller', 'Deploy Incentive Controller')
       await localBRE.run('set-DRE');
       const network = <eNetwork>localBRE.network.name;
       const poolConfig = loadPoolConfig(pool);
-      const {
-        OFTTokenAddress,
-        OFTEndpoint,
-        OFTTreasury,
-        LiquidityZap,
-        UniswapPoolHelper,
-        LockZap,
-        PriceProvider,
-        LockerList,
-        MultiFeeDistribution,
-        MiddleFeeDistribution,
-        EligibilityDataProvider,
-        IncentivesController,
-        WETH,
-        LendingPool,
-        ViniumOracle,
-        LendingPoolConfigurator,
-        ChainlinkAggregator,
-      } = poolConfig as ICommonConfiguration;
+      const { OFTTokenAddress, OFTEndpoint, OFTTreasury, MultiFeeDistribution, IncentivesController, LendingPoolConfigurator } =
+        poolConfig as ICommonConfiguration;
 
       let oftEndpoint = await getParamPerNetwork(OFTEndpoint, network);
       let oftTreasury = await getParamPerNetwork(OFTTreasury, network);
@@ -111,7 +94,7 @@ task('full:deploy-incentive-controller', 'Deploy Incentive Controller')
       // const ChefIncentivesController = ChefIncentivesControllerFactory.connect(incentivesController, await getFirstSigner());
       // await ChefIncentivesController.changeEmissionSchedule(startTimeOffset, rewardsPerSecond);
 
-      await upgradeMultiFeeDistribution([multiFeeDistribution!], verify);
+      // await upgradeMultiFeeDistribution([multiFeeDistribution!], verify);
     } catch (err) {
       console.error(err);
       exit(1);

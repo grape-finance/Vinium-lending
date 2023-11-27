@@ -38,9 +38,9 @@ task('full:add-new-tokens', 'Initialize lending pool configuration.')
 
       const reserveAssets = await getParamPerNetwork(ReserveAssets, network);
       const incentivesController = await getParamPerNetwork(IncentivesController, network);
-      const addressesProvider = await getLendingPoolAddressesProvider('0x8FC2aA21e1963CE9C12F07fc27AFe7681Dc3969b');
+      const addressesProvider = await getLendingPoolAddressesProvider('0x9b19Aa51Beb49EA4588Cf2C4d9165Aa6b4862675');
 
-      const testHelpers = await getViniumProtocolDataProvider();
+      const testHelpers = await getViniumProtocolDataProvider('0xB83C43da6B5fd6972e7cAdBC196F22a4825a1F20');
 
       const admin = await addressesProvider.getPoolAdmin();
       const oracle = await addressesProvider.getPriceOracle();
@@ -51,8 +51,6 @@ task('full:add-new-tokens', 'Initialize lending pool configuration.')
 
       const multiFeeDistribution = await getParamPerNetwork(MultiFeeDistribution, network);
       const treasuryAddress = await getTreasuryAddress(poolConfig);
-
-      console.log('treasuryAddress: ', treasuryAddress);
 
       await initReservesByHelper(
         ReservesConfig,
@@ -68,7 +66,7 @@ task('full:add-new-tokens', 'Initialize lending pool configuration.')
         pool,
         verify
       );
-      // await configureReservesByHelper(ReservesConfig, reserveAssets, testHelpers, admin);
+      await configureReservesByHelper(ReservesConfig, reserveAssets, testHelpers, admin);
 
       // let collateralManagerAddress = await getParamPerNetwork(LendingPoolCollateralManager, network);
       // if (!notFalsyOrZeroAddress(collateralManagerAddress)) {

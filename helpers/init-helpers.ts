@@ -35,7 +35,7 @@ export const initReservesByHelper = async (
   poolName: ConfigNames,
   verify: boolean
 ) => {
-  const addressProvider = await getLendingPoolAddressesProvider('0x8FC2aA21e1963CE9C12F07fc27AFe7681Dc3969b');
+  const addressProvider = await getLendingPoolAddressesProvider('0x9b19Aa51Beb49EA4588Cf2C4d9165Aa6b4862675');
 
   // CHUNK CONFIGURATION
   const initChunks = 1;
@@ -134,7 +134,7 @@ export const initReservesByHelper = async (
   const chunkedSymbols = chunk(reserveSymbols, initChunks);
   const chunkedInitInputParams = chunk(initInputParams, initChunks);
 
-  const configurator = await getLendingPoolConfiguratorProxy('0x741919447fFAa3f1038D881Ff9EEA9Fc908a2C30');
+  const configurator = await getLendingPoolConfiguratorProxy('0x5a0Da85d205F5b8d13fe6F1F35F77a3A663129B0');
 
   console.log(`- Reserves initialization in ${chunkedInitInputParams.length} txs`);
   for (let chunkIndex = 0; chunkIndex < chunkedInitInputParams.length; chunkIndex++) {
@@ -174,8 +174,8 @@ export const configureReservesByHelper = async (
   helpers: ViniumProtocolDataProvider,
   admin: tEthereumAddress
 ) => {
-  const addressProvider = await getLendingPoolAddressesProvider('0x8FC2aA21e1963CE9C12F07fc27AFe7681Dc3969b');
-  const vitokenAndRatesDeployer = await getViTokensAndRatesHelper('0xae3Be832c83CfDcae4fe494a7F998759B2c74832');
+  const addressProvider = await getLendingPoolAddressesProvider('0x9b19Aa51Beb49EA4588Cf2C4d9165Aa6b4862675');
+  const vitokenAndRatesDeployer = await getViTokensAndRatesHelper('0x79C4Bb15a4C873739Bf21180Fdd291cAA0D79008');
   const tokens: string[] = [];
   const symbols: string[] = [];
 
@@ -195,6 +195,9 @@ export const configureReservesByHelper = async (
   ] of Object.entries(reservesParams) as [string, IReserveParams][]) {
     if (!tokenAddresses[assetSymbol]) {
       console.log(`- Skipping init of ${assetSymbol} due token address is not set at markets config`);
+      continue;
+    }
+    if (assetSymbol === 'USDT') {
       continue;
     }
     if (baseLTVAsCollateral === '-1') continue;
@@ -225,7 +228,7 @@ export const configureReservesByHelper = async (
     // Set viTokenAndRatesDeployer as temporal admin
     await waitForTx(await addressProvider.setPoolAdmin(vitokenAndRatesDeployer.address));
 
-    // console.log('inputParams :>> ', inputParams);
+    console.log('inputParams :>> ', inputParams);
     // Deploy init per chunks
     const enableChunks = 20;
     const chunkedSymbols = chunk(symbols, enableChunks);

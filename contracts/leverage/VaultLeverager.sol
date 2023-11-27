@@ -16,7 +16,7 @@ interface ILido {
   function submit(address referal) external payable returns (uint256 shareAmount);
 }
 
-contract Leverager {
+contract VaultLeverager {
   using SafeMath for uint256;
   // using SafeERC20 for IERC20;
 

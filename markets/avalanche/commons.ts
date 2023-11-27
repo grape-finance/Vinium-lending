@@ -1,12 +1,5 @@
 import BigNumber from 'bignumber.js';
-import {
-  oneEther,
-  oneRay,
-  RAY,
-  ZERO_ADDRESS,
-  MOCK_CHAINLINK_AGGREGATORS_PRICES,
-  oneUsd,
-} from '../../helpers/constants';
+import { oneEther, oneRay, RAY, ZERO_ADDRESS, MOCK_CHAINLINK_AGGREGATORS_PRICES, oneUsd } from '../../helpers/constants';
 import { ICommonConfiguration, eAvalancheNetwork, eBaseNetwork, eEthereumNetwork } from '../../helpers/types';
 import {
   strategySAVAX,
@@ -15,7 +8,13 @@ import {
   strategyDAI,
   strategyWETH,
   strategyBTCB,
-  strategyGRAPE, strategyWAVAX, strategyWBTC, strategySDAI, strategyFRAX, strategySFRAX, strategySTETH,
+  strategyGRAPE,
+  strategyWAVAX,
+  strategyWBTC,
+  strategySDAI,
+  strategyFRAX,
+  strategySFRAX,
+  strategySTETH,
 } from './reservesConfigs';
 
 // ----------------
@@ -69,6 +68,9 @@ export const CommonsConfig: ICommonConfiguration = {
     WBTC: {
       borrowRate: oneRay.multipliedBy(0.03).toFixed(),
     },
+    SDAI: {
+      borrowRate: oneRay.multipliedBy(0.039).toFixed(),
+    },
     WAVAX: {
       borrowRate: oneRay.multipliedBy(0.05).toFixed(), // TODO: fix borrowRate?
     },
@@ -76,7 +78,6 @@ export const CommonsConfig: ICommonConfiguration = {
   // ----------------
   // COMMON PROTOCOL ADDRESSES ACROSS POOLS
   // ----------------
-
 
   // ViToken:{
   //   [eAvalancheNetwork.avalanche]: undefined,
@@ -107,24 +108,30 @@ export const CommonsConfig: ICommonConfiguration = {
     [eAvalancheNetwork.fuji]: '',
     [eEthereumNetwork.goerli]: '0x4Aa6Da4ca5d76e8d5e3ACD11B92Ab22D564F1fcb',
   },
-  LendingRateOracle: {
-    [eAvalancheNetwork.avalanche]: '0xCA3eb6E8c67a2B00C5B35E0Fd469d50712017279',
-    [eAvalancheNetwork.fuji]: '',
-  },
-  LendingPoolCollateralManager: {
+  LendingPool: {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '0xA1C15daD72746FE6e393b922e1769099e4Fc768d',
+    [eEthereumNetwork.goerli]: '0x94564E9ed93ef9c6970391b0183614670C924102',
   },
   LendingPoolConfigurator: {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '0x741919447fFAa3f1038D881Ff9EEA9Fc908a2C30',
+    [eEthereumNetwork.goerli]: '0x5a0Da85d205F5b8d13fe6F1F35F77a3A663129B0',
   },
-  LendingPool: {
+  ViniumOracle: {
+    [eAvalancheNetwork.avalanche]: '0xFC5C922b6A0137FD33E3604663aB468D15C9d4f5',
+    [eAvalancheNetwork.fuji]: '',
+    [eEthereumNetwork.goerli]: '0xF0e35d0852C9aA2f0F12B98500db9Be7ade9A09F',
+  },
+  LendingRateOracle: {
+    [eAvalancheNetwork.avalanche]: '0xCA3eb6E8c67a2B00C5B35E0Fd469d50712017279',
+    [eAvalancheNetwork.fuji]: '',
+    [eEthereumNetwork.goerli]: '0x41A889c900682054E1E5f01D6f61C3bE37eB5d11',
+  },
+  LendingPoolCollateralManager: {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '0xb4705bb618fa64EEff3009d68A5696bc1Bda0E53',    
+    [eEthereumNetwork.goerli]: '0x4dF6741d1d6311A4BA6A32eaF8aa000f754dd481',
   },
   WethGateway: {
     [eAvalancheNetwork.avalanche]: '',
@@ -135,12 +142,7 @@ export const CommonsConfig: ICommonConfiguration = {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
   },
-  ViniumOracle: {
-    [eAvalancheNetwork.avalanche]: '0xFC5C922b6A0137FD33E3604663aB468D15C9d4f5',
-    [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '0xec93F9B4Ae488346bB259e2308272E6c8798D2BF',
-    
-  },
+
   FallbackOracle: {
     [eAvalancheNetwork.avalanche]: ZERO_ADDRESS,
     [eAvalancheNetwork.fuji]: ZERO_ADDRESS,
@@ -167,10 +169,11 @@ export const CommonsConfig: ICommonConfiguration = {
       USD: '0x86d67c3D38D2bCeE722E601025C25a575021c6EA',
     },
     [eEthereumNetwork.goerli]: {
-      WETH: '0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e', 
-      WBTC: "0xA39434A63A52E749F02807ae27335515BA4b07F7", 
-      DAI: "0x0d79df66BE487753B02D015Fb622DED7f0E9798d", 
-      USDT: '0xAb5c49580294Aff77670F839ea425f5b78ab3Ae7', 
+      WETH: '0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e',
+      WBTC: '0xA39434A63A52E749F02807ae27335515BA4b07F7',
+      DAI: '0x0d79df66BE487753B02D015Fb622DED7f0E9798d',
+      USDT: '0xAb5c49580294Aff77670F839ea425f5b78ab3Ae7',
+      SDAI: '0x19021e5FBC32FDDC9D266a76dB90D14587c0c895',
     },
   },
   ReserveAssets: {
@@ -178,26 +181,26 @@ export const CommonsConfig: ICommonConfiguration = {
     [eAvalancheNetwork.fuji]: {},
     [eEthereumNetwork.goerli]: {
       WETH: '0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6', // Official WETH
-      WBTC: "0xbf781b25A4632C580A210b3A9D06F95a720d5672", // MintableERC20 token
-      DAI: "0x5810ecE5108924a8d793Dce0620fbF60C596aF77", // MintableERC20 token
+      DAI: '0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844', // DAI
+      WBTC: '0xbf781b25A4632C580A210b3A9D06F95a720d5672', // MintableERC20 token
       USDT: '0x0B3924aBe2A9856e9b685c7788d15fFD465C3Dd4', // MintableERC20 token
+      SDAI: '0xd8134205b0328f5676aaefb3b2a0dc15f4029d8c', // SDAI
     },
-    
   },
   ReservesConfig: {
     WETH: strategyWETH,
     WBTC: strategyWBTC,
     DAI: strategyDAI,
     USDT: strategyUSDT,
-    // SDAI: strategySDAI,
+    SDAI: strategySDAI,
     // FRAX: strategyFRAX,
     // SFRAX: strategySFRAX,
     // STETH: strategySTETH,
   },
-  ViToken:{
+  ViToken: {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '0x65aC3cB820Fff869c30351A912940AD5e8de0833',
+    [eEthereumNetwork.goerli]: '0x3655184F4A6629B8469Bbd86b27D72d9DFEF919A',
   },
   ViTokenDomainSeparator: {
     [eAvalancheNetwork.avalanche]: '',
@@ -207,7 +210,6 @@ export const CommonsConfig: ICommonConfiguration = {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
     [eEthereumNetwork.goerli]: '0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6',
-    
   },
   WrappedNativeToken: {
     [eAvalancheNetwork.avalanche]: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7', // Official WAVAX
@@ -246,11 +248,11 @@ export const CommonsConfig: ICommonConfiguration = {
   IncentivesController: {
     [eAvalancheNetwork.avalanche]: '0x4a40Cf33cc1D38fc1C4668F398eE17133f5c2636',
     [eAvalancheNetwork.fuji]: '0xa1EF206fb9a8D8186157FC817fCddcC47727ED55',
-    [eEthereumNetwork.goerli]: '0x283eB941249d80ABCFdB3e244BFAabd4c8C893fa',
+    [eEthereumNetwork.goerli]: '0x2E390c506f42e3d7Cf0C37255eB307A46D716E6b',
   },
   Leverager: {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '0xaFEC67611d2EAD0d86BF343e7e0206e4Aad7F923',
-  },
+    [eEthereumNetwork.goerli]: '0x39123B7DD37c3CAa038E31433312ab33a4643704',
+  }
 };
