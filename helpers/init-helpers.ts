@@ -197,6 +197,7 @@ export const configureReservesByHelper = async (
       console.log(`- Skipping init of ${assetSymbol} due token address is not set at markets config`);
       continue;
     }
+    // TODO : need to remove it. just for testing.
     if (assetSymbol === 'USDT') {
       continue;
     }

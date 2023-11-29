@@ -36,8 +36,8 @@ yarn hardhat --network goerli dev:vault-oracle --verify
 // StableVdToken 0x36a7f6b3E30BE142253e9aB7Fb0b0f6Ab7434809
 // VariableVdToken 0xFe8fC8B4473ee183860e9aa2b3bcF6481564FC95
 
-// ViniumOracle 0xF0e35d0852C9aA2f0F12B98500db9Be7ade9A09F
-// LendingRateOracle 0x41A889c900682054E1E5f01D6f61C3bE37eB5d11
+// ViniumOracle 0xb2906D0c42bbc0D2FAEA4C5Ea95c3885C6BeD8f7
+// LendingRateOracle 0x60DCbf2456Ff7dC4698291BBc46a41E00dBE59fF
 
 // ViniumProtocolDataProvider 0xB83C43da6B5fd6972e7cAdBC196F22a4825a1F20
 // WETHGateway 0xe2ebf2D930D0Bf680A7167bAaF623e9B312E6a06
@@ -56,6 +56,6 @@ yarn hardhat --network goerli dev:vault-oracle --verify
 // Vinium-ETH LP 0xa8e21cbe7c32cb2131a1a25c56042e2dd4f1b1ce
 // MultiFeeDistribution 0x2134E090f1172383eEcCd77B2d63f32e689b9a82
 // ChefIncentiveController 0x2E390c506f42e3d7Cf0C37255eB307A46D716E6b
-// Leverager 0x6d1aB4ec1b5DFf53F8fdDed3CB62f12495e41Ae4
+// Leverager 0xAC33f2C33e9746Ab5fC18e4b7F8319B22130e222
 
 // Old Incentive Controller 0xDf405Ef49410a6c4D2bc95D48f78416a1582E256

@@ -11,13 +11,15 @@ import {IWETH} from '../interfaces/IWETH.sol';
 
 import {SafeERC20} from '../dependencies/openzeppelin/contracts/SafeERC20.sol';
 
-interface ILido {
-  function submit(address referal) external payable returns (uint256 shareAmount);
+interface ILiquidStakingAsset is IERC20 {
+  // function submit(address referal) external payable returns (uint256 shareAmount);
+  function deposit() external payable;
 }
 
 contract Leverager {
   using SafeMath for uint256;
   // using SafeERC20 for IERC20;
+  // using SafeERC20 for IERC4626;
   // using SafeERC20 for IERC4626;
 
   uint256 public constant BORROW_RATIO_DECIMALS = 4;
@@ -28,6 +30,10 @@ contract Leverager {
   constructor(ILendingPool _lendingPool) {
     lendingPool = _lendingPool;
   }
+
+  receive() external payable {}
+
+  fallback() external payable {}
 
   /**
    * @dev Returns the configuration of the reserve
@@ -66,7 +72,7 @@ contract Leverager {
    * @param borrowRatio Ratio of tokens to borrow
    * @param loopCount Repeat count for loop
    **/
-  function singleLoop(address asset, uint256 amount, uint256 interestRateMode, uint256 borrowRatio, uint256 loopCount) external {
+  function singleTokenLoop(address asset, uint256 amount, uint256 interestRateMode, uint256 borrowRatio, uint256 loopCount) external {
     uint16 referralCode = 0;
     IERC20(asset).transferFrom(msg.sender, address(this), amount);
     IERC20(asset).approve(address(lendingPool), type(uint256).max);
@@ -90,7 +96,7 @@ contract Leverager {
    * @param borrowRatio Ratio of tokens to borrow
    * @param loopCount Repeat count for loop
    **/
-  function vaultLoop(
+  function vaultTokenLoop(
     address underlyingAsset,
     address vaultAsset,
     uint256 amount,
@@ -119,39 +125,41 @@ contract Leverager {
 
   /**
    * @dev Loop the deposit and borrow
-   * deposit shareAsset ( stETH ) to lending pool and borrow underlyingAsset ( ETH )
-   * submit underlyingAsset to Lido Contract to get shareAsset
-   * @param asset borrow ETH and submit Lido to get stETH
-   * @param shareAsset deposit stETH to lendingPool and borrow ETH
+   * deposit liquidStakingAsset ( stETH ) to lending pool and borrow underlyingAsset ( ETH )
+   * mint eth to liquid staking contract to get stETH
+   * @param weth borrow ETH and mint Liquid Token (stETH)
+   * @param liquidStakingAsset deposit stETH to lendingPool and borrow ETH
    * @param amount for the initial deposit
    * @param interestRateMode stable or variable borrow mode
    * @param borrowRatio Ratio of tokens to borrow
    * @param loopCount Repeat count for loop
    **/
 
-  function lidoLoop(
-    address asset, // ETH
-    address shareAsset, // stETH
-    address lidoAddr,
+  function liquidStakingTokenLoop(
+    address weth, // ETH
+    address liquidStakingAsset, // stETH
     uint256 amount,
     uint256 interestRateMode,
     uint256 borrowRatio,
     uint256 loopCount
   ) external {
     uint16 referralCode = 0;
-    IERC20(shareAsset).transferFrom(msg.sender, address(this), amount);
+    IERC20(liquidStakingAsset).transferFrom(msg.sender, address(this), amount);
+    IERC20(liquidStakingAsset).approve(address(lendingPool), type(uint256).max);
 
-    lendingPool.deposit(shareAsset, amount, msg.sender, referralCode);
+    lendingPool.deposit(liquidStakingAsset, amount, msg.sender, referralCode);
 
     for (uint256 i = 0; i < loopCount; i += 1) {
       amount = amount.mul(borrowRatio).div(10 ** BORROW_RATIO_DECIMALS);
-      lendingPool.borrow(asset, amount, interestRateMode, referralCode, msg.sender);
+      lendingPool.borrow(weth, amount, interestRateMode, referralCode, msg.sender);
 
-      IWETH(asset).withdraw(amount);
+      IWETH(weth).withdraw(amount);
 
-      ILido(lidoAddr).submit{value: amount}(msg.sender);
+      uint256 _oldBalance = ILiquidStakingAsset(liquidStakingAsset).balanceOf(address(this));
+      ILiquidStakingAsset(liquidStakingAsset).deposit{value: amount}();
+      amount = ILiquidStakingAsset(liquidStakingAsset).balanceOf(address(this)) - _oldBalance;
 
-      lendingPool.deposit(shareAsset, amount, msg.sender, referralCode);
+      lendingPool.deposit(liquidStakingAsset, amount, msg.sender, referralCode);
     }
   }
 }

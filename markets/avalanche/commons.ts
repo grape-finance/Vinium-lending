@@ -15,6 +15,7 @@ import {
   strategyFRAX,
   strategySFRAX,
   strategySTETH,
+  strategySWETH,
 } from './reservesConfigs';
 
 // ----------------
@@ -71,6 +72,12 @@ export const CommonsConfig: ICommonConfiguration = {
     SDAI: {
       borrowRate: oneRay.multipliedBy(0.039).toFixed(),
     },
+    STETH: {
+      borrowRate: oneRay.multipliedBy(0.039).toFixed(),
+    },
+    SWETH: {
+      borrowRate: oneRay.multipliedBy(0.039).toFixed(),
+    },
     WAVAX: {
       borrowRate: oneRay.multipliedBy(0.05).toFixed(), // TODO: fix borrowRate?
     },
@@ -121,12 +128,12 @@ export const CommonsConfig: ICommonConfiguration = {
   ViniumOracle: {
     [eAvalancheNetwork.avalanche]: '0xFC5C922b6A0137FD33E3604663aB468D15C9d4f5',
     [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '0xF0e35d0852C9aA2f0F12B98500db9Be7ade9A09F',
+    [eEthereumNetwork.goerli]: '0xb2906D0c42bbc0D2FAEA4C5Ea95c3885C6BeD8f7',
   },
   LendingRateOracle: {
     [eAvalancheNetwork.avalanche]: '0xCA3eb6E8c67a2B00C5B35E0Fd469d50712017279',
     [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '0x41A889c900682054E1E5f01D6f61C3bE37eB5d11',
+    [eEthereumNetwork.goerli]: '0x60DCbf2456Ff7dC4698291BBc46a41E00dBE59fF',
   },
   LendingPoolCollateralManager: {
     [eAvalancheNetwork.avalanche]: '',
@@ -174,6 +181,8 @@ export const CommonsConfig: ICommonConfiguration = {
       DAI: '0x0d79df66BE487753B02D015Fb622DED7f0E9798d',
       USDT: '0xAb5c49580294Aff77670F839ea425f5b78ab3Ae7',
       SDAI: '0x19021e5FBC32FDDC9D266a76dB90D14587c0c895',
+      STETH: '0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e',
+      SWETH: '0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e',
     },
   },
   ReserveAssets: {
@@ -185,6 +194,8 @@ export const CommonsConfig: ICommonConfiguration = {
       WBTC: '0xbf781b25A4632C580A210b3A9D06F95a720d5672', // MintableERC20 token
       USDT: '0x0B3924aBe2A9856e9b685c7788d15fFD465C3Dd4', // MintableERC20 token
       SDAI: '0xd8134205b0328f5676aaefb3b2a0dc15f4029d8c', // SDAI
+      STETH: '0x1643E812aE58766192Cf7D2Cf9567dF2C37e9B7F', // STETH
+      SWETH: '0x8bb383A752Ff3c1d510625C6F536E3332327068F', // SWETH
     },
   },
   ReservesConfig: {
@@ -195,7 +206,8 @@ export const CommonsConfig: ICommonConfiguration = {
     SDAI: strategySDAI,
     // FRAX: strategyFRAX,
     // SFRAX: strategySFRAX,
-    // STETH: strategySTETH,
+    STETH: strategySTETH,
+    SWETH: strategySWETH,
   },
   ViToken: {
     [eAvalancheNetwork.avalanche]: '',
@@ -253,6 +265,6 @@ export const CommonsConfig: ICommonConfiguration = {
   Leverager: {
     [eAvalancheNetwork.avalanche]: '',
     [eAvalancheNetwork.fuji]: '',
-    [eEthereumNetwork.goerli]: '0x39123B7DD37c3CAa038E31433312ab33a4643704',
-  }
+    [eEthereumNetwork.goerli]: '0xAC33f2C33e9746Ab5fC18e4b7F8319B22130e222',
+  },
 };

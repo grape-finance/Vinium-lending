@@ -110,6 +110,18 @@ export const strategySTETH: IReserveParams = {
   reserveFactor: '1000',
 };
 
+export const strategySWETH: IReserveParams = {
+  strategy: rateStrategyVolatileOne,
+  baseLTVAsCollateral: '8000',
+  liquidationThreshold: '8250',
+  liquidationBonus: '10500',
+  borrowingEnabled: true,
+  stableBorrowRateEnabled: false,
+  reserveDecimals: '18',
+  viTokenImpl: eContractid.ViToken,
+  reserveFactor: '1000',
+};
+
 export const strategyBTCB: IReserveParams = {
   strategy: rateStrategyVolatileOne,
   baseLTVAsCollateral: '6000',
