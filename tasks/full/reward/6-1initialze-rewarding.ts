@@ -28,7 +28,7 @@ import { chainlinkAggregatorProxy, chainlinkEthUsdAggregatorProxy } from '../../
 import { ethers } from 'ethers';
 import { LendingPoolConfiguratorFactory, MultiFeeDistributionFactory, ViniumOFTFactory, WETH9Factory } from '../../../types';
 
-task('full:initialize-incentive-controller', 'Deploy Incentive Controller')
+task('full:initialize-rewarding', 'Deploy Incentive Controller')
   .addFlag('verify', 'Verify contracts at Etherscan')
   .addParam('pool', `Pool name to retrieve configuration, supported: ${Object.values(ConfigNames)}`)
   .setAction(async ({ verify, pool }, localBRE) => {
@@ -36,8 +36,7 @@ task('full:initialize-incentive-controller', 'Deploy Incentive Controller')
       await localBRE.run('set-DRE');
       const network = <eNetwork>localBRE.network.name;
       const poolConfig = loadPoolConfig(pool);
-      const { OFTTokenAddress, OFTTreasury, MultiFeeDistribution, IncentivesController, WETH, LendingPool, LendingPoolConfigurator } =
-        poolConfig as ICommonConfiguration;
+      const { OFTTokenAddress, OFTTreasury, MultiFeeDistribution, IncentivesController } = poolConfig as ICommonConfiguration;
 
       let oftTreasury = await getParamPerNetwork(OFTTreasury, network);
       let oftTokenAddress = await getParamPerNetwork(OFTTokenAddress, network);

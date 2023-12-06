@@ -3,8 +3,10 @@ yarn hardhat --network goerli full:deploy-lending-pool --pool Commons --verify
 yarn hardhat --network goerli full:deploy-oracles --pool Commons --verify
 yarn hardhat --network goerli full:data-provider --verify
 yarn hardhat --network goerli full-deploy-weth-gateway --pool Commons --verify
-yarn hardhat --network goerli full:deploy-incentive-controller --pool Commons --verify
-yarn hardhat --network goerli full:initialize-incentive-controller --pool Commons --verify
+
+yarn hardhat --network goerli full:deploy-rewarding --pool Commons --verify
+yarn hardhat --network goerli full:initialize-rewarding --pool Commons --verify
+
 yarn hardhat --network goerli full:initialize-lending-pool --pool Commons --verify
 yarn hardhat --network goerli full:deploy-leverager --pool Commons --verify
 // yarn hardhat --network goerli full:add-new-tokens --pool Commons --verify
@@ -13,39 +15,38 @@ yarn hardhat --network goerli deploy-UiPoolDataProviderV2 --verify
 yarn hardhat --network goerli deploy-UiIncentiveDataProviderV2 --verify
 yarn hardhat --network goerli full:multicall --verify
 
-yarn hardhat --network goerli dev:vault-oracle --vault 0xd8134205b0328f5676aaefb3b2a0dc15f4029d8c --oracle 0x0d79df66BE487753B02D015Fb622DED7f0E9798d  --verify 
+yarn hardhat --network goerli dev:vault-oracle --verify 
 
-// LendingPoolAddressesProvider registry 0x810C2009F54C68EB0c90db4F14de20CDf9BD586F
-// LendingPoolAddressesProvider 0x8FC2aA21e1963CE9C12F07fc27AFe7681Dc3969b
+// LendingPoolAddressesProvider registry 0x8370993b567F0366ef193Ee1dD86dfC6FA8AD821
+// LendingPoolAddressesProvider 0x9b19Aa51Beb49EA4588Cf2C4d9165Aa6b4862675
 
 // Reserve logic 0xA316412d564c3c749738B5F59e7Fb2819c9A2E93
 // GenericLogic 0xfb0d06c9B248038eaF57E9E88AE33f4aC8e979Be
 // ValidationLogic 0x5B371397dab7A60a9798dE99d8a08b587C8b5B93
 
-// LendingPool Proxy 0xb4705bb618fa64EEff3009d68A5696bc1Bda0E53
-// LendingPool 0xe3E7682a922E1562fB2ECE4A029b81F89a22b1d0
-// LendingPoolConfigurator Proxy 0x741919447fFAa3f1038D881Ff9EEA9Fc908a2C30
-// LendingPoolConfigurator 0x10904E90e68093BCB62CEC13ccC1d05A6Db6Ef95
+// LendingPool Proxy 0x94564E9ed93ef9c6970391b0183614670C924102
+// LendingPool 0x73E5f00ed6a270C58e1CBE76F8D71cC97a63B20E
+// LendingPoolConfigurator Proxy 0x5a0Da85d205F5b8d13fe6F1F35F77a3A663129B0
+// LendingPoolConfigurator 0x0B4dC1e09d1cb8851413Eb5cAbDC13dB4A278D4b
 
-// StableAndVariableTokensHelper 0xf1fb43DEbd2De1d71Ec33AEF4Bc789D7f50482C6
-// ViTokensAndRatesHelper 0xae3Be832c83CfDcae4fe494a7F998759B2c74832
+// StableAndVariableTokensHelper 0x7845eF13bBcDbf3B3AF5Be666eD5E037E9755aE2
+// ViTokensAndRatesHelper 0x79C4Bb15a4C873739Bf21180Fdd291cAA0D79008
 
-// ViToken 0x65aC3cB820Fff869c30351A912940AD5e8de0833
-// StableVdToken 0xaA33f35A5efBB038214308d07EFFc42311B6872c
-// VariableVdToken 0xc7dfE853e1F3575cc65DBDB5d7E23A734E75d25F
+// ViToken 0x3655184F4A6629B8469Bbd86b27D72d9DFEF919A
+// StableVdToken 0x36a7f6b3E30BE142253e9aB7Fb0b0f6Ab7434809
+// VariableVdToken 0xFe8fC8B4473ee183860e9aa2b3bcF6481564FC95
 
-// ViniumOracle 0xec93F9B4Ae488346bB259e2308272E6c8798D2BF
-// LendingRateOracle 0x2BA88cEB73D95AC07A520F98DaDa136A852fC10d
+// ViniumOracle 0xb2906D0c42bbc0D2FAEA4C5Ea95c3885C6BeD8f7
+// LendingRateOracle 0x60DCbf2456Ff7dC4698291BBc46a41E00dBE59fF
 
-// ViniumProtocolDataProvider 0xa8e02BEc402AA21eA9c1B3704aE05f8203dee789
-
+// ViniumProtocolDataProvider 0xB83C43da6B5fd6972e7cAdBC196F22a4825a1F20
 // WETHGateway 0xe2ebf2D930D0Bf680A7167bAaF623e9B312E6a06
 
-// DefaultReserveInterestRateStrategy 0x16d40C5783acbA44931d188401c92472BFe88287
+// DefaultReserveInterestRateStrategy 0x985BD803F4C415A726892e072bb41A8aC5CD8Ed4
 // 0x27810894A3Fa1F9a4165afBDB2a4203e94Bb1F98
 
-// LendingPoolCollateralManager 0xA1C15daD72746FE6e393b922e1769099e4Fc768d
-// WalletBalanceProvider 0x435CE0F5Ec9c3b18eaCC63d7f54c2d7582F31b52
+// LendingPoolCollateralManager 0x4dF6741d1d6311A4BA6A32eaF8aa000f754dd481
+// WalletBalanceProvider 0x8a689aC6F227e17104953e720D48414454ce53c3
 
 // UiPoolDataProviderV2 0x84A63CDC0aa7e851373C9DD1CB824E2c6e7d4f49
 // UiIncentiveDataProviderV2 0xC20bda162d06431ab8891C9810a37F5585EA5147
@@ -54,7 +55,7 @@ yarn hardhat --network goerli dev:vault-oracle --vault 0xd8134205b0328f5676aaefb
 // ViniumOFT 0x2f058f16223d0c74a1A2e6a9a47ba9c78f8776b8
 // Vinium-ETH LP 0xa8e21cbe7c32cb2131a1a25c56042e2dd4f1b1ce
 // MultiFeeDistribution 0x2134E090f1172383eEcCd77B2d63f32e689b9a82
-// ChefIncentiveController 0x283eB941249d80ABCFdB3e244BFAabd4c8C893fa
-// Leverager 0xaFEC67611d2EAD0d86BF343e7e0206e4Aad7F923
+// ChefIncentiveController 0x2E390c506f42e3d7Cf0C37255eB307A46D716E6b
+// Leverager 0xAC33f2C33e9746Ab5fC18e4b7F8319B22130e222
 
 // Old Incentive Controller 0xDf405Ef49410a6c4D2bc95D48f78416a1582E256

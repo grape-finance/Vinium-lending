@@ -38,9 +38,9 @@ task('full:initialize-lending-pool', 'Initialize lending pool configuration.')
 
       const reserveAssets = await getParamPerNetwork(ReserveAssets, network);
       const incentivesController = await getParamPerNetwork(IncentivesController, network);
-      const addressesProvider = await getLendingPoolAddressesProvider('0x8FC2aA21e1963CE9C12F07fc27AFe7681Dc3969b');
+      const addressesProvider = await getLendingPoolAddressesProvider('0x9b19Aa51Beb49EA4588Cf2C4d9165Aa6b4862675');
 
-      const testHelpers = await getViniumProtocolDataProvider('0xa8e02BEc402AA21eA9c1B3704aE05f8203dee789');
+      const testHelpers = await getViniumProtocolDataProvider('0xB83C43da6B5fd6972e7cAdBC196F22a4825a1F20');
 
       const admin = await addressesProvider.getPoolAdmin();
       const oracle = await addressesProvider.getPriceOracle();
