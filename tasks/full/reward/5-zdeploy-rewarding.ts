@@ -1,6 +1,6 @@
 import { task } from 'hardhat/config';
 import hre from 'hardhat';
-import { getParamPerNetwork } from '../../helpers/contracts-helpers';
+import { getParamPerNetwork } from '../../../helpers/contracts-helpers';
 import {
   deployLendingPoolCollateralManager,
   deployWalletBalancerProvider,
@@ -19,15 +19,15 @@ import {
   deployLendingPoolAddressesProvider,
   upgradeChefIncentivesController,
   upgradeMultiFeeDistribution,
-} from '../../helpers/contracts-deployments';
-import { loadPoolConfig, ConfigNames, getTreasuryAddress } from '../../helpers/configuration';
-import { getFirstSigner, getWETHGateway } from '../../helpers/contracts-getters';
-import { eNetwork, ICommonConfiguration } from '../../helpers/types';
-import { DRE, notFalsyOrZeroAddress, waitForTx } from '../../helpers/misc-utils';
+} from '../../../helpers/contracts-deployments';
+import { loadPoolConfig, ConfigNames, getTreasuryAddress } from '../../../helpers/configuration';
+import { getFirstSigner, getWETHGateway } from '../../../helpers/contracts-getters';
+import { eNetwork, ICommonConfiguration } from '../../../helpers/types';
+import { DRE, notFalsyOrZeroAddress, waitForTx } from '../../../helpers/misc-utils';
 import { exit } from 'process';
-import { chainlinkAggregatorProxy, chainlinkEthUsdAggregatorProxy } from '../../helpers/constants';
+import { chainlinkAggregatorProxy, chainlinkEthUsdAggregatorProxy } from '../../../helpers/constants';
 import { ethers } from 'ethers';
-import { ChefIncentivesControllerFactory, MultiFeeDistributionFactory } from '../../types';
+import { ChefIncentivesControllerFactory, MultiFeeDistributionFactory } from '../../../types';
 
 task('full:deploy-incentive-controller', 'Deploy Incentive Controller')
   .addFlag('verify', 'Verify contracts at Etherscan')

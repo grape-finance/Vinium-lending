@@ -57,18 +57,12 @@ import {
   UiIncentiveDataProviderV2V3,
   UiIncentiveDataProviderV2Factory,
   ViniumOFTFactory,
-  LiquidityZapFactory,
-  UniswapPoolHelperFactory,
-  LockZapFactory,
-  PriceProviderFactory,
-  LockerListFactory,
   MultiFeeDistributionFactory,
-  MiddleFeeDistributionFactory,
   ChefIncentivesControllerFactory,
-  EligibilityDataProviderFactory,
   MulticallFactory,
   LeveragerFactory,
   VaultTokenChainlinkPriceAdapterFactory,
+  TwapOraclePriceFeedFactoryFactory,
 } from '../types';
 import {
   withSaveAndVerify,
@@ -370,6 +364,9 @@ export const upgradeChefIncentivesController = async (args: [string], verify?: b
 
 export const deployLeverager = async (lendingPool: tEthereumAddress, verify?: boolean) =>
   withSaveAndVerify(await new LeveragerFactory(await getFirstSigner()).deploy(lendingPool), eContractid.Leverager, [lendingPool], verify);
+
+export const deployTwapOracleFactory = async (verify?: boolean) =>
+  withSaveAndVerify(await new TwapOraclePriceFeedFactoryFactory(await getFirstSigner()).deploy(), eContractid.TwapOraclePriceFeedFactory, [], verify);
 
 // export const deployMintableDelegationERC20 = async (
 //   args: [string, string, string],

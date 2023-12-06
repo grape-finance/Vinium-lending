@@ -1,12 +1,12 @@
 import { task } from 'hardhat/config';
-import { deployLeverager, deployViniumProtocolDataProvider } from '../../helpers/contracts-deployments';
+import { deployLeverager, deployViniumProtocolDataProvider } from '../../../helpers/contracts-deployments';
 import { exit } from 'process';
-import { getFirstSigner, getLendingPoolAddressesProvider } from '../../helpers/contracts-getters';
-import { ConfigNames, loadPoolConfig } from '../../helpers/configuration';
-import { ICommonConfiguration, eNetwork } from '../../helpers/types';
-import { getParamPerNetwork } from '../../helpers/contracts-helpers';
-import { notFalsyOrZeroAddress } from '../../helpers/misc-utils';
-import { LeveragerFactory, MintableDelegationERC20Factory, VariableVdTokenFactory } from '../../types';
+import { getFirstSigner, getLendingPoolAddressesProvider } from '../../../helpers/contracts-getters';
+import { ConfigNames, loadPoolConfig } from '../../../helpers/configuration';
+import { ICommonConfiguration, eNetwork } from '../../../helpers/types';
+import { getParamPerNetwork } from '../../../helpers/contracts-helpers';
+import { notFalsyOrZeroAddress } from '../../../helpers/misc-utils';
+import { LeveragerFactory, MintableDelegationERC20Factory, VariableVdTokenFactory } from '../../../types';
 import { ethers } from 'ethers';
 
 task('full:deploy-leverager', 'Initialize lending pool configuration.')

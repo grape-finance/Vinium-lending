@@ -122,9 +122,8 @@ export enum eContractid {
   MiddleFeeDistribution = 'MiddleFeeDistribution',
   EligibilityDataProvider = 'EligibilityDataProvider',
   ChefIncentivesController = 'ChefIncentivesController',
-
   Leverager = 'Leverager',
-
+  TwapOraclePriceFeedFactory = 'TwapOraclePriceFeedFactory',
   Multicall = 'Multicall',
 }
 
