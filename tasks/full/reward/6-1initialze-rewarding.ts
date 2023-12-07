@@ -6,6 +6,7 @@ import { eNetwork, ICommonConfiguration } from '../../../helpers/types';
 import { exit } from 'process';
 
 import { MultiFeeDistributionFactory, ViniumOFTFactory } from '../../../types';
+import { parseEther } from 'ethers/lib/utils';
 
 task('full:initialize-rewarding', 'Deploy Incentive Controller')
   .addFlag('verify', 'Verify contracts at Etherscan')
@@ -30,6 +31,12 @@ task('full:initialize-rewarding', 'Deploy Incentive Controller')
       // await OFTTokenContract.setMinter(multiFeeDistribution!);
       // await MultiFeeDistributionContract.setMinters([oftTreasury!, incentivesController!]);
       // await MultiFeeDistributionContract.setIncentivesController(incentivesController!);
+
+      // const user = await (await getFirstSigner()).getAddress();
+
+      // const withdrawableBalance = await MultiFeeDistributionContract.withdrawableBalance(user!);
+      // console.log('withdrawableBalance :>> ', withdrawableBalance.penaltyETHAmount);
+      // await MultiFeeDistributionContract.exitEarly(user!, { value: withdrawableBalance.penaltyETHAmount });
     } catch (err) {
       console.error(err);
       exit(1);

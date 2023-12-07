@@ -12,6 +12,7 @@ import {PausableUpgradeable} from '@openzeppelin/contracts-upgradeable/security/
 import {IChefIncentivesController} from '../interfaces/IChefIncentivesController.sol';
 import {IMultiFeeDistribution} from '../interfaces/IMultiFeeDistribution.sol';
 import {ITwapOraclePriceFeed} from '../interfaces/ITwapOraclePriceFeed.sol';
+import {IWETH} from '../interfaces/IWETH.sol';
 
 interface IMintableToken is IERC20 {
   function mint(address _receiver, uint256 _amount) external returns (bool);
@@ -85,6 +86,7 @@ contract MultiFeeDistribution is IMultiFeeDistribution, Initializable, PausableU
   mapping(address => address) public exitDelegatee;
 
   address public twapOracleAddr;
+  address public weth;
 
   function initialize(IERC20 _stakingToken, IMintableToken _rewardToken) public initializer {
     __Pausable_init();
@@ -291,12 +293,13 @@ contract MultiFeeDistribution is IMultiFeeDistribution, Initializable, PausableU
     _updateReward(onBehalfOf);
 
     (uint256 earned, , uint256 penaltyETHAmount) = withdrawableBalance(onBehalfOf);
-    require(msg.value >= penaltyETHAmount, 'Not Enough ETH to Exit Early');
+    require(msg.value == penaltyETHAmount, 'Not Enough ETH to Exit Early');
 
-    (bool sentLPPool, ) = payable(address(stakingToken)).call{value: msg.value / 2}('');
-    require(sentLPPool, 'Failed to send Ether to LP Pool');
-    (bool sentTreasury, ) = payable(treasury).call{value: msg.value / 2}('');
-    require(sentTreasury, 'Failed to send Ether to Treasury');
+    address weth = 0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6;
+    IWETH(weth).deposit{value: msg.value}();
+
+    IWETH(weth).transfer(address(stakingToken), penaltyETHAmount.div(2));
+    IWETH(weth).transfer(treasury, penaltyETHAmount.div(2));
 
     delete userEarnings[onBehalfOf];
     Balances storage bal = balances[onBehalfOf];

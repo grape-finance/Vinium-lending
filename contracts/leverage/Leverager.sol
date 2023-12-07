@@ -142,7 +142,7 @@ contract Leverager {
     uint256 interestRateMode,
     uint256 borrowRatio,
     uint256 loopCount
-  ) external {
+  ) external payable {
     uint16 referralCode = 0;
     IERC20(liquidStakingAsset).transferFrom(msg.sender, address(this), amount);
     IERC20(liquidStakingAsset).approve(address(lendingPool), type(uint256).max);

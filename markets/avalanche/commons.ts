@@ -189,7 +189,7 @@ export const CommonsConfig: ICommonConfiguration = {
     [eAvalancheNetwork.avalanche]: {},
     [eAvalancheNetwork.fuji]: {},
     [eEthereumNetwork.goerli]: {
-      WETH: '0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6', // Official WETH
+      WETH: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6', // Official WETH
       DAI: '0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844', // DAI
       WBTC: '0xbf781b25A4632C580A210b3A9D06F95a720d5672', // MintableERC20 token
       USDT: '0x0B3924aBe2A9856e9b685c7788d15fFD465C3Dd4', // MintableERC20 token
