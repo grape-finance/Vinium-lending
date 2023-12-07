@@ -94,7 +94,7 @@ task('full:deploy-rewarding', 'Deploy Incentive Controller')
       // const ChefIncentivesController = ChefIncentivesControllerFactory.connect(incentivesController, await getFirstSigner());
       // await ChefIncentivesController.changeEmissionSchedule(startTimeOffset, rewardsPerSecond);
 
-      // await upgradeMultiFeeDistribution([multiFeeDistribution!], verify);
+      await upgradeMultiFeeDistribution([multiFeeDistribution!], verify);
     } catch (err) {
       console.error(err);
       exit(1);

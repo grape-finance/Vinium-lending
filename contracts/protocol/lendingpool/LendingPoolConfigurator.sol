@@ -81,7 +81,6 @@ contract LendingPoolConfigurator is VersionedInitializable, ILendingPoolConfigur
     );
 
     incentivesController.addPool(viTokenProxyAddress, input.allocPoint);
-    // IMultiFeeDistribution(input.treasury).addReward(viTokenProxyAddress);
 
     address stableVdTokenProxyAddress = _initTokenWithProxy(
       input.stableVdTokenImpl,

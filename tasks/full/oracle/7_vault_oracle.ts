@@ -1,9 +1,9 @@
 import { task } from 'hardhat/config';
-import { deployVaultPriceOracle, deployWalletBalancerProvider } from '../../helpers/contracts-deployments';
-import { ConfigNames, loadPoolConfig, getQuoteCurrency } from '../../helpers/configuration';
-import { getLendingPoolAddressesProvider } from '../../helpers/contracts-getters';
+import { deployVaultPriceOracle, deployWalletBalancerProvider } from '../../../helpers/contracts-deployments';
+import { ConfigNames, loadPoolConfig, getQuoteCurrency } from '../../../helpers/configuration';
+import { getLendingPoolAddressesProvider } from '../../../helpers/contracts-getters';
 
-task('dev:vault-oracle', 'Initialize lending pool configuration.')
+task('full:vault-oracle', 'Initialize lending pool configuration.')
   .addFlag('verify', 'Verify contracts at Etherscan')
   .setAction(async ({ verify, vault, oracle }, localBRE) => {
     await localBRE.run('set-DRE');

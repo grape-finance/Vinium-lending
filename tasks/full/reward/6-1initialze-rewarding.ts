@@ -1,32 +1,11 @@
 import { task } from 'hardhat/config';
 import { getParamPerNetwork } from '../../../helpers/contracts-helpers';
-import {
-  deployLendingPoolCollateralManager,
-  deployWalletBalancerProvider,
-  authorizeWETHGateway,
-  deployUiPoolDataProviderV2,
-  deployOFTToken,
-  deployLiquidityZap,
-  deployUniswapPoolHelper,
-  deployLockZap,
-  deployPriceProvider,
-  deployLockerList,
-  deployMultiFeeDistribution,
-  deployMiddleFeeDistribution,
-  deployChefIncentivesController,
-  deployEligibilityDataProvider,
-  deployLendingPoolAddressesProvider,
-  deployBaseOracle,
-  deployUniV2TwapOracle,
-} from '../../../helpers/contracts-deployments';
-import { loadPoolConfig, ConfigNames, getTreasuryAddress } from '../../../helpers/configuration';
+import { loadPoolConfig, ConfigNames } from '../../../helpers/configuration';
 import { getFirstSigner, getWETHGateway } from '../../../helpers/contracts-getters';
 import { eNetwork, ICommonConfiguration } from '../../../helpers/types';
-import { notFalsyOrZeroAddress, waitForTx } from '../../../helpers/misc-utils';
 import { exit } from 'process';
-import { chainlinkAggregatorProxy, chainlinkEthUsdAggregatorProxy } from '../../../helpers/constants';
-import { ethers } from 'ethers';
-import { LendingPoolConfiguratorFactory, MultiFeeDistributionFactory, ViniumOFTFactory, WETH9Factory } from '../../../types';
+
+import { MultiFeeDistributionFactory, ViniumOFTFactory } from '../../../types';
 
 task('full:initialize-rewarding', 'Deploy Incentive Controller')
   .addFlag('verify', 'Verify contracts at Etherscan')
@@ -49,7 +28,7 @@ task('full:initialize-rewarding', 'Deploy Incentive Controller')
       console.log('multiFeeDistribution :>> ', multiFeeDistribution);
       console.log('incentivesController :>> ', incentivesController);
       // await OFTTokenContract.setMinter(multiFeeDistribution!);
-      await MultiFeeDistributionContract.setMinters([oftTreasury!, incentivesController!]);
+      // await MultiFeeDistributionContract.setMinters([oftTreasury!, incentivesController!]);
       // await MultiFeeDistributionContract.setIncentivesController(incentivesController!);
     } catch (err) {
       console.error(err);

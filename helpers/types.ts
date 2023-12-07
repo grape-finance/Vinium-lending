@@ -124,6 +124,7 @@ export enum eContractid {
   ChefIncentivesController = 'ChefIncentivesController',
   Leverager = 'Leverager',
   TwapOraclePriceFeedFactory = 'TwapOraclePriceFeedFactory',
+  TwapOraclePriceFeed = 'TwapOraclePriceFeed',
   Multicall = 'Multicall',
 }
 

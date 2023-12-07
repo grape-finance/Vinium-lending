@@ -15,7 +15,8 @@ yarn hardhat --network goerli deploy-UiPoolDataProviderV2 --verify
 yarn hardhat --network goerli deploy-UiIncentiveDataProviderV2 --verify
 yarn hardhat --network goerli full:multicall --verify
 
-yarn hardhat --network goerli dev:vault-oracle --verify 
+yarn hardhat --network goerli full:vault-oracle --verify 
+yarn hardhat --network goerli full:twap-oracle --verify
 
 // LendingPoolAddressesProvider registry 0x8370993b567F0366ef193Ee1dD86dfC6FA8AD821
 // LendingPoolAddressesProvider 0x9b19Aa51Beb49EA4588Cf2C4d9165Aa6b4862675
@@ -58,4 +59,4 @@ yarn hardhat --network goerli dev:vault-oracle --verify
 // ChefIncentiveController 0x2E390c506f42e3d7Cf0C37255eB307A46D716E6b
 // Leverager 0xAC33f2C33e9746Ab5fC18e4b7F8319B22130e222
 
-// Old Incentive Controller 0xDf405Ef49410a6c4D2bc95D48f78416a1582E256
+// TwapPriceOracle 0x42e3823BC078D75f32B4824F8f16C1Fa40fc72b8

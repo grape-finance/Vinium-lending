@@ -63,6 +63,7 @@ import {
   LeveragerFactory,
   VaultTokenChainlinkPriceAdapterFactory,
   TwapOraclePriceFeedFactoryFactory,
+  TwapOraclePriceFeedFactory,
 } from '../types';
 import {
   withSaveAndVerify,
@@ -365,8 +366,17 @@ export const upgradeChefIncentivesController = async (args: [string], verify?: b
 export const deployLeverager = async (lendingPool: tEthereumAddress, verify?: boolean) =>
   withSaveAndVerify(await new LeveragerFactory(await getFirstSigner()).deploy(lendingPool), eContractid.Leverager, [lendingPool], verify);
 
-export const deployTwapOracleFactory = async (verify?: boolean) =>
-  withSaveAndVerify(await new TwapOraclePriceFeedFactoryFactory(await getFirstSigner()).deploy(), eContractid.TwapOraclePriceFeedFactory, [], verify);
+export const deployTwapOracleFactory = async (verify?: boolean) => {
+  const TwapOracleFactory = await DRE.ethers.getContractFactory('TwapOraclePriceFeedFactory');
+
+  const twapOracleFactory = await TwapOracleFactory.deploy();
+
+  await insertContractAddressInDb(eContractid.LendingPoolCollateralManagerImpl, twapOracleFactory.address);
+  return withSaveAndVerify(twapOracleFactory, eContractid.LendingPoolCollateralManager, [], verify);
+};
+
+export const deployTwapPriceOracleFeed = async (args: [tEthereumAddress, tEthereumAddress, tEthereumAddress], verify?: boolean) =>
+  withSaveAndVerify(await new TwapOraclePriceFeedFactory(await getFirstSigner()).deploy(...args), eContractid.TwapOraclePriceFeed, args, verify);
 
 // export const deployMintableDelegationERC20 = async (
 //   args: [string, string, string],

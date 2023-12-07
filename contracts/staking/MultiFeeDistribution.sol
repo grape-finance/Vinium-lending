@@ -2,16 +2,16 @@
 pragma solidity 0.8.12;
 pragma abicoder v2;
 
-import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import '@openzeppelin/contracts/utils/math/SafeMath.sol';
-import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
-import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
-import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
-
-import '../interfaces/IChefIncentivesController.sol';
-import '../interfaces/IMultiFeeDistribution.sol';
+import {SafeERC20} from '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import {SafeMath} from '@openzeppelin/contracts/utils/math/SafeMath.sol';
+import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import {EnumerableSet} from '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
+import {Initializable} from '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
+import {OwnableUpgradeable} from '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
+import {PausableUpgradeable} from '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
+import {IChefIncentivesController} from '../interfaces/IChefIncentivesController.sol';
+import {IMultiFeeDistribution} from '../interfaces/IMultiFeeDistribution.sol';
+import {ITwapOraclePriceFeed} from '../interfaces/ITwapOraclePriceFeed.sol';
 
 interface IMintableToken is IERC20 {
   function mint(address _receiver, uint256 _amount) external returns (bool);
@@ -28,7 +28,7 @@ contract MultiFeeDistribution is IMultiFeeDistribution, Initializable, PausableU
   event Locked(address indexed user, uint256 amount);
   event WithdrawnExpiredLocks(address indexed user, uint256 amount);
   event Minted(address indexed user, uint256 amount);
-  event ExitedEarly(address indexed user, uint256 amount, uint256 penaltyAmount);
+  event ExitedEarly(address indexed user, uint256 amount);
   event Withdrawn(address indexed user, uint256 amount);
   event RewardPaid(address indexed user, address indexed rewardsToken, uint256 reward);
   event PublicExit();
@@ -57,6 +57,7 @@ contract MultiFeeDistribution is IMultiFeeDistribution, Initializable, PausableU
   uint256 public constant rewardLookback = 86400;
   uint256 public constant lockDuration = rewardsDuration * 8; // 56 days
   uint256 public constant vestingDuration = rewardsDuration * 4; // 28 days
+  uint256 public constant exitEarlyTax = 60;
 
   // Addresses approved to call mint
   EnumerableSet.AddressSet private minters;
@@ -83,12 +84,14 @@ contract MultiFeeDistribution is IMultiFeeDistribution, Initializable, PausableU
   mapping(address => LockedBalance[]) private userEarnings; // vesting Vinium tokens
   mapping(address => address) public exitDelegatee;
 
+  address public twapOracleAddr;
+
   function initialize(IERC20 _stakingToken, IMintableToken _rewardToken) public initializer {
     __Pausable_init();
     __Ownable_init();
 
-    stakingToken = _stakingToken;
-    rewardToken = _rewardToken;
+    stakingToken = _stakingToken; // Vinium-ETH LP
+    rewardToken = _rewardToken; // Vnium
     rewardTokens.push(address(_rewardToken));
     rewardData[address(_rewardToken)].lastUpdateTime = block.timestamp;
     rewardData[address(_rewardToken)].periodFinish = block.timestamp;
@@ -97,6 +100,10 @@ contract MultiFeeDistribution is IMultiFeeDistribution, Initializable, PausableU
 
   function setTreasury(address _treasury) external onlyOwner {
     treasury = _treasury;
+  }
+
+  function setTwapPriceOracle(address _twapOracleAddr) external onlyOwner {
+    twapOracleAddr = _twapOracleAddr;
   }
 
   function setTeamRewardVault(address vault) external onlyOwner {
@@ -167,11 +174,9 @@ contract MultiFeeDistribution is IMultiFeeDistribution, Initializable, PausableU
     return (total, earningsData);
   }
 
-  function withdrawableBalance(
-    address user
-  ) public view returns (uint256 amount, uint256 penaltyAmount, uint256 treausryAmount, uint256 amountWithoutPenalty) {
+  function withdrawableBalance(address user) public view returns (uint256 earned, uint256 amountWithoutPenalty, uint256 penaltyETHAmount) {
     Balances storage bal = balances[user];
-    uint256 earned = bal.earned;
+    earned = bal.earned;
     if (earned > 0) {
       uint256 length = userEarnings[user].length;
       for (uint256 i = 0; i < length; i++) {
@@ -182,11 +187,13 @@ contract MultiFeeDistribution is IMultiFeeDistribution, Initializable, PausableU
         }
         amountWithoutPenalty = amountWithoutPenalty.add(earnedAmount);
       }
-      penaltyAmount = earned.sub(amountWithoutPenalty).div(2);
-      treausryAmount = penaltyAmount.mul(2).div(5);
+      // penaltyAmount = earned.sub(amountWithoutPenalty).div(2);
     }
     // amount = earned.sub(penaltyAmount);
-    amount = earned.sub(penaltyAmount).sub(treausryAmount);
+    penaltyETHAmount = ITwapOraclePriceFeed(twapOracleAddr).consult(
+      address(rewardToken),
+      earned.sub(amountWithoutPenalty).mul(exitEarlyTax).div(100)
+    );
   }
 
   // Address and claimable amount of all reward tokens for the given account
@@ -243,6 +250,11 @@ contract MultiFeeDistribution is IMultiFeeDistribution, Initializable, PausableU
   }
 
   function mint(address user, uint256 amount) external whenNotPaused {
+    uint256 rewardsDuration_ = 300 * 7; // reward interval 7 days;
+    uint256 rewardLookback_ = 300;
+    uint256 lockDuration_ = rewardsDuration_ * 8; // 56 days
+    uint256 vestingDuration_ = rewardsDuration_ * 4; // 28 days
+
     require(minters.contains(msg.sender), '!minter');
     if (amount == 0) return;
     _updateReward(user);
@@ -254,7 +266,7 @@ contract MultiFeeDistribution is IMultiFeeDistribution, Initializable, PausableU
     }
     Balances storage bal = balances[user];
     bal.earned = bal.earned.add(amount);
-    uint256 unlockTime = block.timestamp.div(rewardsDuration).mul(rewardsDuration).add(vestingDuration);
+    uint256 unlockTime = block.timestamp.div(rewardsDuration_).mul(rewardsDuration_).add(vestingDuration_);
     LockedBalance[] storage earnings = userEarnings[user];
     uint256 idx = earnings.length;
     if (idx == 0 || earnings[idx - 1].unlockTime < unlockTime) {
@@ -271,20 +283,28 @@ contract MultiFeeDistribution is IMultiFeeDistribution, Initializable, PausableU
   }
 
   // Withdraw full unlocked balance and optionally claim pending rewards
-  function exitEarly(address onBehalfOf) external whenNotPaused {
+  function exitEarly(address onBehalfOf) external payable whenNotPaused {
+    require(twapOracleAddr != address(0), 'TwapPriceOracle not set');
+    require(treasury != address(0), 'Treasury not set');
     require(onBehalfOf == msg.sender || exitDelegatee[onBehalfOf] == msg.sender);
+
     _updateReward(onBehalfOf);
-    (uint256 amount, uint256 penaltyAmount, uint256 treasuryAmount, ) = withdrawableBalance(onBehalfOf);
+
+    (uint256 earned, , uint256 penaltyETHAmount) = withdrawableBalance(onBehalfOf);
+    require(msg.value >= penaltyETHAmount, 'Not Enough ETH to Exit Early');
+
+    (bool sentLPPool, ) = payable(address(stakingToken)).call{value: msg.value / 2}('');
+    require(sentLPPool, 'Failed to send Ether to LP Pool');
+    (bool sentTreasury, ) = payable(treasury).call{value: msg.value / 2}('');
+    require(sentTreasury, 'Failed to send Ether to Treasury');
+
     delete userEarnings[onBehalfOf];
     Balances storage bal = balances[onBehalfOf];
     bal.earned = 0;
-    rewardToken.safeTransfer(onBehalfOf, amount);
-    rewardToken.safeTransfer(treasury, treasuryAmount);
-    if (penaltyAmount > 0) {
-      incentivesController.claim(address(this), new address[](0));
-      _notifyReward(address(rewardToken), penaltyAmount);
-    }
-    emit ExitedEarly(onBehalfOf, amount, penaltyAmount);
+
+    rewardToken.safeTransfer(onBehalfOf, earned);
+
+    emit ExitedEarly(onBehalfOf, earned);
   }
 
   // Withdraw staked tokens
